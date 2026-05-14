@@ -60,3 +60,4 @@ desktop.ini
 # Misc
 *.pem
 next-env.d.ts
+.env*.local

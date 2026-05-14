@@ -15,7 +15,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const compat = new FlatCompat({ baseDirectory: __dirname });
 
 const eslintConfig = defineConfig([
-  // Next.js defaults (legacy eslintrc format → flat config via FlatCompat).
+  // Next 15.x ships legacy eslintrc shape — translate via FlatCompat. When the
+  // repo upgrades to Next 16, drop FlatCompat and spread the configs directly.
   ...compat.extends('next/core-web-vitals', 'next/typescript'),
 
   // ===== Maelify framework — universal rules =====
