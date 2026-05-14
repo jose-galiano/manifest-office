@@ -1,0 +1,7 @@
+# Packages allowed to run install scripts. pnpm 11 security default requires
+# explicit per-package approval. These two are required for Next.js + ESLint.
+# - sharp: image optimization (next/image)
+# - unrs-resolver: Rust-based module resolver (ESLint)
+allowBuilds:
+  sharp: true
+  unrs-resolver: true
