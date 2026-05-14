@@ -1,6 +1,10 @@
 import { Inter, JetBrains_Mono, Space_Grotesk } from 'next/font/google';
 
-import type { Metadata } from 'next';
+import { AtelierToggle } from '@/components/layout/AtelierToggle';
+import { Footer } from '@/components/layout/Footer';
+import { Nav } from '@/components/layout/Nav';
+
+import type { Metadata, Viewport } from 'next';
 import type { ReactElement, ReactNode } from 'react';
 
 import './globals.css';
@@ -42,13 +46,22 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
+export const viewport: Viewport = {
+  themeColor: '#0B0F0E',
+};
+
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>): ReactElement {
   return (
     <html
       lang="en"
       className={`${displayFont.variable} ${bodyFont.variable} ${monoFont.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col bg-[var(--color-paper)] text-[var(--color-ink)]">
+        <Nav />
+        <main className="flex-1">{children}</main>
+        <Footer />
+        <AtelierToggle />
+      </body>
     </html>
   );
 }

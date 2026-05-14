@@ -1,26 +1,77 @@
 @import 'tailwindcss';
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+ * Manifest Office — design tokens.
+ *
+ * Sourced from the brand bible §07 (colour) and §08 (typography). The
+ * production stack uses ABC Diatype; this implementation uses the documented
+ * mockup-stage substitutes (Space Grotesk / Inter / JetBrains Mono) loaded
+ * via `next/font/google` in `app/layout.tsx`. The CSS custom properties
+ * (`--font-display`, `--font-body`, `--font-mono`) are injected by
+ * `next/font` and consumed below.
+ */
+
+@theme {
+  /* Brand colour — Edition 01 palette. */
+  --color-ink: #0b0f0e;
+  --color-paper: #f2efe8;
+  --color-signal: #d24a1f;
+  --color-signal-hover: #b83c16;
+  --color-lichen: #5c6b5a;
+  --color-charcoal: #1a1a1a;
+
+  /* Per-Edition accent — Edition 01 = Signal Orange. Rotates per Edition (§07). */
+  --color-accent: #d24a1f;
+
+  /* Rule / divider tokens. */
+  --color-rule: rgb(11 15 14 / 0.12);
+  --color-rule-strong: rgb(11 15 14 / 0.35);
+  --color-rule-dark: rgb(242 239 232 / 0.18);
+
+  /* Typography — display, body, metadata (§08). */
+  --font-display: var(--font-display), 'Space Grotesk', 'ABC Diatype Wide', system-ui, sans-serif;
+  --font-body: var(--font-body), 'Inter', 'ABC Diatype', system-ui, sans-serif;
+  --font-mono:
+    var(--font-mono), 'JetBrains Mono', 'ABC Diatype Mono', ui-monospace, SFMono-Regular, Menlo,
+    monospace;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/*
+ * Base layer — page chrome.
+ * Paper background is the dominant surface across the storefront (§07).
+ */
+@layer base {
+  html,
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
   }
-}
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    font-family: var(--font-body);
+    font-size: 17px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background-color: var(--color-signal);
+    color: var(--color-paper);
+  }
+
+  /*
+   * Reduced motion — brand bible §11 ("scroll-triggered animations honor
+   * `prefers-reduced-motion`"). Carry forward as a global rule.
+   */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }

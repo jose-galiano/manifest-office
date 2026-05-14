@@ -20,7 +20,9 @@
   "dependencies": {
     "next": "15.5.4",
     "react": "19.1.1",
-    "react-dom": "19.1.1"
+    "react-dom": "19.1.1",
+    "three": "^0.184.0",
+    "zustand": "^5.0.13"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",
@@ -28,6 +30,7 @@
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/three": "^0.184.1",
     "eslint": "^9",
     "eslint-config-next": "15.5.4",
     "eslint-import-resolver-typescript": "^4.4.4",
