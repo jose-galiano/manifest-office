@@ -43,6 +43,16 @@ export const CUSTOM_EVENTS = {
   cartDrawerClose: 'cart_drawer_close',
   audioPlay: 'audio_play',
   audioPause: 'audio_pause',
+  /**
+   * Soft-conversion event. Fired when the visitor submits an email through
+   * the cart-drawer "Manifest complete" form. The site has no real checkout
+   * (Pause and Build plan), so this is the closest proxy to purchase intent:
+   * the visitor curated a kit, totalled it, and gave us a contact to reach
+   * them on. Mark this as a Conversion Event in GA4 admin so it lands in the
+   * Conversions report. `generate_lead` fires in parallel for the standard
+   * Lead generation report.
+   */
+  manifestComplete: 'manifest_complete',
   teletypeComplete: 'teletype_complete',
   variantView: 'variant_view',
   dossierFilter: 'dossier_filter',

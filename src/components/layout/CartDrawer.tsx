@@ -46,7 +46,9 @@ import type { ReactElement } from 'react';
 
 const ANON_STORAGE_KEY = 'mo_anon';
 const EMAIL_STORAGE_KEY = 'mo_email';
+const MANIFEST_FILED_SESSION_KEY = 'mo_manifest_filed';
 const COUNTDOWN_REFRESH_MS = 30_000;
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 type CutoffParts = {
   readonly hours: number;
@@ -92,6 +94,181 @@ function ensureAnonymousId(): string {
   return fresh;
 }
 
+function readManifestFiledFromSession(): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    return window.sessionStorage.getItem(MANIFEST_FILED_SESSION_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
+function writeManifestFiledToSession(): void {
+  if (typeof window === 'undefined') return;
+  try {
+    window.sessionStorage.setItem(MANIFEST_FILED_SESSION_KEY, '1');
+  } catch {
+    /* private mode — caller's local state still reflects the submission. */
+  }
+}
+
+/** Footer renderer split out of CartDrawer to keep the parent under the
+ *  SonarJS cognitive-complexity ceiling. Owns the "filed vs form" branch
+ *  and the email validation surface only. */
+type ManifestFooterProps = {
+  readonly manifestFiled: boolean;
+  readonly cartIsEmpty: boolean;
+  readonly email: string;
+  readonly emailError: string | null;
+  readonly emailInputId: string;
+  readonly onEmailChange: (next: string) => void;
+  readonly onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  readonly onClose: () => void;
+};
+
+function ManifestFooter(props: ManifestFooterProps): ReactElement {
+  const {
+    manifestFiled,
+    cartIsEmpty,
+    email,
+    emailError,
+    emailInputId,
+    onEmailChange,
+    onSubmit,
+    onClose,
+  } = props;
+
+  if (manifestFiled) {
+    return (
+      <div className="flex flex-col gap-3 px-9 pb-9 pt-7">
+        <div
+          role="status"
+          className="border border-[var(--color-rule-strong)] px-5 py-[18px] font-mono text-[11px] uppercase tracking-[0.1em] text-[var(--color-ink)]"
+        >
+          ✓ Manifest filed · we&apos;ll be in touch.
+        </div>
+        <Link
+          href="/cart"
+          onClick={onClose}
+          className="text-center font-mono text-[10px] uppercase tracking-[0.08em] text-[var(--color-lichen)] hover:text-[var(--color-signal)] transition-colors"
+        >
+          View full manifest
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <form
+      onSubmit={onSubmit}
+      noValidate
+      aria-describedby={emailError ? `${emailInputId}-error` : undefined}
+      className="flex flex-col gap-3 px-9 pb-9 pt-2"
+    >
+      <div className="flex items-stretch border border-[var(--color-rule-strong)] focus-within:border-[var(--color-ink)]">
+        <label htmlFor={emailInputId} className="sr-only">
+          Email · required to file manifest
+        </label>
+        <input
+          id={emailInputId}
+          type="email"
+          inputMode="email"
+          autoComplete="email"
+          required
+          value={email}
+          onChange={(event) => onEmailChange(event.target.value)}
+          aria-invalid={emailError !== null}
+          placeholder="email · required to file manifest"
+          disabled={cartIsEmpty}
+          className="flex-1 border-0 bg-transparent px-4 py-[14px] font-mono text-[12px] tracking-[0.02em] text-[var(--color-ink)] outline-none placeholder:text-[var(--color-lichen)] focus:bg-[rgba(11,15,14,0.02)] disabled:opacity-50"
+        />
+      </div>
+      {emailError ? (
+        <p
+          id={`${emailInputId}-error`}
+          role="alert"
+          className="font-mono text-[10px] uppercase tracking-[0.06em] text-[var(--color-signal)]"
+        >
+          {emailError}
+        </p>
+      ) : null}
+      <button
+        type="submit"
+        disabled={cartIsEmpty}
+        className="w-full bg-[var(--color-ink)] px-4 py-[18px] font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--color-paper)] transition-[background-color,letter-spacing] duration-[360ms] ease-out hover:bg-[var(--color-signal)] hover:tracking-[0.18em] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-[var(--color-ink)] disabled:hover:tracking-[0.14em]"
+      >
+        Manifest complete
+      </button>
+      <Link
+        href="/cart"
+        onClick={onClose}
+        className="text-center font-mono text-[10px] uppercase tracking-[0.08em] text-[var(--color-lichen)] hover:text-[var(--color-signal)] transition-colors"
+      >
+        View full manifest
+      </Link>
+    </form>
+  );
+}
+
+type ManifestCompletePayload = {
+  readonly email: string;
+  readonly anonymousId: string;
+  readonly items: readonly CartItem[];
+  readonly subtotalEur: number;
+  readonly totalWithShipping: number;
+  readonly freeShip: boolean;
+};
+
+/**
+ * Fan-out for the Manifest-Complete soft conversion. Lifted out of the
+ * component so the React function stays under the SonarJS cognitive-
+ * complexity ceiling. Three destinations:
+ *   1. `manifest_complete` custom event (mark as Conversion in GA4 admin).
+ *   2. `generate_lead` GA4 canonical event (auto-counted in Lead reports).
+ *   3. Klaviyo `Manifest Complete` event via the existing /api/track route.
+ */
+function fireManifestCompleteEvents(payload: ManifestCompletePayload): void {
+  const ecommerceItems = payload.items.map((item, index) => ({
+    item_id: item.handle,
+    item_name: item.title,
+    item_brand: 'Manifest Office',
+    price: item.price,
+    quantity: 1,
+    currency: 'EUR',
+    index,
+  }));
+  const ecommerce = {
+    currency: 'EUR',
+    value: payload.totalWithShipping,
+    items: ecommerceItems,
+  };
+
+  track(CUSTOM_EVENTS.manifestComplete, {
+    params: {
+      cart_item_count: payload.items.length,
+      cart_subtotal: payload.subtotalEur,
+      cart_total: payload.totalWithShipping,
+      free_shipping_unlocked: payload.freeShip,
+    },
+    ecommerce,
+    fanout: { klaviyo: true, email: payload.email },
+  });
+
+  track(ECOMMERCE_EVENTS.generateLead, {
+    params: { method: 'cart_drawer_manifest_complete' },
+    ecommerce,
+  });
+
+  void postTrack('Manifest Complete', payload.anonymousId, payload.email, {
+    email_captured: true,
+    cart_item_count: payload.items.length,
+    cart_subtotal: payload.subtotalEur,
+    cart_total: payload.totalWithShipping,
+    free_shipping_unlocked: payload.freeShip,
+    interested_in_edition: '01',
+  });
+}
+
 type TrackProperties = Record<string, string | number | boolean | null>;
 
 async function postTrack(
@@ -135,7 +312,8 @@ export function CartDrawer(): ReactElement | null {
   const [cutoff, setCutoff] = useState<CutoffParts>(() => ({ hours: 0, minutes: 0 }));
   const [upsells, setUpsells] = useState<readonly ManifestProduct[]>([]);
   const [email, setEmail] = useState('');
-  const [isEmailSaved, setIsEmailSaved] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [manifestFiled, setManifestFiled] = useState(false);
   const anonymousIdRef = useRef<string>('');
   const emailInputId = useId();
 
@@ -147,8 +325,12 @@ export function CartDrawer(): ReactElement | null {
     const savedEmail = readLocalStorage(EMAIL_STORAGE_KEY);
     if (savedEmail && savedEmail.length > 0) {
       setEmail(savedEmail);
-      setIsEmailSaved(true);
     }
+    // `manifest_filed` is a session-scoped flag — once a visitor has
+    // submitted the Manifest Complete form, the same drawer re-opens to
+    // the confirmation state, not the form. Prevents one visitor inflating
+    // the conversion count by clicking multiple times in a session.
+    if (readManifestFiledFromSession()) setManifestFiled(true);
     setCutoff(computeCutoff());
     const handle = window.setInterval(() => setCutoff(computeCutoff()), COUNTDOWN_REFRESH_MS);
     return () => window.clearInterval(handle);
@@ -284,36 +466,36 @@ export function CartDrawer(): ReactElement | null {
     [addCartItem, items.length],
   );
 
-  const handleEmailSubmit = useCallback(
+  /**
+   * Unified Manifest-Complete handler. Replaces the previous two-step flow
+   * (separate email save + separate Manifest-Complete click). Now: one form,
+   * email is required, submit captures the email AND fires the conversion
+   * events together. There's no real checkout — this is the closest proxy
+   * to purchase intent the demo can produce.
+   */
+  const handleManifestSubmit = useCallback(
     (event: React.FormEvent<HTMLFormElement>): void => {
       event.preventDefault();
       const trimmed = email.trim();
-      if (trimmed.length === 0 || !trimmed.includes('@')) return;
+      if (!EMAIL_PATTERN.test(trimmed)) {
+        setEmailError('Please enter a valid email.');
+        return;
+      }
+      setEmailError(null);
       writeLocalStorage(EMAIL_STORAGE_KEY, trimmed);
-      setIsEmailSaved(true);
-      void postTrack('Manifest Email Saved', anonymousIdRef.current, trimmed, {
-        email_captured: true,
-        cart_item_count: items.length,
-        cart_subtotal: subtotalEur,
-        interested_in_edition: '01',
+      fireManifestCompleteEvents({
+        email: trimmed,
+        anonymousId: anonymousIdRef.current,
+        items,
+        subtotalEur,
+        totalWithShipping,
+        freeShip: progress.freeShip,
       });
+      writeManifestFiledToSession();
+      setManifestFiled(true);
     },
-    [email, items.length, subtotalEur],
+    [email, items, subtotalEur, totalWithShipping, progress.freeShip],
   );
-
-  const handleManifestComplete = useCallback((): void => {
-    void postTrack(
-      'Manifest Complete Clicked',
-      anonymousIdRef.current,
-      readLocalStorage(EMAIL_STORAGE_KEY),
-      {
-        cart_item_count: items.length,
-        cart_subtotal: subtotalEur,
-        cart_total: totalWithShipping,
-        free_shipping_unlocked: progress.freeShip,
-      },
-    );
-  }, [items.length, subtotalEur, totalWithShipping, progress.freeShip]);
 
   // Hydration safety: server renders nothing for the drawer's open state.
   // Once mounted, the closed state is rendered (transformed off-canvas) so
@@ -454,59 +636,23 @@ export function CartDrawer(): ReactElement | null {
           </span>
         </div>
 
-        {/* Email capture */}
-        <div className="px-9 pt-2">
-          <form
-            onSubmit={handleEmailSubmit}
-            className="flex items-stretch border border-[var(--color-rule-strong)]"
-          >
-            <label htmlFor={emailInputId} className="sr-only">
-              Save manifest by email
-            </label>
-            <input
-              id={emailInputId}
-              type="email"
-              required
-              value={email}
-              onChange={(event) => {
-                setEmail(event.target.value);
-                setIsEmailSaved(false);
-              }}
-              placeholder="email · save manifest"
-              className="flex-1 border-0 bg-transparent px-4 py-[14px] font-mono text-[12px] tracking-[0.02em] text-[var(--color-ink)] outline-none placeholder:text-[var(--color-lichen)] focus:bg-[rgba(11,15,14,0.02)]"
-            />
-            <button
-              type="submit"
-              className="border-0 border-l border-[var(--color-rule-strong)] bg-transparent px-5 font-mono text-[11px] uppercase tracking-[0.1em] text-[var(--color-ink)] transition-colors hover:bg-[var(--color-ink)] hover:text-[var(--color-paper)]"
-            >
-              {isEmailSaved ? '✓ Saved' : 'Save'}
-            </button>
-          </form>
-          {isEmailSaved ? (
-            <div className="pt-[10px] font-mono text-[10px] uppercase tracking-[0.06em] text-[var(--color-lichen)]">
-              Saved.
-            </div>
-          ) : null}
-        </div>
-
-        {/* Actions */}
-        <div className="flex flex-col gap-3 px-9 pb-9 pt-2">
-          <button
-            type="button"
-            disabled={cartIsEmpty}
-            onClick={handleManifestComplete}
-            className="w-full bg-[var(--color-ink)] px-4 py-[18px] font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--color-paper)] transition-[background-color,letter-spacing] duration-[360ms] ease-out hover:bg-[var(--color-signal)] hover:tracking-[0.18em] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-[var(--color-ink)] disabled:hover:tracking-[0.14em]"
-          >
-            Manifest complete
-          </button>
-          <Link
-            href="/cart"
-            onClick={closeDrawer}
-            className="text-center font-mono text-[10px] uppercase tracking-[0.08em] text-[var(--color-lichen)] hover:text-[var(--color-signal)] transition-colors"
-          >
-            View full manifest
-          </Link>
-        </div>
+        {/* Unified Manifest-Complete form (or confirmation state) — extracted
+            into <ManifestFooter> so this component stays under the SonarJS
+            cognitive-complexity ceiling. Email is required; submission fires
+            `manifest_complete` + `generate_lead` + the Klaviyo event. */}
+        <ManifestFooter
+          manifestFiled={manifestFiled}
+          cartIsEmpty={cartIsEmpty}
+          email={email}
+          emailError={emailError}
+          emailInputId={emailInputId}
+          onEmailChange={(next) => {
+            setEmail(next);
+            if (emailError) setEmailError(null);
+          }}
+          onSubmit={handleManifestSubmit}
+          onClose={closeDrawer}
+        />
       </aside>
     </>
   );
