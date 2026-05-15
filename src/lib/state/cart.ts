@@ -14,6 +14,14 @@
  *    visitors with an open tab during the cut-over keep their cart.
  *  - SSR-safe: the persist middleware skips reading from storage on the
  *    server; the first client render hydrates.
+ *
+ * Drawer open/close state:
+ *  - Held in the same store for ergonomics (any component can open the
+ *    drawer via `useCart().openDrawer()`), but DELIBERATELY NOT persisted —
+ *    `partialize` only emits `items`. Re-opening the drawer after a page
+ *    navigation would be confusing UX.
+ *  - Wave 3A (Buybox) should call `openDrawer()` immediately after a
+ *    successful reserve so the user sees their reservation.
  */
 
 import { create } from 'zustand';
@@ -39,12 +47,17 @@ export type CartItem = {
 
 export type CartState = {
   readonly items: readonly CartItem[];
+  readonly isDrawerOpen: boolean;
 };
 
 export type CartActions = {
   add: (item: CartItem) => void;
   remove: (handle: string) => void;
+  removeLine: (handle: string, engravingText: string | undefined) => void;
   clear: () => void;
+  openDrawer: () => void;
+  closeDrawer: () => void;
+  toggleDrawer: () => void;
 };
 
 export type CartStore = CartState & CartActions;
@@ -76,6 +89,7 @@ export const useCartStore = create<CartStore>()(
   persist(
     (set) => ({
       items: [],
+      isDrawerOpen: false,
       add: (item) =>
         set((state) => {
           // De-duplicate: if the same line already exists, we keep one entry.
@@ -87,12 +101,24 @@ export const useCartStore = create<CartStore>()(
         }),
       remove: (handle) =>
         set((state) => ({ items: state.items.filter((item) => item.handle !== handle) })),
+      removeLine: (handle, engravingText) =>
+        set((state) => ({
+          items: state.items.filter(
+            (item) =>
+              !(item.handle === handle && (item.engraving?.text ?? '') === (engravingText ?? '')),
+          ),
+        })),
       clear: () => set({ items: [] }),
+      openDrawer: () => set({ isDrawerOpen: true }),
+      closeDrawer: () => set({ isDrawerOpen: false }),
+      toggleDrawer: () => set((state) => ({ isDrawerOpen: !state.isDrawerOpen })),
     }),
     {
       name: MO_CART_STORAGE_KEY,
       storage: createJSONStorage(() => getSessionStorage() ?? noopStorage),
-      // Only the items array persists — actions are recreated on every load.
+      // Only the items array persists — actions and drawer-open state are
+      // recreated on every load (re-opening the drawer after a nav would be
+      // confusing UX).
       partialize: (state) => ({ items: state.items }),
       version: 1,
     },

@@ -1,8 +1,10 @@
 import { Inter, JetBrains_Mono, Space_Grotesk } from 'next/font/google';
 
 import { AtelierToggle } from '@/components/layout/AtelierToggle';
+import { CartDrawer } from '@/components/layout/CartDrawer';
 import { Footer } from '@/components/layout/Footer';
 import { Nav } from '@/components/layout/Nav';
+import { JsonLd, buildOrganizationSchema, buildWebsiteSchema } from '@/lib/seo';
 
 import type { Metadata, Viewport } from 'next';
 import type { ReactElement, ReactNode } from 'react';
@@ -57,10 +59,13 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
       className={`${displayFont.variable} ${bodyFont.variable} ${monoFont.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-[var(--color-paper)] text-[var(--color-ink)]">
+        <JsonLd id="org-jsonld" schema={buildOrganizationSchema()} />
+        <JsonLd id="website-jsonld" schema={buildWebsiteSchema()} />
         <Nav />
         <main className="flex-1">{children}</main>
         <Footer />
         <AtelierToggle />
+        <CartDrawer />
       </body>
     </html>
   );

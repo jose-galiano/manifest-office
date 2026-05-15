@@ -3,7 +3,9 @@ import { notFound } from 'next/navigation';
 
 import { Eyebrow } from '@/components/ui/Eyebrow';
 import { MonoCaption } from '@/components/ui/MonoCaption';
+import { JsonLd, SITE_ORIGIN, buildBreadcrumbList } from '@/lib/seo';
 
+import type { SchemaOrgGraph } from '@/lib/seo';
 import type { Metadata } from 'next';
 import type { ReactElement } from 'react';
 
@@ -51,6 +53,19 @@ export async function generateMetadata({ params }: BlogPageProps): Promise<Metad
   return { title: meta.title, description: meta.description };
 }
 
+function buildBlogSchema(handle: BlogHandle, meta: BlogMeta): SchemaOrgGraph {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Blog',
+    '@id': `${SITE_ORIGIN}/blogs/${handle}#blog`,
+    name: meta.title,
+    description: meta.description,
+    url: `${SITE_ORIGIN}/blogs/${handle}`,
+    publisher: { '@id': `${SITE_ORIGIN}/#organization` },
+    inLanguage: 'en',
+  };
+}
+
 export default async function BlogIndexPage({ params }: BlogPageProps): Promise<ReactElement> {
   const { blog } = await params;
   if (!isBlogHandle(blog)) {
@@ -79,6 +94,16 @@ export default async function BlogIndexPage({ params }: BlogPageProps): Promise<
           Return to the office <span aria-hidden="true">→</span>
         </Link>
       </div>
+
+      <JsonLd id="blog-jsonld" schema={buildBlogSchema(blog, meta)} />
+      <JsonLd
+        id="blog-breadcrumb-jsonld"
+        schema={buildBreadcrumbList([
+          { name: 'Manifest Office', url: '/' },
+          { name: 'Blogs', url: '/blogs/operator-notes' },
+          { name: meta.title, url: `/blogs/${blog}` },
+        ])}
+      />
     </main>
   );
 }

@@ -17,9 +17,14 @@ export type UseCartResult = {
   readonly items: readonly CartItem[];
   readonly count: number;
   readonly subtotalEur: number;
+  readonly isDrawerOpen: boolean;
   add: (item: CartItem) => void;
   remove: (handle: string) => void;
+  removeLine: (handle: string, engravingText: string | undefined) => void;
   clear: () => void;
+  openDrawer: () => void;
+  closeDrawer: () => void;
+  toggleDrawer: () => void;
 };
 
 /**
@@ -28,12 +33,29 @@ export type UseCartResult = {
  */
 export function useCart(): UseCartResult {
   const items = useCartStore((state) => state.items);
+  const isDrawerOpen = useCartStore((state) => state.isDrawerOpen);
   const add = useCartStore((state) => state.add);
   const remove = useCartStore((state) => state.remove);
+  const removeLine = useCartStore((state) => state.removeLine);
   const clear = useCartStore((state) => state.clear);
+  const openDrawer = useCartStore((state) => state.openDrawer);
+  const closeDrawer = useCartStore((state) => state.closeDrawer);
+  const toggleDrawer = useCartStore((state) => state.toggleDrawer);
 
   const count = items.length;
   const subtotalEur = items.reduce((sum, item) => sum + item.price + (item.engraving?.fee ?? 0), 0);
 
-  return { items, count, subtotalEur, add, remove, clear };
+  return {
+    items,
+    count,
+    subtotalEur,
+    isDrawerOpen,
+    add,
+    remove,
+    removeLine,
+    clear,
+    openDrawer,
+    closeDrawer,
+    toggleDrawer,
+  };
 }

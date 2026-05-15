@@ -14,6 +14,7 @@ import { SystemAnchorLatch } from '@/components/sections/SystemAnchorLatch';
 import { SystemEcosystem } from '@/components/sections/SystemEcosystem';
 import { SystemStats } from '@/components/sections/SystemStats';
 import { SystemThreeMotions } from '@/components/sections/SystemThreeMotions';
+import { JsonLd, buildBreadcrumbList } from '@/lib/seo';
 
 import type { Metadata } from 'next';
 import type { ReactElement } from 'react';
@@ -125,5 +126,17 @@ export default async function StaticContentPage({ params }: PageProps): Promise<
     notFound();
   }
   const View = HANDLE_TO_VIEW[handle];
-  return <main className="bg-[#F2EFE8] text-[#0B0F0E]">{View()}</main>;
+  const meta = PAGE_META[handle];
+  return (
+    <main className="bg-[#F2EFE8] text-[#0B0F0E]">
+      {View()}
+      <JsonLd
+        id="page-breadcrumb-jsonld"
+        schema={buildBreadcrumbList([
+          { name: 'Manifest Office', url: '/' },
+          { name: meta.title, url: `/pages/${handle}` },
+        ])}
+      />
+    </main>
+  );
 }

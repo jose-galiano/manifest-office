@@ -4,6 +4,17 @@ const IMMUTABLE_CACHE = 'public, max-age=31536000, immutable';
 
 const nextConfig: NextConfig = {
   /**
+   * Allow `next/image` to optimise Shopify CDN assets. Product galleries and
+   * the PLP card stream straight from `cdn.shopify.com`; without this, the
+   * Image component fails at runtime with `hostname not configured`.
+   */
+  images: {
+    remotePatterns: [
+      { protocol: 'https', hostname: 'cdn.shopify.com' },
+    ],
+  },
+
+  /**
    * Static-asset caching parity with legacy `vercel.json`.
    * Mood-board imagery and the ambient audio bed are content-hashed by file
    * name (e.g. `v2/maker-cristina.png`) — safe to serve as immutable.

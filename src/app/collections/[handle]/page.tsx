@@ -9,6 +9,7 @@ import {
   findProductByShopifyHandle,
   type Collection,
 } from '@/content/manifest-office';
+import { JsonLd, buildBreadcrumbList, buildOfferCatalog } from '@/lib/seo';
 import { fetchManifestProducts } from '@/lib/services/fetch-products';
 
 import type { ManifestProduct } from '@/lib/types/product';
@@ -144,6 +145,16 @@ export default async function CollectionPage({
       <div className="mx-auto max-w-[1800px]">
         <ProductGrid products={products} />
       </div>
+
+      <JsonLd id="collection-jsonld" schema={buildOfferCatalog(collection, products)} />
+      <JsonLd
+        id="collection-breadcrumb-jsonld"
+        schema={buildBreadcrumbList([
+          { name: 'Manifest Office', url: '/' },
+          { name: 'Collections', url: '/collections' },
+          { name: collection.title, url: `/collections/${collection.handle}` },
+        ])}
+      />
     </main>
   );
 }
