@@ -114,7 +114,7 @@ function emitSignature(): void {
     '%cHIRING? BUILDING SOMETHING HARD?\n\n' +
       '%chello@maelify.com\n' +
       '%clinkedin.com/in/jose-galiano\n' +
-      'github.com/jose-galiano/manifest-office  (soon)\n',
+      'github.com/jose-galiano/manifest-office\n',
     STYLE_BLOCK_LABEL,
     STYLE_LINK,
     STYLE_MONO,

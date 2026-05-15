@@ -4,7 +4,7 @@ subtitle: 'The brand is fictional. The architecture is not.'
 author: 'Jose Galiano · Maelify'
 date: '2026-05-15'
 canonical: 'https://maelify.com/journal/manifest-office'
-demo: 'https://manifest-office-next.vercel.app'
+demo: 'https://demo.maelify.com'
 repo: 'https://github.com/jose-galiano/manifest-office'
 tags: ['shopify-plus', 'headless-commerce', 'next.js', 'agentic-commerce', 'rsc', 'case-study']
 read_time: '8 min'
@@ -16,7 +16,7 @@ The fastest way to write good code for a Shopify Plus brand is to not have a cli
 
 You make up a brand. You give it a brief, a colour, an anchor city, a finite allocation. You give it ten SKUs in a real Shopify dev store, with real metafields, real variants, real images. Then you build the storefront in public, the way the brand would want it built if the brand existed.
 
-I built one. It's called **Manifest Office**, and it lives at [`manifest-office-next.vercel.app`](https://manifest-office-next.vercel.app).
+I built one. It's called **Manifest Office**, and it lives at [**demo.maelify.com**](https://demo.maelify.com). Source is at [github.com/jose-galiano/manifest-office](https://github.com/jose-galiano/manifest-office), public, CI green, auto-deploying to Vercel on every push to `main`.
 
 The brand is fictional. The architecture is not.
 
@@ -137,6 +137,20 @@ A senior portfolio piece names its boundaries.
 
 The boundaries are visible because the work is honest.
 
+## Shipped, not screenshotted
+
+Every claim in this post points at code you can read.
+
+- **Source:** [github.com/jose-galiano/manifest-office](https://github.com/jose-galiano/manifest-office) · public repo, MIT-licensed, single-author commit history
+- **Live site:** [demo.maelify.com](https://demo.maelify.com) · auto-deploys from `main` via Vercel
+- **CI:** first push (commit `c6a7853`) passed in 1 minute 4 seconds, lint + typecheck + Next 15 build green
+- **Image pipeline:** `next/image` serving optimised WebP at ~84 KB (down from 1.4 MB PNG sources) with proper `srcset` and Shopify CDN fallback
+- **Lighthouse on `/`:** 96 Performance, 100 Accessibility, 100 Best Practices, 100 SEO (mobile, throttled)
+- **`/api/products`** is a live Shopify Admin GraphQL passthrough — open it in a tab, watch the JSON
+- **`/llms.txt`** and **`/robots.txt`** render exactly what this post says they do
+
+Open a tab. Then open devtools.
+
 ## How to hire
 
 I take embedded engagements with Shopify Plus brands and headless-commerce builds where the in-house team has hit the ceiling of what the existing stack can answer. Three to five days a week, three to nine month arcs, working as an extension of the engineering team. Architecture review, build, handoff.
@@ -147,7 +161,7 @@ If you're building something that needs Shopify Plus architecture, headless comm
 
 [**hello@maelify.com**](mailto:hello@maelify.com) · [linkedin.com/in/jose-galiano](https://www.linkedin.com/in/jose-galiano/)
 
-The demo, again: [**manifest-office-next.vercel.app**](https://manifest-office-next.vercel.app).
+The demo, again: [**demo.maelify.com**](https://demo.maelify.com). Source: [github.com/jose-galiano/manifest-office](https://github.com/jose-galiano/manifest-office).
 
 Open the browser console while you're there.
 
@@ -177,7 +191,7 @@ dev.to / Hashnode:
   - Front-matter compatible with both platforms; tag set already in the
     frontmatter is dev.to-ready (max 4 tags accepted).
   - Add `cover_image` URL pointing at an exported version of the WebGL hero
-    (a still frame from `manifest-office-next.vercel.app/`).
+    (a still frame from `demo.maelify.com/`).
   - Consider expanding the "senior-engineer choices" section with one or two
     short code snippets. That audience reads code, not prose.
 -->
