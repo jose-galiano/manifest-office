@@ -129,62 +129,73 @@ function EngravingSlot({ item }: EngravingSlotProps): ReactElement | null {
   const draftLength = draftText.length;
 
   if (editing) {
+    // On narrow viewports (cart drawer ≈ 340px) the input + counter + two
+    // buttons cannot share a single line — the input would collapse to
+    // ~60-80px and become unusable. Below `sm:` we stack into two rows
+    // (input on top, counter + actions below). From `sm:` we keep the
+    // original inline editor.
     return (
-      <div className="min-h-[20px]">
-        <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.06em]">
-          <span aria-hidden="true" className="text-[var(--color-lichen)]">
-            ↳
-          </span>
-          <input
-            ref={inputRef}
-            type="text"
-            inputMode="text"
-            spellCheck={false}
-            autoComplete="off"
-            maxLength={ENGRAVING_MAX}
-            value={draftText}
-            onChange={(event: ChangeEvent<HTMLInputElement>) =>
-              setDraftText(sanitiseEngraving(event.target.value))
-            }
-            onKeyDown={handleKeyDown}
-            onBlur={commitEdit}
-            placeholder="J.MAELIFY"
-            aria-label="Engraving text up to 15 characters"
-            className="min-w-0 flex-1 border-b border-[var(--color-rule-strong)] bg-transparent py-0.5 text-[11px] tracking-[0.08em] text-[var(--color-ink)] placeholder:text-[var(--color-lichen)] focus:border-[var(--color-signal)] focus:outline-none"
-          />
-          <span className="tabular-nums text-[var(--color-lichen)]">
-            {String(draftLength).padStart(2, '0')}/{ENGRAVING_MAX}
-          </span>
-          <button
-            type="button"
-            onMouseDown={(event) => event.preventDefault()}
-            onClick={commitEdit}
-            className="px-1 text-[var(--color-signal)] transition-colors hover:text-[var(--color-ink)]"
-            aria-label="Save engraving"
-          >
-            Save
-          </button>
-          {hasEngraving ? (
-            <button
-              type="button"
-              onMouseDown={(event) => event.preventDefault()}
-              onClick={removeEngraving}
-              className="px-1 text-[var(--color-lichen)] transition-colors hover:text-[var(--color-signal)]"
-              aria-label="Remove engraving"
-            >
-              Clear
-            </button>
-          ) : (
-            <button
-              type="button"
-              onMouseDown={(event) => event.preventDefault()}
-              onClick={cancelEdit}
-              className="px-1 text-[var(--color-lichen)] transition-colors hover:text-[var(--color-ink)]"
-              aria-label="Cancel engraving edit"
-            >
-              Cancel
-            </button>
-          )}
+      <div className="py-1">
+        <div className="flex flex-col gap-2 font-mono uppercase tracking-[0.06em] sm:flex-row sm:items-center sm:gap-2">
+          <div className="flex items-center gap-2 sm:flex-1">
+            <span aria-hidden="true" className="text-[10px] text-[var(--color-lichen)]">
+              ↳
+            </span>
+            <input
+              ref={inputRef}
+              type="text"
+              inputMode="text"
+              spellCheck={false}
+              autoComplete="off"
+              maxLength={ENGRAVING_MAX}
+              value={draftText}
+              onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                setDraftText(sanitiseEngraving(event.target.value))
+              }
+              onKeyDown={handleKeyDown}
+              onBlur={commitEdit}
+              placeholder="J.MAELIFY"
+              aria-label="Engraving text up to 15 characters"
+              className="min-w-0 flex-1 border-b border-[var(--color-rule-strong)] bg-transparent py-1.5 text-[16px] tracking-[0.08em] text-[var(--color-ink)] placeholder:text-[var(--color-lichen)] focus:border-[var(--color-signal)] focus:outline-none sm:py-0.5 sm:text-[11px]"
+            />
+          </div>
+          <div className="flex items-center justify-between gap-3 text-[10px] sm:justify-end sm:gap-2">
+            <span className="tabular-nums text-[var(--color-lichen)]">
+              {String(draftLength).padStart(2, '0')}/{ENGRAVING_MAX}
+            </span>
+            <div className="flex items-center gap-3 sm:gap-2">
+              <button
+                type="button"
+                onMouseDown={(event) => event.preventDefault()}
+                onClick={commitEdit}
+                className="px-2 py-1.5 text-[var(--color-signal)] transition-colors hover:text-[var(--color-ink)] sm:px-1 sm:py-0"
+                aria-label="Save engraving"
+              >
+                Save
+              </button>
+              {hasEngraving ? (
+                <button
+                  type="button"
+                  onMouseDown={(event) => event.preventDefault()}
+                  onClick={removeEngraving}
+                  className="px-2 py-1.5 text-[var(--color-lichen)] transition-colors hover:text-[var(--color-signal)] sm:px-1 sm:py-0"
+                  aria-label="Remove engraving"
+                >
+                  Clear
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onMouseDown={(event) => event.preventDefault()}
+                  onClick={cancelEdit}
+                  className="px-2 py-1.5 text-[var(--color-lichen)] transition-colors hover:text-[var(--color-ink)] sm:px-1 sm:py-0"
+                  aria-label="Cancel engraving edit"
+                >
+                  Cancel
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     );
