@@ -1,9 +1,12 @@
 import { Inter, JetBrains_Mono, Space_Grotesk } from 'next/font/google';
 
-import { AtelierToggle } from '@/components/layout/AtelierToggle';
+import { Analytics, AnalyticsNoScript } from '@/components/analytics/Analytics';
 import { CartDrawer } from '@/components/layout/CartDrawer';
+import { ConsoleSignature } from '@/components/layout/ConsoleSignature';
 import { Footer } from '@/components/layout/Footer';
 import { Nav } from '@/components/layout/Nav';
+import { EditionBanner } from '@/components/sections/EditionBanner';
+import { CONSENT_DEFAULT_SCRIPT } from '@/lib/analytics';
 import { JsonLd, buildOrganizationSchema, buildWebsiteSchema } from '@/lib/seo';
 
 import type { Metadata, Viewport } from 'next';
@@ -58,14 +61,32 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
       lang="en"
       className={`${displayFont.variable} ${bodyFont.variable} ${monoFont.variable} h-full antialiased`}
     >
+      <head>
+        {/* Consent Mode v2 defaults MUST run before GTM injects any tag, so
+            this is a raw inline script (App Router forbids `next/script`
+            beforeInteractive outside `pages/_document.js`). Kept tiny and
+            synchronous so it doesn't block FCP. */}
+        <script dangerouslySetInnerHTML={{ __html: CONSENT_DEFAULT_SCRIPT }} />
+      </head>
       <body className="min-h-full flex flex-col bg-[var(--color-paper)] text-[var(--color-ink)]">
+        {/* Trackers live in <body>, not <head>. Client components inside
+            <head> render but their effects/hooks behave unreliably (the
+            PageViewTracker silently misses its first push). */}
+        <Analytics />
+        <AnalyticsNoScript />
         <JsonLd id="org-jsonld" schema={buildOrganizationSchema()} />
         <JsonLd id="website-jsonld" schema={buildWebsiteSchema()} />
+        {/* Global header: thin Edition status bar (h=36px, fixed top:0) plus
+            sticky Nav (h=68px, fixed top:9). Pages own their own top spacing
+            so bleeding sections (homepage hero, collection allocation strip)
+            can extend up under the transparent Nav with their own dark bg,
+            while interior pages set the nav-clearance themselves. */}
+        <EditionBanner />
         <Nav />
         <main className="flex-1">{children}</main>
         <Footer />
-        <AtelierToggle />
         <CartDrawer />
+        <ConsoleSignature />
       </body>
     </html>
   );
