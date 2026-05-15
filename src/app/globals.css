@@ -54,6 +54,14 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    /*
+     * Clip horizontal overflow at the body. The cart drawer parks off-canvas
+     * via `translate-x-full` while closed; without this, mobile browsers
+     * extend the body's scrollable width to cover the parked drawer, causing
+     * sideways scroll. `clip` (not `hidden`) avoids creating a scroll
+     * container, so `position: sticky` ancestors keep working.
+     */
+    overflow-x: clip;
   }
 
   ::selection {
