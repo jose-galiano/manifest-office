@@ -345,7 +345,10 @@ export function CartDrawer(): ReactElement | null {
         aria-label="Your manifest"
         aria-hidden={!isDrawerOpen}
         className={[
-          'fixed right-0 top-0 z-[900] flex h-screen w-[min(440px,100vw)] flex-col',
+          // `h-dvh` (dynamic viewport height) so the drawer's bottom edge
+          // tracks the mobile browser's visible chrome — `h-screen`/`100vh`
+          // extends behind iOS Safari's URL bar and hides the CTA actions.
+          'fixed right-0 top-0 z-[900] flex h-dvh w-[min(440px,100vw)] flex-col',
           'bg-[var(--color-paper)] text-[var(--color-ink)]',
           'shadow-[-1px_0_0_var(--color-rule)]',
           'transition-transform duration-[520ms] ease-[cubic-bezier(0.22,1,0.36,1)]',
