@@ -39,6 +39,7 @@ import {
   TIMEZONE_OFFSET_HOURS,
 } from '@/lib/constants/commerce';
 import { toStorefrontHandle } from '@/lib/shopify/handle';
+import { validateEmail } from '@/lib/utils/email';
 
 import type { CartItem } from '@/lib/state/cart';
 import type { ManifestProduct, ProductsResponse } from '@/lib/types/product';
@@ -48,7 +49,6 @@ const ANON_STORAGE_KEY = 'mo_anon';
 const EMAIL_STORAGE_KEY = 'mo_email';
 const MANIFEST_FILED_SESSION_KEY = 'mo_manifest_filed';
 const COUNTDOWN_REFRESH_MS = 30_000;
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 type CutoffParts = {
   readonly hours: number;
@@ -476,11 +476,16 @@ export function CartDrawer(): ReactElement | null {
   const handleManifestSubmit = useCallback(
     (event: React.FormEvent<HTMLFormElement>): void => {
       event.preventDefault();
-      const trimmed = email.trim();
-      if (!EMAIL_PATTERN.test(trimmed)) {
-        setEmailError('Please enter a valid email.');
+      const validation = validateEmail(email);
+      if (!validation.ok) {
+        setEmailError(
+          validation.reason === 'typo'
+            ? 'Looks like a typo in the domain — double-check the TLD.'
+            : 'Please enter a valid email.',
+        );
         return;
       }
+      const trimmed = validation.email;
       setEmailError(null);
       writeLocalStorage(EMAIL_STORAGE_KEY, trimmed);
       fireManifestCompleteEvents({

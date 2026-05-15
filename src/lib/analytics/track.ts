@@ -176,7 +176,11 @@ export function track(eventName: string, options: TrackOptions = {}): void {
     ...(ecommerce ? { ecommerce } : {}),
   };
   pushToDataLayer(envelope);
-  if (fanout?.klaviyo) {
+  // Klaviyo fan-out is gated on a known email. The `/api/track` route also
+  // refuses anonymous events server-side, but skipping locally saves the
+  // round trip and keeps the network panel quiet during the long-tail of
+  // anonymous behavioural events (view_item, viewer_3d_rotate, etc.).
+  if (fanout?.klaviyo && fanout.email) {
     fanoutToKlaviyo(eventName, params ?? {}, ecommerce, fanout.email);
   }
 }

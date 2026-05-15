@@ -15,12 +15,11 @@
 import { useCallback, useState } from 'react';
 
 import { CUSTOM_EVENTS, ECOMMERCE_EVENTS, track } from '@/lib/analytics';
+import { validateEmail } from '@/lib/utils/email';
 
 import type { FormEvent, ReactElement } from 'react';
 
 type SubmitState = 'idle' | 'submitting' | 'success' | 'error';
-
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 export function EmailCapture(): ReactElement {
   const [email, setEmail] = useState<string>('');
@@ -30,12 +29,17 @@ export function EmailCapture(): ReactElement {
   const handleSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>): Promise<void> => {
       event.preventDefault();
-      const trimmed = email.trim();
-      if (!EMAIL_PATTERN.test(trimmed)) {
+      const validation = validateEmail(email);
+      if (!validation.ok) {
         setState('error');
-        setErrorMessage('Please enter a valid email.');
+        setErrorMessage(
+          validation.reason === 'typo'
+            ? 'Looks like a typo in the domain — double-check the TLD.'
+            : 'Please enter a valid email.',
+        );
         return;
       }
+      const trimmed = validation.email;
       setState('submitting');
       setErrorMessage('');
       try {
