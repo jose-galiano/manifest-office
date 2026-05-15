@@ -23,7 +23,7 @@ export function EditionFeature(): ReactElement {
       <div className="mx-auto grid max-w-[1400px] grid-cols-1 items-center gap-20 md:grid-cols-2">
         <div className="aspect-[3/4] overflow-hidden">
           <Image
-            src="/images/mood-board/editorial/edition-folio.png"
+            src="/images/mood-board/editorial/edition-folio.webp"
             alt="Edition 01 folio with brass anchor paperweight, wax seal, and fountain pen"
             width={900}
             height={1200}

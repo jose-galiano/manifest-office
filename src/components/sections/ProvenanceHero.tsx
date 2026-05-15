@@ -22,7 +22,7 @@ export function ProvenanceHero(): ReactElement {
         </div>
         <div className="relative aspect-[3/4] min-w-0 overflow-hidden">
           <Image
-            src="/images/mood-board/v1/11-hand-fabric-detail.png"
+            src="/images/mood-board/v1/11-hand-fabric-detail.webp"
             alt="Cordura fabric inspection"
             fill
             sizes="(min-width: 768px) 50vw, 100vw"

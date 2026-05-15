@@ -9,9 +9,7 @@ const nextConfig: NextConfig = {
    * Image component fails at runtime with `hostname not configured`.
    */
   images: {
-    remotePatterns: [
-      { protocol: 'https', hostname: 'cdn.shopify.com' },
-    ],
+    remotePatterns: [{ protocol: 'https', hostname: 'cdn.shopify.com' }],
   },
 
   /**

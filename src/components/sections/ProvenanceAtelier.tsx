@@ -13,7 +13,7 @@ export function ProvenanceAtelier(): ReactElement {
       <div className="mx-auto grid max-w-[1400px] grid-cols-1 items-center gap-20 md:grid-cols-[1fr_1.2fr]">
         <div className="group aspect-[4/5] overflow-hidden">
           <Image
-            src="/images/mood-board/v1/02-field-document-lisbon.png"
+            src="/images/mood-board/v1/02-field-document-lisbon.webp"
             alt="Atelier Souto sample room"
             width={900}
             height={1125}

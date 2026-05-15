@@ -28,7 +28,7 @@ const ENTRIES: readonly EditionEntry[] = [
     title: 'Gibraltar.\n1:250,000.',
     summary:
       'The Strait. The line where the Mediterranean meets the Atlantic. Signal orange. Hypalon-reinforced tech pouch. Twelve hundred systems.',
-    image: '/images/mood-board/v1/04-broadside-edition.png',
+    image: '/images/mood-board/v1/04-broadside-edition.webp',
     imageAlt: 'Edition 01 Gibraltar topographic broadside',
     meta: [
       { term: 'Anchor', definition: "Strait of Gibraltar · 36°08'N 5°21'W" },
@@ -45,7 +45,7 @@ const ENTRIES: readonly EditionEntry[] = [
     title: 'Atacama.\nReserved.',
     summary:
       'The driest desert on earth. Lichen green accent. A guest material announced at issue. The full brief opens when Edition 01 closes.',
-    image: '/images/mood-board/v1/02-field-document-lisbon.png',
+    image: '/images/mood-board/v1/02-field-document-lisbon.webp',
     imageAlt: 'Edition 02 placeholder',
     meta: [
       { term: 'Anchor', definition: 'Atacama · 24°S 69°W' },
@@ -61,7 +61,7 @@ const ENTRIES: readonly EditionEntry[] = [
     title: 'To be\ndocumented.',
     summary:
       'Geographic anchor under selection. The brief publishes when the team returns from the field. Operators on the waitlist are notified first.',
-    image: '/images/mood-board/v1/14-field-document-mexico.png',
+    image: '/images/mood-board/v1/14-field-document-mexico.webp',
     imageAlt: 'Edition 03 placeholder',
     lockedNote: 'Brief — under construction',
   },

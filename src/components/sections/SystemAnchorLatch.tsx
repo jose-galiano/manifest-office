@@ -60,7 +60,7 @@ export function SystemAnchorLatch(): ReactElement {
           </div>
           <div className="aspect-square overflow-hidden bg-[#F2EFE8]">
             <Image
-              src="/images/mood-board/v1/13-anchor-latch-detail.png"
+              src="/images/mood-board/v1/13-anchor-latch-detail.webp"
               alt="The Anchor Latch detail"
               width={1200}
               height={1200}
@@ -93,7 +93,7 @@ export function SystemAnchorLatch(): ReactElement {
           <div className="grid grid-cols-1 items-center gap-20 md:grid-cols-2">
             <div className="aspect-square overflow-hidden">
               <Image
-                src="/images/mood-board/v1/07-hands-anchor-latch.png"
+                src="/images/mood-board/v1/07-hands-anchor-latch.webp"
                 alt="Hands engaging the Anchor Latch"
                 width={1200}
                 height={1200}

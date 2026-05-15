@@ -30,7 +30,7 @@ export function SystemEcosystem(): ReactElement {
         </div>
         <div className="mt-12 aspect-[16/9] overflow-hidden">
           <Image
-            src="/images/mood-board/v1/12-full-system-flatlay.png"
+            src="/images/mood-board/v1/12-full-system-flatlay.webp"
             alt="The full Manifest Office system"
             width={1920}
             height={1080}

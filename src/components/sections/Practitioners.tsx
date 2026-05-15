@@ -22,7 +22,7 @@ const PRACTITIONERS: readonly Practitioner[] = [
   {
     name: 'Cristina Mendes',
     role: '— SAMPLE-ROOM LEAD',
-    portrait: '/images/mood-board/v2/maker-cristina.png',
+    portrait: '/images/mood-board/v2/maker-cristina.webp',
     portraitAlt: 'Cristina Mendes at the Juki industrial machine in the Porto sample room',
     bio: 'Fourteen years in soft-goods construction. Built the first Manifest Office prototype on a hotel-room ironing board in March 2024. Runs the QC bench. Signs every dossier.',
     quote: '"A bag should be repaired, not replaced. We design for the third decade."',
@@ -30,7 +30,7 @@ const PRACTITIONERS: readonly Practitioner[] = [
   {
     name: 'Marc Aubert',
     role: '— TECHNICAL · TRIMS & HARDWARE',
-    portrait: '/images/mood-board/v2/maker-marc.png',
+    portrait: '/images/mood-board/v2/maker-marc.webp',
     portraitAlt:
       'Marc Aubert inspecting an Anchor Latch with a jewelers loupe at the trims supplier',
     bio: 'A decade as a technical sales rep at a European trims supplier. Documents failure points on outdoor and commuter gear. Sourced every zip, every magnet, every paracord whip on the Edition 01 kit.',
@@ -39,7 +39,7 @@ const PRACTITIONERS: readonly Practitioner[] = [
   {
     name: 'Joana Reis',
     role: '— FIELD TESTER · OPERATOR 00001',
-    portrait: '/images/mood-board/v2/maker-joana.png',
+    portrait: '/images/mood-board/v2/maker-joana.webp',
     portraitAlt: 'Joana Reis documenting a field test on a hotel desk in Mexico City',
     bio: 'Strategy consultant. Lisbon and Mexico City. Carried sample 7 through forty-three trips before we shipped Edition 01. Found the seam failure that triggered iteration 43.',
     quote: '"The first version of anything is wrong. The forty-third is honest."',

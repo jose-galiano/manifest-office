@@ -10,7 +10,7 @@ export function EditionsIntro(): ReactElement {
       <div className="mx-auto grid max-w-[1400px] grid-cols-1 items-center gap-20 md:grid-cols-2">
         <div className="group aspect-[3/4] overflow-hidden">
           <Image
-            src="/images/mood-board/v1/15-edition-chipboard-certificate.png"
+            src="/images/mood-board/v1/15-edition-chipboard-certificate.webp"
             alt="Edition certificates"
             width={900}
             height={1200}
