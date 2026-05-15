@@ -19,6 +19,8 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { CUSTOM_EVENTS, track } from '@/lib/analytics';
+
 import type { ChangeEvent, ReactElement } from 'react';
 
 const SESSION_KEY = 'mo_audio_session';
@@ -72,6 +74,11 @@ function readSavedVolume(): number {
 export function AtelierToggle(): ReactElement {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const fadeFrameRef = useRef<number | null>(null);
+  // Mark of the wall-clock moment the user pressed play, so the pause event
+  // can carry `listened_ms`. We only set this from the user-gesture path
+  // (handleToggle), never from the sessionStorage auto-resume effect — that
+  // way one visitor crossing several pages still counts as one audio_play.
+  const playStartedAtRef = useRef<number | null>(null);
   const [isOn, setIsOn] = useState<boolean>(false);
   const [isMounted, setIsMounted] = useState<boolean>(false);
   const [volume, setVolume] = useState<number>(DEFAULT_VOLUME);
@@ -210,7 +217,26 @@ export function AtelierToggle(): ReactElement {
   }, [isMounted]);
 
   const handleToggle = useCallback((): void => {
-    setIsOn((previous) => !previous);
+    setIsOn((previous) => {
+      const next = !previous;
+      if (next) {
+        playStartedAtRef.current = performance.now();
+        track(CUSTOM_EVENTS.audioPlay, {
+          params: { source: 'banner_toggle' },
+        });
+      } else {
+        const startedAt = playStartedAtRef.current;
+        const listenedMs = startedAt !== null ? Math.round(performance.now() - startedAt) : null;
+        playStartedAtRef.current = null;
+        track(CUSTOM_EVENTS.audioPause, {
+          params: {
+            source: 'banner_toggle',
+            listened_ms: listenedMs ?? undefined,
+          },
+        });
+      }
+      return next;
+    });
   }, []);
 
   const handleVolumeChange = useCallback(

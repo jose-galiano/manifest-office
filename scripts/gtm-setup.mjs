@@ -66,6 +66,8 @@ const EVENT_REGEX = [
   'scroll_pin_panel',
   'cart_drawer_open',
   'cart_drawer_close',
+  'audio_play',
+  'audio_pause',
   'variant_view',
   'email_capture_submit',
   'consent_granted',

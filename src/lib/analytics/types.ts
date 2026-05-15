@@ -41,6 +41,8 @@ export const CUSTOM_EVENTS = {
   scrollPinPanel: 'scroll_pin_panel',
   cartDrawerOpen: 'cart_drawer_open',
   cartDrawerClose: 'cart_drawer_close',
+  audioPlay: 'audio_play',
+  audioPause: 'audio_pause',
   teletypeComplete: 'teletype_complete',
   variantView: 'variant_view',
   dossierFilter: 'dossier_filter',

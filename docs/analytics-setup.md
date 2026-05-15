@@ -66,31 +66,33 @@ All events live in `src/lib/analytics/types.ts`. The forwarder tag picks
 them up by regex, so adding a new event = add the literal there and
 update the trigger regex in GTM.
 
-| Event                  | When it fires                                    |
-| ---------------------- | ------------------------------------------------ |
-| `page_view`            | Every SPA route change.                          |
-| `section_view`         | Section enters viewport (via `<SectionView>`).   |
-| `section_dwell`        | Section leaves viewport, with `dwell_ms`.        |
-| `scroll_depth`         | Page scrolled past 10/25/50/75/90/100%.          |
-| `element_click`        | Any element with `data-track="<label>"` clicked. |
-| `outbound_click`       | Click on an `<a>` to a different host.           |
-| `rage_click`           | 3+ clicks <800ms on same element.                |
-| `dead_click`           | Click on non-interactive element.                |
-| `reserve_click`        | PDP Reserve button pressed.                      |
-| `add_to_cart`          | Reservation succeeded (GA4 ecommerce shape).     |
-| `view_item`            | PDP loaded (GA4 ecommerce shape).                |
-| `view_cart`            | Cart drawer opened (GA4 ecommerce shape).        |
-| `variant_view`         | Colorway swapped on PDP.                         |
-| `viewer_3d_rotate`     | User dragged the 3D viewer (one per drag-end).   |
-| `viewer_3d_explode`    | Latch viewer toggled to exploded state.          |
-| `viewer_3d_assemble`   | Latch viewer toggled to assembled state.         |
-| `scroll_pin_panel`     | BuildYourSystem horizontal panel changed.        |
-| `cart_drawer_open`     | Slide-in drawer opened.                          |
-| `cart_drawer_close`    | Slide-in drawer closed.                          |
-| `email_capture_submit` | Footer email form submitted.                     |
-| `generate_lead`        | Same submission, GA4-canonical shape.            |
-| `consent_granted`      | Cookie banner accepted.                          |
-| `consent_denied`       | Cookie banner declined.                          |
+| Event                  | When it fires                                                                                                         |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `page_view`            | Every SPA route change.                                                                                               |
+| `section_view`         | Section enters viewport (via `<SectionView>`).                                                                        |
+| `section_dwell`        | Section leaves viewport, with `dwell_ms`.                                                                             |
+| `scroll_depth`         | Page scrolled past 10/25/50/75/90/100%.                                                                               |
+| `element_click`        | Any element with `data-track="<label>"` clicked.                                                                      |
+| `outbound_click`       | Click on an `<a>` to a different host.                                                                                |
+| `rage_click`           | 3+ clicks <800ms on same element.                                                                                     |
+| `dead_click`           | Click on non-interactive element.                                                                                     |
+| `reserve_click`        | PDP Reserve button pressed.                                                                                           |
+| `add_to_cart`          | Reservation succeeded (GA4 ecommerce shape).                                                                          |
+| `view_item`            | PDP loaded (GA4 ecommerce shape).                                                                                     |
+| `view_cart`            | Cart drawer opened (GA4 ecommerce shape).                                                                             |
+| `variant_view`         | Colorway swapped on PDP.                                                                                              |
+| `viewer_3d_rotate`     | User dragged the 3D viewer (one per drag-end).                                                                        |
+| `viewer_3d_explode`    | Latch viewer toggled to exploded state.                                                                               |
+| `viewer_3d_assemble`   | Latch viewer toggled to assembled state.                                                                              |
+| `scroll_pin_panel`     | BuildYourSystem horizontal panel changed.                                                                             |
+| `cart_drawer_open`     | Slide-in drawer opened.                                                                                               |
+| `cart_drawer_close`    | Slide-in drawer closed.                                                                                               |
+| `audio_play`           | Visitor pressed the atelier-ambience play button (user gesture only — auto-resume on nav doesn't re-fire).            |
+| `audio_pause`          | Visitor paused the atelier ambience. Carries `listened_ms` so we can see whether they engaged for seconds or minutes. |
+| `email_capture_submit` | Footer email form submitted.                                                                                          |
+| `generate_lead`        | Same submission, GA4-canonical shape.                                                                                 |
+| `consent_granted`      | Cookie banner accepted.                                                                                               |
+| `consent_denied`       | Cookie banner declined.                                                                                               |
 
 ## 6. GA4 — register the custom dimensions
 
