@@ -153,9 +153,64 @@ Adapted from framework §8 for the storefront shape:
   with client code (Next.js convention reinforced).
 - Generated files use a `*.generated.ts` suffix and are ignored by ESLint.
 
+## Observability (`data-track` + GA4 + GTM)
+
+The repo ships a single typed `track()` helper (`src/lib/analytics/track.ts`)
+that pushes a normalised envelope to `window.dataLayer` and optionally
+fans out to Klaviyo. GTM container `GTM-5HMML5DX` forwards every event to
+GA4 `G-S63PX9NHSS` with full param mapping. Full taxonomy + setup runbook
+in [`docs/analytics-setup.md`](./analytics-setup.md).
+
+There are two ways to instrument an element:
+
+**Declarative — `data-track` attribute** (default for static UI):
+
+```tsx
+<button data-track="newsletter_signup" data-track-position="hero">
+  Subscribe
+</button>
+```
+
+A single delegated `click` listener (`AutoClickTracker.tsx`) walks up from
+the click target, finds the nearest `[data-track]` ancestor, and emits an
+`element_click` event with `label = data-track` value. Every additional
+`data-track-*` attribute is forwarded as an event parameter
+(`data-track-position="hero"` → `position: "hero"`). Adding a tracked
+element is a one-attribute change in JSX — no imports, no hook wiring.
+
+**Imperative — `track(eventName, options)`** (for state changes and async
+results that have no DOM origin):
+
+```ts
+import { CUSTOM_EVENTS, track } from '@/lib/analytics';
+
+track(CUSTOM_EVENTS.reserveClick, {
+  params: { handle, price },
+  ecommerce: { currency: 'EUR', value: price, items: [{ ... }] },
+  fanout: { klaviyo: true },
+});
+```
+
+The `CUSTOM_EVENTS` and `ECOMMERCE_EVENTS` const objects in
+`src/lib/analytics/types.ts` are the single source of truth for event
+names. The GTM trigger regex must mirror them; a new event name without a
+trigger update will fire into the dataLayer but never reach GA4.
+
+### What we measure that is non-obvious
+
+- **`section_view` + `section_dwell`** via `<SectionView name="...">` so we
+  can answer "what did people actually see?" not just "what's on the page?".
+- **`rage_click` + `dead_click`** for frustration signals (3 clicks <800ms
+  on same target, and clicks that landed on non-interactive elements).
+- **`viewer_3d_rotate` / `_explode` / `_assemble`** with `source: auto |
+user` so the IntersectionObserver auto-trigger doesn't inflate the
+  intentional-toggle counts.
+- **`scroll_pin_panel`** on integer panel-index crossings only; hysteresis
+  falls out for free without an extra ref.
+
 ## Security posture
 
-See [`SECURITY.md`](../SECURITY.md) for the full policy. Headlines:
+See [`SECURITY.md`](./SECURITY.md) for the full policy. Headlines:
 
 - **Secrets** live in Vercel environment variables only. Pull with
   `vercel env pull .env.local` for local development.

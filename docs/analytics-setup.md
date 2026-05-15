@@ -7,7 +7,7 @@ GA4 property `G-S63PX9NHSS`, Microsoft Clarity (optional), Consent Mode v2.
 
 1. Open https://tagmanager.google.com → workspace **GTM-5HMML5DX**.
 2. **Admin → Import Container**.
-3. Choose `docs/gtm-container.json` from this repo.
+3. Choose `docs/gtm-import.json` from this repo.
 4. Workspace: **Existing → Default Workspace**.
 5. Import option: **Merge → Overwrite conflicting tags, triggers, and variables**.
 6. Click **Confirm**. The import creates:
