@@ -8,10 +8,11 @@ import {
   applyExplodeState,
   buildExplodedScene,
   easeInOutCubic,
+  loadLatchGeometries,
   readPartMetadata,
 } from '@/lib/three/exploded-scene';
 
-import type { ExplodedSceneHandle } from '@/lib/three/exploded-scene';
+import type { ExplodedSceneHandle, LatchGeometries } from '@/lib/three/exploded-scene';
 import type { ReactElement } from 'react';
 
 // ExplodedLatchViewer — the PDP section that lets a visitor drag-rotate the
@@ -95,13 +96,35 @@ export function ExplodedLatchViewer(): ReactElement {
   // Toggle text + active state lives in React; the actual tween target is
   // mirrored into a ref so the rAF loop reads without triggering re-renders.
   const [exploded, setExploded] = useState<boolean>(false);
+  const [geometries, setGeometries] = useState<LatchGeometries | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const explodedRef = useRef<boolean>(false);
 
   // Hold the underlying toggle function so the button onClick stays a
   // stable callback rather than a re-bound closure.
   const toggleRef = useRef<() => void>(() => {});
 
+  // Load the STL parts once. The scene effect waits on the resulting state
+  // so the rAF loop only spins up when geometry is in hand.
   useEffect(() => {
+    let cancelled = false;
+    loadLatchGeometries()
+      .then((geos) => {
+        if (!cancelled) setGeometries(geos);
+      })
+      .catch((error: unknown) => {
+        if (!cancelled) {
+          setLoadError(error instanceof Error ? error.message : 'Failed to load geometry');
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!geometries) return;
+
     // Strict-mode double-mount guard. The effect runs twice in dev; the
     // second pass bails immediately and the first cleanup tears everything
     // down before the second init can run.
@@ -131,7 +154,7 @@ export function ExplodedLatchViewer(): ReactElement {
     renderer.setSize(wrapper.clientWidth, wrapper.clientHeight);
 
     const aspect = wrapper.clientWidth / wrapper.clientHeight;
-    const sceneHandle: ExplodedSceneHandle = buildExplodedScene(aspect);
+    const sceneHandle: ExplodedSceneHandle = buildExplodedScene(aspect, geometries);
     const { scene, camera, rootGroup, labelledParts } = sceneHandle;
 
     // --- Label DOM ------------------------------------------------------
@@ -338,14 +361,14 @@ export function ExplodedLatchViewer(): ReactElement {
       // Allow the second strict-mode pass to re-initialise cleanly.
       initialisedRef.current = false;
     };
-  }, []);
+  }, [geometries]);
 
   const buttonLabel = exploded ? '↘ ASSEMBLE' : '↗ EXPLODE';
 
   return (
     <section className="bg-[#0B0F0E] text-[#F2EFE8] px-5 md:px-10 py-24 border-t border-[rgba(242,239,232,0.18)]">
       <span className="font-mono text-[11px] tracking-[0.08em] uppercase text-[#D24A1F] block mb-3">
-        THE SYSTEM · EXPLODED · INTERACTIVE
+        REFERENCE GEOMETRY · INTERACTIVE
       </span>
       <h2 className="font-display font-bold text-[clamp(48px,7vw,72px)] leading-[0.95] tracking-[-0.02em] max-w-[16ch] mb-4">
         Drag. Rotate.
@@ -353,8 +376,8 @@ export function ExplodedLatchViewer(): ReactElement {
         Pull it apart.
       </h2>
       <div className="font-mono text-[12px] tracking-[0.06em] uppercase text-[#5C6B5A] mb-14">
-        06 latch parts. 07 kit components. One closure connects every piece. Click and drag to
-        rotate. Toggle to explode the system.
+        Open-hardware lockable latch · four parts · loaded from STL into Three.js, exploded on an
+        eased tween. Click and drag to rotate. Toggle to pull it apart.
       </div>
 
       <div
@@ -368,10 +391,18 @@ export function ExplodedLatchViewer(): ReactElement {
         <canvas
           ref={canvasRef}
           className="block w-full h-full cursor-grab active:cursor-grabbing"
-          aria-label="Anchor Latch and kit-system exploded viewer"
+          aria-label="Lockable latch interactive exploded viewer"
           role="img"
         />
         <div ref={uiRef} className="absolute inset-0 pointer-events-none" />
+
+        {/* Loading + error overlay — only visible while STLs haven't arrived. */}
+        {geometries === null ? (
+          <div className="absolute inset-0 flex items-center justify-center font-mono text-[11px] tracking-[0.08em] uppercase text-[#5C6B5A]">
+            {loadError ? `× ${loadError}` : 'Loading geometry…'}
+          </div>
+        ) : null}
+
         <div className="absolute bottom-6 left-6 right-6 flex justify-between items-center font-mono text-[11px] tracking-[0.08em] uppercase text-[#5C6B5A] pointer-events-none">
           <span className="flex items-center gap-2">
             <span className="text-[#D24A1F]">↻</span>
@@ -381,29 +412,45 @@ export function ExplodedLatchViewer(): ReactElement {
             type="button"
             onClick={() => toggleRef.current()}
             data-cursor
-            className="pointer-events-auto bg-transparent border border-[rgba(242,239,232,0.18)] text-[#F2EFE8] px-5 py-3.5 font-mono text-[11px] tracking-[0.12em] uppercase cursor-pointer transition-[background,color,border-color,letter-spacing] duration-300 hover:bg-[#D24A1F] hover:border-[#D24A1F] hover:tracking-[0.16em]"
+            disabled={geometries === null}
+            className="pointer-events-auto bg-transparent border border-[rgba(242,239,232,0.18)] text-[#F2EFE8] px-5 py-3.5 font-mono text-[11px] tracking-[0.12em] uppercase cursor-pointer transition-[background,color,border-color,letter-spacing] duration-300 hover:bg-[#D24A1F] hover:border-[#D24A1F] hover:tracking-[0.16em] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:border-[rgba(242,239,232,0.18)] disabled:hover:tracking-[0.12em]"
           >
             {buttonLabel}
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-14 pt-8 border-t border-[rgba(242,239,232,0.18)] font-mono text-[11px] tracking-[0.06em] uppercase">
+      {/* Attribution — CC-BY requires visible credit wherever the work appears. */}
+      <p className="mt-6 font-mono text-[10px] tracking-[0.06em] uppercase text-[#5C6B5A]">
+        Model{' '}
+        <a
+          href="https://www.thingiverse.com/thing:3283176"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[#F2EFE8] underline decoration-[rgba(242,239,232,0.32)] underline-offset-[3px] transition-colors hover:text-[#D24A1F] hover:decoration-[#D24A1F]"
+        >
+          Lockable Latch
+        </a>{' '}
+        by Mattsmith3065 · CC-BY · Thingiverse #3283176. Geometry rendered as-published; no
+        modifications.
+      </p>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-12 pt-8 border-t border-[rgba(242,239,232,0.18)] font-mono text-[11px] tracking-[0.06em] uppercase">
         <div>
-          <span className="block text-[#5C6B5A] mb-1.5">Latch parts</span>
-          <span className="text-[#F2EFE8]">06 components</span>
+          <span className="block text-[#5C6B5A] mb-1.5">Parts</span>
+          <span className="text-[#F2EFE8]">04 STL components</span>
         </div>
         <div>
-          <span className="block text-[#5C6B5A] mb-1.5">Kit items</span>
-          <span className="text-[#F2EFE8]">07 components</span>
+          <span className="block text-[#5C6B5A] mb-1.5">Format</span>
+          <span className="text-[#F2EFE8]">Binary STL</span>
         </div>
         <div>
-          <span className="block text-[#5C6B5A] mb-1.5">Cycle test</span>
-          <span className="text-[#F2EFE8]">25,000 engagements</span>
+          <span className="block text-[#5C6B5A] mb-1.5">Loader</span>
+          <span className="text-[#F2EFE8]">Three.js · STLLoader</span>
         </div>
         <div>
-          <span className="block text-[#5C6B5A] mb-1.5">Patent</span>
-          <span className="text-[#F2EFE8]">EU 2026-04 · pending</span>
+          <span className="block text-[#5C6B5A] mb-1.5">License</span>
+          <span className="text-[#F2EFE8]">CC-BY · attributed</span>
         </div>
       </div>
     </section>

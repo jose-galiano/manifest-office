@@ -25,15 +25,3 @@ export interface PartMetadata {
   /** Group an object belongs to. Latch parts hide labels when assembled. */
   readonly group: 'latch' | 'kit';
 }
-
-/** Spec for a kit item, fed to `makeKitItem()`. */
-export interface KitItemSpec {
-  readonly key: string;
-  readonly label: string;
-  readonly material: string;
-  readonly width: number;
-  readonly height: number;
-  readonly depth: number;
-  readonly assembled: Vec3Tuple;
-  readonly exploded: Vec3Tuple;
-}
