@@ -14,13 +14,17 @@ export const DESK_CACHE_TTL_SECONDS = 3600;
 export const ALLOWED_ORIGINS: ReadonlySet<string> = new Set([
   'https://demo.maelify.com',
   'https://manifest-office.vercel.app',
+  'https://manifest-office-next.vercel.app',
+  'https://manifest-office-next-tmsjoses-projects.vercel.app',
   'http://localhost:8765',
   'http://localhost:3000',
 ]);
 
 // Allow any preview deploy under the tmsjoses-projects Vercel team.
+// Covers `manifest-office-*` and `manifest-office-next-*` URL shapes,
+// plus the per-user-suffixed `*-josegalianotms-3305-*` alias.
 export const VERCEL_PREVIEW_ORIGIN_REGEX =
-  /^https:\/\/manifest-office-[a-z0-9]+-tmsjoses-projects\.vercel\.app$/;
+  /^https:\/\/manifest-office(?:-next)?-[a-z0-9]+(?:-josegalianotms-3305)?-tmsjoses-projects\.vercel\.app$/;
 
 // Injection patterns — preserved verbatim from `deploy/api/_lib/security.js:63-76`.
 // Maelify §3 forbids mutation of this list without a corresponding review of

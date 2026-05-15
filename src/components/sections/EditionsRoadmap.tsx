@@ -69,7 +69,7 @@ const ENTRIES: readonly EditionEntry[] = [
 
 export function EditionsRoadmap(): ReactElement {
   return (
-    <section className="border-t border-[rgba(11,15,14,0.12)] bg-[#F2EFE8] px-10 py-[120px]">
+    <section className="border-t border-[rgba(11,15,14,0.12)] bg-[#F2EFE8] px-5 md:px-10 py-16 md:py-[120px]">
       <div className="mx-auto max-w-[1600px]">
         <h2 className="mb-16 font-display font-bold leading-[0.95] tracking-[-0.02em] text-[clamp(40px,5vw,64px)]">
           The archive,

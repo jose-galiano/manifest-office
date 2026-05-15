@@ -19,12 +19,12 @@ const META_ROWS: readonly { term: string; definition: string }[] = [
 
 export function EditionFeature(): ReactElement {
   return (
-    <section className="border-t border-[rgba(242,239,232,0.18)] bg-[#0B0F0E] px-10 py-[160px] text-[#F2EFE8]">
+    <section className="border-t border-[rgba(242,239,232,0.18)] bg-[#0B0F0E] px-5 md:px-10 py-20 md:py-[160px] text-[#F2EFE8]">
       <div className="mx-auto grid max-w-[1400px] grid-cols-1 items-center gap-20 md:grid-cols-2">
         <div className="aspect-[3/4] overflow-hidden">
           <Image
-            src="/images/mood-board/v1/04-broadside-edition.png"
-            alt="Edition 01 Gibraltar broadside"
+            src="/images/mood-board/editorial/edition-folio.png"
+            alt="Edition 01 folio with brass anchor paperweight, wax seal, and fountain pen"
             width={900}
             height={1200}
             className="h-full w-full object-cover transition-transform duration-[1500ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.05]"

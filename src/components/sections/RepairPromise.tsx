@@ -9,7 +9,7 @@ import type { ReactElement } from 'react';
 
 export function RepairPromise(): ReactElement {
   return (
-    <section className="border-t border-[rgba(11,15,14,0.12)] bg-[#F2EFE8] px-10 py-[160px]">
+    <section className="border-t border-[rgba(11,15,14,0.12)] bg-[#F2EFE8] px-5 md:px-10 py-20 md:py-[160px]">
       <div className="mx-auto max-w-[1000px] text-center">
         <Eyebrow className="mb-6 block" flanked>
           THE PROMISE

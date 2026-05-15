@@ -42,7 +42,10 @@ const ANCHORS: readonly Anchor[] = [
 
 export function ProvenanceMap(): ReactElement {
   return (
-    <section className="border-t border-[rgba(11,15,14,0.12)] bg-[#F2EFE8] px-10 py-[120px]">
+    <section
+      id="materials"
+      className="border-t border-[rgba(11,15,14,0.12)] bg-[#F2EFE8] px-5 md:px-10 py-16 md:py-[120px] scroll-mt-[120px]"
+    >
       <div className="mx-auto max-w-[1400px]">
         <div className="mb-16 grid grid-cols-1 items-end gap-20 md:grid-cols-2">
           <div>

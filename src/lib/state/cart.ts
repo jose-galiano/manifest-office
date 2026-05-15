@@ -48,13 +48,32 @@ export type CartItem = {
 export type CartState = {
   readonly items: readonly CartItem[];
   readonly isDrawerOpen: boolean;
+  /**
+   * Live image-by-handle map populated when a consumer fetches the product
+   * feed (drawer upsells, cart-page hydration). `CartItemRow` reads from
+   * this as a fallback when the persisted `item.imageUrl` is missing/stale
+   * — items added in earlier sessions can otherwise lose their thumbnail.
+   * Not persisted: rebuilt from `/api/products` on each load.
+   */
+  readonly imagesByHandle: Readonly<Record<string, string>>;
 };
 
 export type CartActions = {
   add: (item: CartItem) => void;
   remove: (handle: string) => void;
   removeLine: (handle: string, engravingText: string | undefined) => void;
+  /**
+   * Update (or clear) the engraving on a specific line. Identifies the line
+   * by `issuedAs` (the reservation ID) when present; falls back to matching
+   * the legacy handle + previous-text composite key.
+   */
+  updateEngraving: (
+    line: { readonly handle: string; readonly issuedAs?: number; readonly previousText?: string },
+    engraving: CartItemEngraving | null,
+  ) => void;
   clear: () => void;
+  setImageForHandle: (handle: string, imageUrl: string) => void;
+  resolveImage: (handle: string) => string | null;
   openDrawer: () => void;
   closeDrawer: () => void;
   toggleDrawer: () => void;
@@ -87,15 +106,12 @@ function getSessionStorage(): Storage | undefined {
 
 export const useCartStore = create<CartStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       items: [],
       isDrawerOpen: false,
+      imagesByHandle: {},
       add: (item) =>
         set((state) => {
-          // De-duplicate: if the same line already exists, we keep one entry.
-          // (Legacy behaviour replaces the prior reservation for the same
-          // handle+engraving, since each reservation produces a fresh issue
-          // number.)
           const filtered = state.items.filter((existing) => !sameLine(existing, item));
           return { items: [...filtered, item] };
         }),
@@ -108,7 +124,27 @@ export const useCartStore = create<CartStore>()(
               !(item.handle === handle && (item.engraving?.text ?? '') === (engravingText ?? '')),
           ),
         })),
+      updateEngraving: (line, engraving) =>
+        set((state) => {
+          const next = state.items.map((entry) => {
+            const matchesIssue =
+              typeof line.issuedAs === 'number' && entry.issuedAs === line.issuedAs;
+            const matchesLegacy =
+              typeof line.issuedAs !== 'number' &&
+              entry.handle === line.handle &&
+              (entry.engraving?.text ?? '') === (line.previousText ?? '');
+            if (!matchesIssue && !matchesLegacy) return entry;
+            return { ...entry, engraving: engraving ?? undefined };
+          });
+          return { items: next };
+        }),
       clear: () => set({ items: [] }),
+      setImageForHandle: (handle, imageUrl) =>
+        set((state) => {
+          if (!handle || !imageUrl || state.imagesByHandle[handle] === imageUrl) return state;
+          return { imagesByHandle: { ...state.imagesByHandle, [handle]: imageUrl } };
+        }),
+      resolveImage: (handle) => get().imagesByHandle[handle] ?? null,
       openDrawer: () => set({ isDrawerOpen: true }),
       closeDrawer: () => set({ isDrawerOpen: false }),
       toggleDrawer: () => set((state) => ({ isDrawerOpen: !state.isDrawerOpen })),

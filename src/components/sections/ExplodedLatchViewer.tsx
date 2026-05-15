@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 
+import { CUSTOM_EVENTS, track } from '@/lib/analytics';
 import {
   applyExplodeState,
   buildExplodedScene,
@@ -159,15 +160,29 @@ export function ExplodedLatchViewer(): ReactElement {
     let currentRotY = targetRotY;
     let currentRotX = targetRotX;
 
+    // Single `viewer_3d_rotate` event per drag session, fired on pointer-up
+    // with total dragged distance + duration. We deliberately don't fire on
+    // every mousemove (would flood GA4).
+    let dragStartAt = 0;
+    let dragStartX = 0;
+    let dragStartY = 0;
+    let dragDistance = 0;
+    const ROTATE_MIN_DISTANCE_PX = 12;
+
     const onPointerDown = (clientX: number, clientY: number): void => {
       isDragging = true;
       lastPointerX = clientX;
       lastPointerY = clientY;
+      dragStartAt = performance.now();
+      dragStartX = clientX;
+      dragStartY = clientY;
+      dragDistance = 0;
     };
     const onPointerMove = (clientX: number, clientY: number): void => {
       if (!isDragging) return;
       const dx = clientX - lastPointerX;
       const dy = clientY - lastPointerY;
+      dragDistance += Math.hypot(dx, dy);
       targetRotY += dx * DRAG_SENSITIVITY_X;
       targetRotX += dy * DRAG_SENSITIVITY_Y;
       targetRotX = Math.max(-ROTATION_X_CLAMP, Math.min(ROTATION_X_CLAMP, targetRotX));
@@ -175,6 +190,17 @@ export function ExplodedLatchViewer(): ReactElement {
       lastPointerY = clientY;
     };
     const onPointerUp = (): void => {
+      if (isDragging && dragDistance >= ROTATE_MIN_DISTANCE_PX) {
+        track(CUSTOM_EVENTS.viewer3dRotate, {
+          params: {
+            duration_ms: Math.round(performance.now() - dragStartAt),
+            distance_px: Math.round(dragDistance),
+            net_dx: Math.round(lastPointerX - dragStartX),
+            net_dy: Math.round(lastPointerY - dragStartY),
+            in_exploded_view: explodedRef.current,
+          },
+        });
+      }
       isDragging = false;
     };
 
@@ -216,10 +242,9 @@ export function ExplodedLatchViewer(): ReactElement {
       const width = wrapper.clientWidth;
       const height = wrapper.clientHeight;
       for (const label of labels) {
-        // Latch parts cluster too tight in assembled mode — hide them then.
-        // Kit-item labels stay readable, so always show them.
-        const visibleInState = currentExploded || label.group === 'kit';
-        label.element.style.opacity = visibleInState ? '1' : '0';
+        // All labels hide in assembled mode to keep the silhouette clean —
+        // the user only needs them when actively inspecting the exploded view.
+        label.element.style.opacity = currentExploded ? '1' : '0';
 
         label.part.getWorldPosition(projection);
         projection.project(camera);
@@ -234,7 +259,7 @@ export function ExplodedLatchViewer(): ReactElement {
     let explodeT = 0;
     let explodeTarget = 0;
 
-    const toggle = (): void => {
+    const toggle = (source: 'auto' | 'user'): void => {
       const next = !explodedRef.current;
       explodedRef.current = next;
       explodeTarget = next ? 1 : 0;
@@ -246,8 +271,11 @@ export function ExplodedLatchViewer(): ReactElement {
         applyExplodeState(labelledParts, explodeT);
         refreshLabels(next);
       }
+      track(next ? CUSTOM_EVENTS.viewer3dExplode : CUSTOM_EVENTS.viewer3dAssemble, {
+        params: { source, reduced_motion: reducedMotion },
+      });
     };
-    toggleRef.current = toggle;
+    toggleRef.current = () => toggle('user');
 
     // Auto-explode once the section first enters the viewport.
     let autoTriggered = false;
@@ -257,7 +285,7 @@ export function ExplodedLatchViewer(): ReactElement {
           if (entry.isIntersecting && !autoTriggered) {
             autoTriggered = true;
             autoObserver.unobserve(entry.target);
-            window.setTimeout(toggle, reducedMotion ? 0 : AUTO_EXPLODE_DELAY_MS);
+            window.setTimeout(() => toggle('auto'), reducedMotion ? 0 : AUTO_EXPLODE_DELAY_MS);
           }
         }
       },
@@ -315,7 +343,7 @@ export function ExplodedLatchViewer(): ReactElement {
   const buttonLabel = exploded ? '↘ ASSEMBLE' : '↗ EXPLODE';
 
   return (
-    <section className="bg-[#0B0F0E] text-[#F2EFE8] px-10 py-24 border-t border-[rgba(242,239,232,0.18)]">
+    <section className="bg-[#0B0F0E] text-[#F2EFE8] px-5 md:px-10 py-24 border-t border-[rgba(242,239,232,0.18)]">
       <span className="font-mono text-[11px] tracking-[0.08em] uppercase text-[#D24A1F] block mb-3">
         THE SYSTEM · EXPLODED · INTERACTIVE
       </span>

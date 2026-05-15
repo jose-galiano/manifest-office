@@ -40,7 +40,7 @@ const MOTIONS: readonly Motion[] = [
 
 export function SystemThreeMotions(): ReactElement {
   return (
-    <section className="border-t border-[rgba(242,239,232,0.18)] bg-[#0B0F0E] px-10 py-[140px] text-[#F2EFE8]">
+    <section className="border-t border-[rgba(242,239,232,0.18)] bg-[#0B0F0E] px-5 md:px-10 py-20 md:py-[140px] text-[#F2EFE8]">
       <div className="mx-auto max-w-[1400px]">
         <Eyebrow className="mb-6 block" flanked>
           HOW IT HOLDS

@@ -16,7 +16,7 @@ type ProductGridProps = {
 export function ProductGrid({ products }: ProductGridProps): ReactElement {
   if (products.length === 0) {
     return (
-      <div className="border-y border-[rgba(11,15,14,0.12)] bg-[#F2EFE8] px-10 py-24 text-center">
+      <div className="border-y border-[rgba(11,15,14,0.12)] bg-[#F2EFE8] px-5 md:px-10 py-24 text-center">
         <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[#5C6B5A]">
           No dossiers in this collection yet.
         </p>

@@ -6,7 +6,7 @@ import type { ReactElement } from 'react';
 
 export function EditionsIntro(): ReactElement {
   return (
-    <section className="border-t border-[rgba(11,15,14,0.12)] bg-[#F2EFE8] px-10 py-[140px]">
+    <section className="border-t border-[rgba(11,15,14,0.12)] bg-[#F2EFE8] px-5 md:px-10 py-20 md:py-[140px]">
       <div className="mx-auto grid max-w-[1400px] grid-cols-1 items-center gap-20 md:grid-cols-2">
         <div className="group aspect-[3/4] overflow-hidden">
           <Image

@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { CollectionHeader } from '@/components/sections/CollectionHeader';
@@ -133,14 +134,36 @@ export default async function CollectionPage({
         }
       />
 
-      <div className="flex flex-wrap items-center justify-between gap-y-2 border-b border-[rgba(11,15,14,0.12)] px-10 py-4 font-mono text-[11px] uppercase tracking-[0.06em]">
+      <nav
+        aria-label="Collection filters"
+        className="flex flex-wrap items-center justify-between gap-y-2 border-b border-[rgba(11,15,14,0.12)] px-10 py-4 font-mono text-[11px] uppercase tracking-[0.06em]"
+      >
         <div className="flex flex-wrap items-center gap-6 text-[#5C6B5A]">
           <span className="text-[#0B0F0E]">
             {String(products.length).padStart(2, '0')} DOSSIERS
           </span>
-          <span>ALL · CUBES · POUCHES · CARRY · HARDWARE</span>
+          <ul className="flex flex-wrap items-center gap-5">
+            {COLLECTIONS.map((c) => {
+              const isActive = c.handle === collection.handle;
+              return (
+                <li key={c.handle}>
+                  <Link
+                    href={`/collections/${c.handle}`}
+                    aria-current={isActive ? 'page' : undefined}
+                    className={
+                      isActive
+                        ? 'text-[#0B0F0E] underline underline-offset-[6px] decoration-[#D24A1F]'
+                        : 'text-[#5C6B5A] hover:text-[#0B0F0E] transition-colors'
+                    }
+                  >
+                    {c.title}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
         </div>
-      </div>
+      </nav>
 
       <div className="mx-auto max-w-[1800px]">
         <ProductGrid products={products} />

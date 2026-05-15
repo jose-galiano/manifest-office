@@ -20,7 +20,7 @@ export function PdpDossierBody({ title, body }: PdpDossierBodyProps): ReactEleme
   const placeholder = `The ${title} dossier — provenance, field notes, and operator credentials — expands in Wave 4. The skeleton is shipped now so the URL is stable for SEO and agentic-commerce crawlers.`;
 
   return (
-    <section className="border-t border-[rgba(11,15,14,0.12)] px-10 py-24 md:py-32">
+    <section className="border-t border-[rgba(11,15,14,0.12)] px-5 md:px-10 py-24 md:py-32">
       <div className="mx-auto max-w-[1100px]">
         <span className="mb-4 block font-mono text-[11px] uppercase tracking-[0.08em] text-[#D24A1F]">
           DOSSIER · LONG-FORM

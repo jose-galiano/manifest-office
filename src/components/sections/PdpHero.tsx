@@ -33,6 +33,12 @@ export type PdpHeroProps = {
   readonly tiles: readonly ProductImage[];
   readonly sizeOptions: readonly SizeOption[];
   readonly colorways: readonly ColorwaySwatch[];
+  /**
+   * Name of the colorway the page should land on. Resolved server-side from
+   * the `?color=` query (set by the PLP card when the customer picked a
+   * non-default swatch). When absent, defaults to the first colorway.
+   */
+  readonly initialColorwayName?: string;
   readonly issued: number;
   readonly total: number;
 };
@@ -50,6 +56,7 @@ export function PdpHero(props: PdpHeroProps): ReactElement {
     tiles,
     sizeOptions,
     colorways,
+    initialColorwayName,
     issued,
     total,
   } = props;
@@ -70,7 +77,7 @@ export function PdpHero(props: PdpHeroProps): ReactElement {
   };
 
   return (
-    <section className="grid gap-12 px-10 pb-16 pt-8 lg:grid-cols-[1.4fr_1fr]">
+    <section className="grid gap-12 px-5 md:px-10 pb-16 pt-8 lg:grid-cols-[1.4fr_1fr]">
       <PdpGallery title={title} heroImageUrl={activeImage} tiles={filteredTiles} />
       <PdpBuybox
         storefrontHandle={storefrontHandle}
@@ -83,6 +90,7 @@ export function PdpHero(props: PdpHeroProps): ReactElement {
         imageUrl={activeImage}
         sizeOptions={sizeOptions}
         colorways={colorways}
+        initialColorwayName={initialColorwayName}
         issued={issued}
         total={total}
         onColorwayChange={handleColorwayChange}

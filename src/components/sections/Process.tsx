@@ -30,7 +30,7 @@ const STEPS: readonly { number: string; title: string; copy: string }[] = [
 
 export function Process(): ReactElement {
   return (
-    <section className="border-t border-[rgba(11,15,14,0.12)] bg-[#F2EFE8] px-10 py-[160px] text-[#0B0F0E]">
+    <section className="border-t border-[rgba(11,15,14,0.12)] bg-[#F2EFE8] px-5 md:px-10 py-20 md:py-[160px] text-[#0B0F0E]">
       <div className="mx-auto max-w-[1400px]">
         <div className="mb-20 grid grid-cols-1 items-end gap-16 md:grid-cols-2">
           <div>
@@ -46,7 +46,35 @@ export function Process(): ReactElement {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-12 md:grid-cols-3">
+        {/* Mobile: horizontal scroll-cards so the user swipes through the
+            three motions rather than scrolling past a vertical stack. Desktop
+            (>= md) reverts to a static 3-column grid. */}
+        <div className="md:hidden -mx-5">
+          <div className="flex gap-5 overflow-x-auto overflow-y-hidden snap-x snap-mandatory no-scrollbar px-5 pb-4">
+            {STEPS.map((step) => (
+              <article
+                key={step.number}
+                className="flex w-[280px] shrink-0 snap-start flex-col gap-5 border-l-2 border-[#D24A1F] pl-5"
+              >
+                <div className="font-display font-bold leading-[0.9] tracking-[-0.03em] text-[80px] text-[#D24A1F]">
+                  {step.number}
+                </div>
+                <div>
+                  <h3 className="mb-2 font-display text-[26px] font-medium leading-[1] tracking-[-0.01em]">
+                    {step.title}
+                  </h3>
+                  <p className="text-[15px] leading-[1.55] text-[#0B0F0E]/80">{step.copy}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+          <style>{`
+            .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+            .no-scrollbar::-webkit-scrollbar { display: none; }
+          `}</style>
+        </div>
+
+        <div className="hidden md:grid md:grid-cols-3 gap-12">
           {STEPS.map((step) => (
             <div key={step.number} className="flex flex-col gap-6">
               <div className="font-display font-bold leading-[0.9] tracking-[-0.03em] text-[96px] text-[#D24A1F]">

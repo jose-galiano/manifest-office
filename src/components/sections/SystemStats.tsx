@@ -14,7 +14,7 @@ const STATS: readonly { label: string; value: string }[] = [
 
 export function SystemStats(): ReactElement {
   return (
-    <section className="border-t border-[rgba(11,15,14,0.12)] bg-[#F2EFE8] px-10 py-24">
+    <section className="border-t border-[rgba(11,15,14,0.12)] bg-[#F2EFE8] px-5 md:px-10 py-24">
       <div className="mx-auto grid max-w-[1600px] grid-cols-2 gap-10 md:grid-cols-4">
         {STATS.map((stat, index) => (
           <div

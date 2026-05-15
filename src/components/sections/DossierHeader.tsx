@@ -41,7 +41,7 @@ export function DossierHeader({
   const breadcrumb = `EDITIONS / ${editionNumber} / DOSSIERS / ${ordinalLabel}`;
 
   return (
-    <header className="grid items-end gap-6 border-b border-[rgba(11,15,14,0.12)] px-10 pb-10 pt-20 md:grid-cols-3 md:gap-12">
+    <header className="grid items-end gap-6 border-b border-[rgba(11,15,14,0.12)] px-5 md:px-10 pb-10 pt-[110px] md:pt-[140px] md:grid-cols-3 md:gap-12">
       <div className="md:col-span-2">
         <div className="font-mono text-[11px] uppercase tracking-[0.06em] text-[#5C6B5A]">
           {breadcrumb}

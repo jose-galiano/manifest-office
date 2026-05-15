@@ -31,6 +31,7 @@ import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 
 import { CartItemRow } from '@/components/sections/CartItemRow';
 import { useCart } from '@/hooks/use-cart';
+import { CUSTOM_EVENTS, ECOMMERCE_EVENTS, track } from '@/lib/analytics';
 import {
   CUTOFF_HOUR,
   FLAT_SHIPPING_EUR,
@@ -120,7 +121,15 @@ async function postTrack(
 }
 
 export function CartDrawer(): ReactElement | null {
-  const { items, subtotalEur, isDrawerOpen, closeDrawer, add: addCartItem, removeLine } = useCart();
+  const {
+    items,
+    subtotalEur,
+    isDrawerOpen,
+    closeDrawer,
+    add: addCartItem,
+    removeLine,
+    setImageForHandle,
+  } = useCart();
 
   const [isMounted, setIsMounted] = useState(false);
   const [cutoff, setCutoff] = useState<CutoffParts>(() => ({ hours: 0, minutes: 0 }));
@@ -147,6 +156,8 @@ export function CartDrawer(): ReactElement | null {
 
   // Fetch upsell catalogue once — same `/api/products` the rest of the
   // storefront uses. Drawer-local: if the fetch fails, the upsell row hides.
+  // We also hydrate the cart store's `imagesByHandle` map so existing cart
+  // items with stale/empty `imageUrl` can render a live thumbnail.
   useEffect(() => {
     if (!isMounted) return;
     const abort = new AbortController();
@@ -155,13 +166,19 @@ export function CartDrawer(): ReactElement | null {
         const response = await fetch('/api/products', { signal: abort.signal });
         if (!response.ok) return;
         const payload = (await response.json()) as ProductsResponse;
-        if (Array.isArray(payload.products)) setUpsells(payload.products);
+        if (!Array.isArray(payload.products)) return;
+        setUpsells(payload.products);
+        for (const product of payload.products) {
+          const storefrontHandle = toStorefrontHandle(product.handle);
+          const image = product.image ?? product.images[0]?.url ?? null;
+          if (image) setImageForHandle(storefrontHandle, image);
+        }
       } catch {
-        /* silent — upsells are a nice-to-have. */
+        /* silent — upsells + image hydration are a nice-to-have. */
       }
     })();
     return () => abort.abort();
-  }, [isMounted]);
+  }, [isMounted, setImageForHandle]);
 
   // Body scroll lock when the drawer is open. Restores prior `overflow` so we
   // don't trample a value some other component set.
@@ -185,15 +202,45 @@ export function CartDrawer(): ReactElement | null {
     return () => window.removeEventListener('keydown', onKey);
   }, [isDrawerOpen, closeDrawer]);
 
-  // Fire "Viewed Cart Drawer" once per open transition.
+  // Fire open/close events on real transitions only. Without the ref-based
+  // guard, the effect fires `cart_drawer_close` on initial mount because the
+  // default state is closed — that's not a transition, just startup.
+  const drawerWasOpenRef = useRef(false);
   useEffect(() => {
-    if (!isDrawerOpen || !isMounted) return;
-    const persistedEmail = readLocalStorage(EMAIL_STORAGE_KEY);
-    void postTrack('Viewed Cart Drawer', anonymousIdRef.current, persistedEmail, {
-      cart_item_count: items.length,
-      cart_subtotal: subtotalEur,
-    });
-    // We track once per open; intentionally not depending on items.
+    if (!isMounted) return;
+    if (isDrawerOpen) {
+      drawerWasOpenRef.current = true;
+      const persistedEmail = readLocalStorage(EMAIL_STORAGE_KEY);
+      void postTrack('Viewed Cart Drawer', anonymousIdRef.current, persistedEmail, {
+        cart_item_count: items.length,
+        cart_subtotal: subtotalEur,
+      });
+      track(CUSTOM_EVENTS.cartDrawerOpen, {
+        params: { cart_item_count: items.length, cart_subtotal: subtotalEur },
+      });
+      track(ECOMMERCE_EVENTS.viewCart, {
+        ecommerce: {
+          currency: 'EUR',
+          value: subtotalEur,
+          items: items.map((item, index) => ({
+            item_id: item.handle,
+            item_name: item.title,
+            item_brand: 'Manifest Office',
+            price: item.price,
+            quantity: 1,
+            currency: 'EUR',
+            index,
+          })),
+        },
+      });
+    } else if (drawerWasOpenRef.current) {
+      drawerWasOpenRef.current = false;
+      track(CUSTOM_EVENTS.cartDrawerClose, {
+        params: { cart_item_count: items.length, cart_subtotal: subtotalEur },
+      });
+    }
+    // Items/subtotal are read at fire time but should not re-fire the effect
+    // when they change mid-open.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDrawerOpen, isMounted]);
 

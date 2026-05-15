@@ -40,7 +40,7 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       { source: '/dossiers', destination: '/collections/edition-01', permanent: true },
-      { source: '/dossiers/:handle', destination: '/products/manifest-:handle', permanent: true },
+      { source: '/dossiers/:handle', destination: '/products/:handle', permanent: true },
       { source: '/pdp', destination: '/collections/edition-01', permanent: true },
       { source: '/collection', destination: '/collections/all', permanent: true },
       { source: '/editions', destination: '/pages/editions', permanent: true },

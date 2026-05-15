@@ -73,7 +73,7 @@ export default async function BlogIndexPage({ params }: BlogPageProps): Promise<
   }
   const meta = BLOG_META[blog];
   return (
-    <main className="flex min-h-[calc(100vh-200px)] flex-col items-center justify-center bg-[#F2EFE8] px-10 py-32 text-[#0B0F0E]">
+    <main className="flex min-h-[calc(100vh-200px)] flex-col items-center justify-center bg-[#F2EFE8] px-5 md:px-10 py-32 text-[#0B0F0E]">
       <div className="max-w-xl text-center">
         <Eyebrow className="mb-6 block" flanked>
           THE BLOG

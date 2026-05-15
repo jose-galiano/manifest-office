@@ -62,6 +62,24 @@
   }
 
   /*
+   * Override CSS Grid's default `min-width: auto` on grid + flex children.
+   *
+   * Without this, a child whose intrinsic content is wider than its column
+   * (e.g. a display-clamp heading that grows with viewport width) refuses to
+   * shrink and overflows the column boundary, bleeding into neighbouring
+   * cells. This affected every two-column hero across the storefront
+   * (Provenance, System, Editions, Collection headers). Fixing at the
+   * cascade root is cheaper than threading `min-w-0` through 40+ components.
+   *
+   * Explicit `min-width` / `min-w-*` utilities on a specific element still
+   * win because they have higher specificity than this universal rule.
+   */
+  :where(.grid, .flex) > * {
+    min-width: 0;
+    min-height: 0;
+  }
+
+  /*
    * Reduced motion — brand bible §11 ("scroll-triggered animations honor
    * `prefers-reduced-motion`"). Carry forward as a global rule.
    */

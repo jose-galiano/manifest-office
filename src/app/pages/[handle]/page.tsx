@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation';
 
-import { EditionBanner } from '@/components/sections/EditionBanner';
 import { EditionsHero } from '@/components/sections/EditionsHero';
 import { EditionsIntro } from '@/components/sections/EditionsIntro';
 import { EditionsPhilosophy } from '@/components/sections/EditionsPhilosophy';
@@ -80,7 +79,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 function SystemPage(): ReactElement {
   return (
     <>
-      <EditionBanner />
       <SystemAnchorLatch />
       <SystemThreeMotions />
       <SystemStats />
@@ -92,7 +90,6 @@ function SystemPage(): ReactElement {
 function ProvenancePage(): ReactElement {
   return (
     <>
-      <EditionBanner />
       <ProvenanceHero />
       <ProvenanceAtelier />
       <ProvenanceMap />
@@ -105,7 +102,6 @@ function ProvenancePage(): ReactElement {
 function EditionsPage(): ReactElement {
   return (
     <>
-      <EditionBanner />
       <EditionsHero />
       <EditionsIntro />
       <EditionsRoadmap />

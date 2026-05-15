@@ -18,7 +18,9 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { CartItemRow } from '@/components/sections/CartItemRow';
 import { useCart } from '@/hooks/use-cart';
 import { FLAT_SHIPPING_EUR, FREE_SHIP_THRESHOLD } from '@/lib/constants/commerce';
+import { toStorefrontHandle } from '@/lib/shopify/handle';
 
+import type { ProductsResponse } from '@/lib/types/product';
 import type { ReactElement } from 'react';
 
 const ANON_STORAGE_KEY = 'mo_anon';
@@ -79,7 +81,7 @@ async function postTrack(
 }
 
 export default function CartPage(): ReactElement {
-  const { items, subtotalEur, removeLine } = useCart();
+  const { items, subtotalEur, removeLine, setImageForHandle } = useCart();
   const [isMounted, setIsMounted] = useState(false);
   const anonymousIdRef = useRef<string>('');
 
@@ -87,6 +89,30 @@ export default function CartPage(): ReactElement {
     setIsMounted(true);
     anonymousIdRef.current = ensureAnonymousId();
   }, []);
+
+  // Hydrate the cart store's image-by-handle map so existing cart rows can
+  // fall back to a live thumbnail when their persisted `imageUrl` is empty
+  // or stale (matches the drawer's hydration behaviour). One-shot fetch.
+  useEffect(() => {
+    if (!isMounted) return;
+    const abort = new AbortController();
+    void (async (): Promise<void> => {
+      try {
+        const response = await fetch('/api/products', { signal: abort.signal });
+        if (!response.ok) return;
+        const payload = (await response.json()) as ProductsResponse;
+        if (!Array.isArray(payload.products)) return;
+        for (const product of payload.products) {
+          const storefrontHandle = toStorefrontHandle(product.handle);
+          const image = product.image ?? product.images[0]?.url ?? null;
+          if (image) setImageForHandle(storefrontHandle, image);
+        }
+      } catch {
+        /* fire-and-forget hydration. */
+      }
+    })();
+    return () => abort.abort();
+  }, [isMounted, setImageForHandle]);
 
   const freeShip = subtotalEur >= FREE_SHIP_THRESHOLD;
   const shipping = freeShip ? 0 : FLAT_SHIPPING_EUR;
@@ -109,7 +135,7 @@ export default function CartPage(): ReactElement {
 
   if (!isMounted) {
     return (
-      <div className="mx-auto max-w-[1280px] px-10 pb-24 pt-[140px]">
+      <div className="mx-auto max-w-[1280px] px-5 md:px-10 pb-24 pt-[110px] md:pt-[140px]">
         <div className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--color-lichen)]">
           Loading manifest…
         </div>
@@ -119,7 +145,7 @@ export default function CartPage(): ReactElement {
 
   if (items.length === 0) {
     return (
-      <div className="mx-auto max-w-[760px] px-10 pb-24 pt-[140px] text-center">
+      <div className="mx-auto max-w-[760px] px-5 md:px-10 pb-24 pt-[110px] md:pt-[140px] text-center">
         <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--color-signal)]">
           MANIFEST · EMPTY
         </span>
@@ -132,7 +158,7 @@ export default function CartPage(): ReactElement {
         </p>
         <div className="mt-10 flex justify-center gap-4">
           <Link
-            href="/products/manifest-tech-pouch-m#desk"
+            href="/products/tech-pouch-m#desk"
             className="bg-[var(--color-ink)] px-6 py-[14px] font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-paper)] transition-[background-color,letter-spacing] hover:bg-[var(--color-signal)] hover:tracking-[0.18em]"
           >
             Brief the desk
@@ -149,7 +175,7 @@ export default function CartPage(): ReactElement {
   }
 
   return (
-    <div className="mx-auto max-w-[1280px] px-10 pb-24 pt-[140px]">
+    <div className="mx-auto max-w-[1280px] px-5 md:px-10 pb-24 pt-[110px] md:pt-[140px]">
       <header className="mb-12 flex flex-col gap-3">
         <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--color-signal)]">
           MANIFEST · YOUR ORDER

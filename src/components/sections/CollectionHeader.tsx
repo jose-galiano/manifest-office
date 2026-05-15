@@ -17,10 +17,6 @@ type CollectionHeaderProps = {
   };
 };
 
-function formatIssued(issued: number): string {
-  return String(issued).padStart(5, '0');
-}
-
 // Header band for `/collections/[handle]`. Three rows:
 //   1. Optional dark allocation banner (ink background, signal counter).
 //   2. Breadcrumb / eyebrow in mono lichen.
@@ -32,34 +28,17 @@ export function CollectionHeader({
   meta,
   allocation,
 }: CollectionHeaderProps): ReactElement {
+  // The global `<EditionBanner />` at top:0 already carries the edition +
+  // allocation + ships-in chrome site-wide. We previously duplicated it here
+  // as a section-local dark strip; dropping that to avoid a stacked-header
+  // look on Edition 01 collection pages. `allocation` is still accepted on
+  // the props so collection-specific meta can return in a future variant
+  // (e.g. a tag-filtered slice with its own counter).
+  void allocation;
+
   return (
     <>
-      {allocation ? (
-        <div className="flex flex-wrap items-center justify-between gap-y-2 bg-[#0B0F0E] px-10 py-2.5 text-[#F2EFE8]">
-          <div className="flex items-center gap-7">
-            <span className="font-mono text-[11px] uppercase tracking-[0.04em]">
-              <span
-                aria-hidden="true"
-                className="mr-2 inline-block h-2 w-2 rounded-full bg-[#D24A1F] align-middle"
-              />
-              {allocation.editionLabel}
-            </span>
-            <span className="font-mono text-[11px] uppercase tracking-[0.04em]">
-              {allocation.originLabel}
-            </span>
-          </div>
-          <div className="flex items-center gap-7">
-            <span className="font-mono text-[11px] uppercase tracking-[0.04em] text-[#D24A1F]">
-              ALLOCATION {formatIssued(allocation.issued)} / {allocation.total}
-            </span>
-            <span className="font-mono text-[11px] uppercase tracking-[0.04em]">
-              {allocation.shipsInLabel}
-            </span>
-          </div>
-        </div>
-      ) : null}
-
-      <header className="border-b border-[rgba(11,15,14,0.12)] bg-[#F2EFE8] px-10 pb-12 pt-16 text-[#0B0F0E]">
+      <header className="border-b border-[rgba(11,15,14,0.12)] bg-[#F2EFE8] px-5 md:px-10 pb-12 pt-[110px] md:pt-[140px] text-[#0B0F0E]">
         <div className="mx-auto max-w-[1600px]">
           <div className="mb-4 font-mono text-[11px] uppercase tracking-[0.06em] text-[#5C6B5A]">
             {eyebrow}

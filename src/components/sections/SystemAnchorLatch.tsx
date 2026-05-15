@@ -31,13 +31,13 @@ const PARTS: readonly PartRow[] = [
 export function SystemAnchorLatch(): ReactElement {
   return (
     <>
-      <section className="relative overflow-hidden bg-[#0B0F0E] px-10 pt-[140px] pb-[100px] text-[#F2EFE8]">
+      <section className="relative overflow-hidden bg-[#0B0F0E] px-5 md:px-10 pt-[110px] md:pt-[140px] pb-14 md:pb-[100px] text-[#F2EFE8]">
         <div className="mx-auto grid max-w-[1400px] grid-cols-1 items-end gap-20 md:grid-cols-2">
           <div>
             <Eyebrow className="mb-8 block" flanked>
               THE ANCHOR LATCH · MO-A1
             </Eyebrow>
-            <h1 className="mb-8 font-display font-bold leading-[0.88] tracking-[-0.035em] text-[clamp(60px,10vw,160px)]">
+            <h1 className="mb-8 font-display font-bold leading-[0.88] tracking-[-0.035em] text-[clamp(40px,6.5vw,96px)]">
               One closure.
               <br />
               Every <span className="text-[#D24A1F]">component</span>.
@@ -71,7 +71,7 @@ export function SystemAnchorLatch(): ReactElement {
         </div>
       </section>
 
-      <section className="bg-[#F2EFE8] px-10 py-[140px]">
+      <section className="bg-[#F2EFE8] px-5 md:px-10 py-20 md:py-[140px]">
         <div className="mx-auto max-w-[1400px]">
           <div className="mb-24 grid grid-cols-1 items-end gap-20 md:grid-cols-2">
             <div>

@@ -19,11 +19,12 @@
 
 'use client';
 
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
 
 import { reserveProductAction } from '@/app/products/[handle]/actions';
 import { useCart } from '@/hooks/use-cart';
+import { CUSTOM_EVENTS, ECOMMERCE_EVENTS, track } from '@/lib/analytics';
 import { ENGRAVING_ALLOWED_REGEX, ENGRAVING_FEE, ENGRAVING_MAX } from '@/lib/constants/commerce';
 import { hasEngravingOption } from '@/lib/constants/engraving';
 
@@ -59,6 +60,12 @@ export type PdpBuyboxProps = {
   /** Pre-sorted sibling size options. Empty array hides the SIZE block. */
   readonly sizeOptions: readonly SizeOption[];
   readonly colorways: readonly ColorwaySwatch[];
+  /**
+   * Name of the colorway to select on mount. Sourced from `?color=` on the
+   * URL (set by the PLP card when the customer picked a non-default swatch).
+   * Falls back to the first colorway when absent or unrecognised.
+   */
+  readonly initialColorwayName?: string;
   /** Live allocation. Re-renders per request (`force-dynamic` page). */
   readonly issued: number;
   readonly total: number;
@@ -129,10 +136,23 @@ type SizeSelectorProps = {
   readonly currentHandle: string;
 };
 
+// SIZE selector. Each size is a real Shopify product with its own canonical
+// URL (cube-s, cube-m, cube-l) — so we *do* navigate on selection. The trick
+// is to keep the page mounted by using `router.replace({ scroll: false })`
+// inside a `useTransition`. React 19 streams the new RSC payload into the
+// same tree; the only visible change is the price + gallery + variant copy.
+// No scroll jump, no full-tree unmount, no flash.
 function SizeSelector({ options, currentHandle }: SizeSelectorProps): ReactElement | null {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+
   if (options.length === 0) return null;
+
   return (
-    <div className="mt-8">
+    <div
+      className={`mt-8 transition-opacity duration-200 ${isPending ? 'opacity-70' : 'opacity-100'}`}
+      aria-busy={isPending}
+    >
       <span className="mb-2 block font-mono text-[11px] uppercase tracking-[0.06em] text-[#5C6B5A]">
         SIZE
       </span>
@@ -140,15 +160,22 @@ function SizeSelector({ options, currentHandle }: SizeSelectorProps): ReactEleme
         {options.map((option) => {
           const isActive = option.storefrontHandle === currentHandle;
           return (
-            <Link
+            <button
               key={option.storefrontHandle}
-              href={`/products/${option.storefrontHandle}`}
+              type="button"
               data-cursor
               aria-current={isActive ? 'page' : undefined}
+              disabled={isActive || isPending}
+              onClick={(): void => {
+                if (isActive) return;
+                startTransition(() => {
+                  router.replace(`/products/${option.storefrontHandle}`, { scroll: false });
+                });
+              }}
               className={optionClass(isActive)}
             >
               {option.label}
-            </Link>
+            </button>
           );
         })}
       </div>
@@ -262,6 +289,7 @@ export function PdpBuybox({
   imageUrl,
   sizeOptions,
   colorways,
+  initialColorwayName,
   issued,
   total,
   onColorwayChange,
@@ -273,7 +301,13 @@ export function PdpBuybox({
   const [engravingOn, setEngravingOn] = useState<boolean>(false);
   const [engravingText, setEngravingText] = useState<string>('');
 
-  const initialColorway = colorways[0];
+  // Resolve the colorway to land on. The server already normalised the
+  // `?color=` query param, but we re-match here so client-side reloads (and
+  // direct deep-links from email / shared URLs) stay coherent.
+  const initialColorway =
+    (initialColorwayName
+      ? colorways.find((swatch) => swatch.name.toLowerCase() === initialColorwayName.toLowerCase())
+      : undefined) ?? colorways[0];
   const [activeColorway, setActiveColorway] = useState<ColorwaySwatch | undefined>(initialColorway);
   const [toast, setToast] = useState<ReserveToast | null>(null);
 
@@ -285,6 +319,25 @@ export function PdpBuybox({
     return () => window.clearTimeout(timer);
   }, [toast]);
 
+  useEffect(() => {
+    track(ECOMMERCE_EVENTS.viewItem, {
+      ecommerce: {
+        currency: 'EUR',
+        value: priceEur,
+        items: [
+          {
+            item_id: storefrontHandle,
+            item_name: title,
+            item_brand: 'Manifest Office',
+            price: priceEur,
+            quantity: 1,
+            currency: 'EUR',
+          },
+        ],
+      },
+    });
+  }, [storefrontHandle, priceEur, title]);
+
   const handleEngravingInput = useCallback((rawValue: string): void => {
     setEngravingText(sanitiseEngraving(rawValue));
   }, []);
@@ -292,9 +345,34 @@ export function PdpBuybox({
   const handleColorwayClick = useCallback(
     (colorway: ColorwaySwatch): void => {
       setActiveColorway(colorway);
+      track(CUSTOM_EVENTS.variantView, {
+        params: {
+          handle: storefrontHandle,
+          variant_type: 'colorway',
+          variant_name: colorway.name,
+        },
+      });
       onColorwayChange?.(colorway);
+      // Sync the URL so it stays shareable. Use `history.replaceState` rather
+      // than `router.replace` — the colorway swap is pure client state (no
+      // server fetch needed), so we want the URL bar to update without
+      // triggering Next.js's force-dynamic re-render. Default colorway (the
+      // first one) → omit the query so the canonical URL stays clean for SEO.
+      if (typeof window !== 'undefined') {
+        const url = new URL(window.location.href);
+        const isDefault = colorway.name === colorways[0]?.name;
+        if (isDefault) {
+          url.searchParams.delete('color');
+        } else {
+          url.searchParams.set('color', colorway.name.toLowerCase());
+        }
+        const nextPath = url.searchParams.toString()
+          ? `${url.pathname}?${url.searchParams.toString()}`
+          : url.pathname;
+        window.history.replaceState(window.history.state, '', nextPath);
+      }
     },
-    [onColorwayChange],
+    [colorways, onColorwayChange, storefrontHandle],
   );
 
   const remaining = useMemo<number>(() => Math.max(0, total - issued), [issued, total]);
@@ -303,6 +381,15 @@ export function PdpBuybox({
   const submittedEngraving = engravingOn && engravingText.length > 0 ? engravingText : null;
 
   const handleReserve = useCallback((): void => {
+    track(CUSTOM_EVENTS.reserveClick, {
+      params: {
+        handle: storefrontHandle,
+        title,
+        price: priceEur,
+        colorway: activeColorway?.name,
+        has_engraving: Boolean(submittedEngraving),
+      },
+    });
     startTransition(async () => {
       const result = await reserveProductAction(storefrontHandle, submittedEngraving);
       if (!result.ok) return;
@@ -321,8 +408,26 @@ export function PdpBuybox({
           ? { text: reservation.engraving, fee: reservation.engraving_fee }
           : undefined,
       });
-      // Show the operator the reservation in the global cart drawer per the
-      // Wave-3B coordination note in the cart store JSDoc.
+      const totalValue = priceEur + (reservation.engraving ? reservation.engraving_fee : 0);
+      track(ECOMMERCE_EVENTS.addToCart, {
+        ecommerce: {
+          currency: 'EUR',
+          value: totalValue,
+          items: [
+            {
+              item_id: storefrontHandle,
+              item_name: title,
+              item_brand: 'Manifest Office',
+              item_variant: activeColorway?.name,
+              price: priceEur,
+              quantity: 1,
+              currency: 'EUR',
+            },
+          ],
+        },
+        params: { issue: reservation.issue },
+        fanout: { klaviyo: true },
+      });
       openDrawer();
       setToast(buildSuccessToast(reservation, title, activeColorway?.name));
     });

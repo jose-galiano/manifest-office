@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { EDITION_01_PRODUCTS } from '@/content/manifest-office';
+import { CUSTOM_EVENTS, track as trackEvent } from '@/lib/analytics';
 
 import type { Product } from '@/content/manifest-office';
 import type { ReactElement } from 'react';
@@ -137,6 +138,10 @@ function useHorizontalScrollPin(enabled: boolean): ScrollPinHookResult {
   const trackNodeRef = useRef<HTMLDivElement | null>(null);
   const lastProgressRef = useRef<number>(-1);
   const rafTokenRef = useRef<number>(0);
+  // Track which panel index was most recently dominant in the viewport so
+  // we fire `scroll_pin_panel` at most once per crossing — without this
+  // every animation frame inside the panel band would emit an event.
+  const lastPanelIndexRef = useRef<number>(-1);
 
   const applyTransform = useCallback((progress: number): void => {
     const track = trackNodeRef.current;
@@ -160,6 +165,26 @@ function useHorizontalScrollPin(enabled: boolean): ScrollPinHookResult {
     if (Math.abs(progress - lastProgressRef.current) < 0.0005) return;
     lastProgressRef.current = progress;
     applyTransform(progress);
+    // Emit `scroll_pin_panel` on panel-index transitions (5 panels split
+    // the [0,1] progress range evenly). Hysteresis falls out for free
+    // because we only fire when the integer index changes.
+    const panelIndex = Math.min(PANEL_COUNT - 1, Math.floor(progress * PANEL_COUNT));
+    if (panelIndex !== lastPanelIndexRef.current) {
+      const previous = lastPanelIndexRef.current;
+      lastPanelIndexRef.current = panelIndex;
+      // -1 → first entry; skip emitting on the initial "set to first panel"
+      // call so we don't double-count the section becoming visible (the
+      // PageView + SectionView already covers entry).
+      if (previous !== -1) {
+        trackEvent(CUSTOM_EVENTS.scrollPinPanel, {
+          params: {
+            panel_index: panelIndex,
+            panel_total: PANEL_COUNT,
+            direction: panelIndex > previous ? 'forward' : 'back',
+          },
+        });
+      }
+    }
   }, [applyTransform]);
 
   const onScroll = useCallback((): void => {
@@ -389,9 +414,9 @@ export function BuildYourSystem(): ReactElement {
 
 function panelBaseClasses(isMobile: boolean): string {
   if (isMobile) {
-    return 'w-screen flex flex-col justify-center px-10 py-32 border-b border-[rgba(11,15,14,0.12)]';
+    return 'w-screen flex flex-col justify-center px-5 md:px-10 py-32 border-b border-[rgba(11,15,14,0.12)]';
   }
-  return 'flex-[0_0_100vw] h-screen px-10 lg:px-20 py-32 flex flex-col justify-center border-r border-[rgba(11,15,14,0.12)] bg-[#F2EFE8]';
+  return 'flex-[0_0_100vw] h-screen px-5 md:px-10 lg:px-20 py-32 flex flex-col justify-center border-r border-[rgba(11,15,14,0.12)] bg-[#F2EFE8]';
 }
 
 function renderIntroPanel({ isMobile }: { isMobile: boolean }): ReactElement {
@@ -467,6 +492,9 @@ function renderStepPanel(props: {
             onClick={option.onSelect}
             data-cursor
             data-active={option.active ? 'true' : 'false'}
+            data-track="build_system_select"
+            data-track-step={label}
+            data-track-option={option.key}
             className={`grid grid-cols-[60px_1fr_auto] gap-6 items-center px-7 py-5 border font-mono uppercase tracking-[0.04em] text-[13px] cursor-pointer transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] text-left ${
               option.active
                 ? 'bg-[#0B0F0E] text-[#F2EFE8] border-[#0B0F0E]'
@@ -534,6 +562,9 @@ function renderSummaryPanel(props: {
       <button
         type="button"
         data-cursor
+        data-track="build_system_reserve_manifest"
+        data-track-skus={String(skuCount)}
+        data-track-total-eur={totalLabel.replace(/[^\d.]/g, '')}
         className="self-start bg-[#D24A1F] text-[#F2EFE8] border-none cursor-pointer px-9 py-5 font-mono text-[13px] tracking-[0.12em] uppercase transition-[letter-spacing,background] duration-300 ease-out hover:tracking-[0.18em] hover:bg-[#B83C16]"
       >
         Reserve this manifest →

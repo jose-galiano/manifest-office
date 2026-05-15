@@ -458,7 +458,7 @@ export function DeskBrief({ anchorId = 'desk' }: DeskBriefProps): ReactElement {
   return (
     <section
       id={anchorId}
-      className="border-y border-[rgba(11,15,14,0.12)] bg-[#0B0F0E] px-10 py-20 text-[#F2EFE8]"
+      className="border-y border-[rgba(11,15,14,0.12)] bg-[#0B0F0E] px-5 md:px-10 py-20 text-[#F2EFE8]"
     >
       <div className="mx-auto max-w-[1100px]">
         <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#D24A1F]">

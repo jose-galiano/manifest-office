@@ -12,11 +12,11 @@ import * as THREE from 'three';
 import type { KitItemSpec, PartMetadata, Vec3Tuple } from './types';
 
 // --- Palette (mirrors design tokens in `globals.css`) ---------------------
-const COLOR_BODY = 0x2c2a28; // graphite anodized housing
+const COLOR_BODY = 0x4a4540; // graphite anodized housing (brightened to read on ink bg)
 const COLOR_LEVER = 0xd24a1f; // signal orange
-const COLOR_HOOK = 0xa6a6a6; // silver machined hardware
-const COLOR_MAGNET = 0x1a1a1a; // sealed magnet face
-const COLOR_PLATE = 0x2a2e2d; // anodized pass-through plate
+const COLOR_HOOK = 0xc0c0c0; // silver machined hardware
+const COLOR_MAGNET = 0x303030; // sealed magnet face
+const COLOR_PLATE = 0x46494a; // anodized pass-through plate (brightened)
 const COLOR_PAPER = 0xf2efe8; // paper-on-ink rim light
 const COLOR_RIM_LIGHT = 0xd24a1f;
 const COLOR_FILL_LIGHT = 0xf2efe8;
@@ -64,7 +64,7 @@ export function applyExplodeState(parts: readonly THREE.Object3D[], explodedT: n
 
 // --- Lighting --------------------------------------------------------------
 function addLights(scene: THREE.Scene): void {
-  const ambient = new THREE.AmbientLight(0xffffff, 0.35);
+  const ambient = new THREE.AmbientLight(0xffffff, 0.65);
   scene.add(ambient);
 
   const key = new THREE.DirectionalLight(0xffffff, 1.1);

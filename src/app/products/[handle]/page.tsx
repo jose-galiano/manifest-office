@@ -46,8 +46,11 @@ export const dynamic = 'force-dynamic';
 
 type PdpParams = { readonly handle: string };
 
+type PdpSearchParams = { readonly color?: string };
+
 type PdpPageProps = {
   readonly params: Promise<PdpParams>;
+  readonly searchParams?: Promise<PdpSearchParams>;
 };
 
 // Static-generation hint. Even with `force-dynamic`, declaring the known
@@ -196,8 +199,12 @@ function selectGalleryImages(
   return { hero, tiles };
 }
 
-export default async function ProductDetailPage({ params }: PdpPageProps): Promise<ReactElement> {
+export default async function ProductDetailPage({
+  params,
+  searchParams,
+}: PdpPageProps): Promise<ReactElement> {
   const { handle } = await params;
+  const search = (await searchParams) ?? {};
   const catalogEntry = findProductByHandle(handle);
   if (!catalogEntry) {
     notFound();
@@ -217,6 +224,16 @@ export default async function ProductDetailPage({ params }: PdpPageProps): Promi
   const colorways = deriveColorways(shopifyProduct);
   const sizeOptions = deriveSizeOptions(catalogEntry.handle);
   const specs = buildSpecStrip(catalogEntry, shopifyProduct);
+
+  // Resolve the requested colorway (e.g. `?color=lichen` from the PLP card).
+  // Match case-insensitively; if the param is missing/unknown, fall back to
+  // the default (first) colorway so the page lands on a coherent variant.
+  const requestedColorway = (search.color ?? '').toLowerCase().trim();
+  const initialColorway =
+    (requestedColorway
+      ? colorways.find((swatch) => swatch.name.toLowerCase() === requestedColorway)
+      : null) ?? colorways[0];
+  const initialHeroImage = initialColorway?.imageUrl ?? gallery.hero;
 
   const summary = `${catalogEntry.title} — ${catalogEntry.use}. Anchor-Latch compatible with every component of the Manifest Office system. Issued from Porto for ${EDITION_01.shipsBy}.`;
 
@@ -246,10 +263,11 @@ export default async function ProductDetailPage({ params }: PdpPageProps): Promi
         summary={summary}
         editionNumber={EDITION_01.number}
         dossierNumber={catalogEntry.dossierNumber}
-        heroImage={gallery.hero}
+        heroImage={initialHeroImage}
         tiles={gallery.tiles}
         sizeOptions={sizeOptions}
         colorways={colorways}
+        initialColorwayName={initialColorway?.name}
         issued={issued}
         total={total}
       />

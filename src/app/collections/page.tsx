@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 export default function CollectionsIndexPage(): ReactElement {
   return (
     <main className="min-h-screen bg-[#F2EFE8] text-[#0B0F0E]">
-      <header className="border-b border-[rgba(11,15,14,0.12)] px-10 pb-12 pt-16">
+      <header className="border-b border-[rgba(11,15,14,0.12)] px-5 md:px-10 pb-12 pt-[110px] md:pt-[140px]">
         <div className="mx-auto max-w-[1600px]">
           <div className="mb-4 font-mono text-[11px] uppercase tracking-[0.06em] text-[#5C6B5A]">
             CATALOGUE / COLLECTIONS
@@ -34,7 +34,7 @@ export default function CollectionsIndexPage(): ReactElement {
           <Link
             key={collection.handle}
             href={`/collections/${collection.handle}`}
-            className="group flex flex-col gap-3 px-10 py-10 transition-colors duration-300 hover:bg-[rgba(11,15,14,0.03)] md:flex-row md:items-baseline md:justify-between md:gap-12"
+            className="group flex flex-col gap-3 px-5 md:px-10 py-10 transition-colors duration-300 hover:bg-[rgba(11,15,14,0.03)] md:flex-row md:items-baseline md:justify-between md:gap-12"
             data-cursor
           >
             <div className="flex-1">

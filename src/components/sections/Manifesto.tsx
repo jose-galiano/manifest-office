@@ -46,7 +46,7 @@ export function Manifesto(): ReactElement {
   return (
     <section
       ref={ref}
-      className="border-t border-[rgba(11,15,14,0.12)] bg-[#F2EFE8] px-10 py-[160px]"
+      className="border-t border-[rgba(11,15,14,0.12)] bg-[#F2EFE8] px-5 md:px-10 py-20 md:py-[160px]"
     >
       <div className="mx-auto max-w-[1100px]">
         <Eyebrow className="mb-8 block">EDITION 01 · BRIEF</Eyebrow>
