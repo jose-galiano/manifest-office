@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Cancel superseded runs on the same ref so feedback is always against
+# the latest commit and we don't burn minutes on stale builds.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: typecheck · lint · build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      # Build-time stubs. CI doesn't talk to Shopify/Klaviyo/Gemini — the
+      # build only needs the variables to be defined so `process.env`
+      # reads don't throw during static analysis. Real values live in
+      # Vercel for runtime.
+      SHOPIFY_STORE: build-ci.myshopify.com
+      SHOPIFY_ADMIN_API_TOKEN: build-only
+      KLAVIYO_PRIVATE_API_KEY: build-only
+      KLAVIYO_PUBLIC_KEY: build-only
+      NEXT_PUBLIC_GTM_ID: ''
+      NEXT_PUBLIC_CLARITY_ID: ''
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.1.2
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: TypeScript
+        run: pnpm typecheck
+
+      - name: ESLint (max-warnings=0)
+        run: pnpm lint
+
+      - name: Prettier (check)
+        run: pnpm format:check
+
+      - name: Next.js build
+        run: pnpm build
