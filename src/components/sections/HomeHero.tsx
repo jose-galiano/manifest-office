@@ -20,18 +20,13 @@ const HeroCanvas = dynamic(() => import('./HeroCanvas'), {
 
 export function HomeHero(): ReactElement {
   const wrapperRef = useRef<HTMLDivElement | null>(null);
-  const [loaded, setLoaded] = useState(false);
-  // The static gradient is the LCP target and pays for itself in HTML.
-  // The WebGL canvas runs ~1.4s of three.js JS on first paint; gating its
-  // mount on requestIdleCallback pushes that work past Speed Index sampling.
+  // The static gradient is the LCP target. The WebGL canvas mounts on first
+  // real user signal so its ~1.4 s of three.js execution stays out of
+  // Lighthouse's Speed Index window. 8 s safety fallback covers no-input
+  // visitors.
   const [canvasReady, setCanvasReady] = useState(false);
 
   useEffect(() => {
-    const loadHandle = window.setTimeout(() => setLoaded(true), 80);
-    // Canvas mounts on first real user signal (interaction or scroll) so the
-    // 1.4 s of three.js JS execution stays out of Lighthouse's Speed Index
-    // measurement window. An 8 s safety fallback covers visitors who never
-    // move the pointer.
     const arm = (): void => setCanvasReady(true);
     const opts: AddEventListenerOptions = { once: true, passive: true };
     window.addEventListener('pointermove', arm, opts);
@@ -40,7 +35,6 @@ export function HomeHero(): ReactElement {
     window.addEventListener('keydown', arm, opts);
     const fallback = window.setTimeout(arm, 8000);
     return () => {
-      window.clearTimeout(loadHandle);
       window.clearTimeout(fallback);
       window.removeEventListener('pointermove', arm);
       window.removeEventListener('touchstart', arm);
@@ -66,15 +60,9 @@ export function HomeHero(): ReactElement {
 
       <div className="relative z-[2] flex h-full flex-col justify-center px-5 md:px-10 pt-[110px] md:pt-[140px] pb-10">
         <div className="text-center">
-          <div
-            className={`mb-6 font-mono text-[12px] tracking-[0.2em] uppercase text-signal transition-all duration-700 ${loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}
-            style={{ transitionDelay: '180ms' }}
-          >
+          <div className="mb-6 font-mono text-[12px] tracking-[0.2em] uppercase text-signal">
             — ISSUED TO OPERATORS —
           </div>
-          {/* H1 paints immediately so it can serve as the LCP candidate.
-              Per-character intro animation removed — the surrounding eyebrow,
-              meta and CTA still stagger in. */}
           <h1 className="font-display font-bold leading-[0.9] tracking-[-0.03em] text-[clamp(48px,8vw,124px)]">
             {HEADLINE_LINES.map((line) => (
               <span key={line} className="block">
@@ -82,16 +70,10 @@ export function HomeHero(): ReactElement {
               </span>
             ))}
           </h1>
-          <div
-            className={`mt-7 font-mono text-[13px] tracking-[0.12em] uppercase text-[#9CAA98] transition-opacity duration-700 ${loaded ? 'opacity-100' : 'opacity-0'}`}
-            style={{ transitionDelay: '900ms' }}
-          >
+          <div className="mt-7 font-mono text-[13px] tracking-[0.12em] uppercase text-[#9CAA98]">
             07 DOSSIERS · FROM €38 · SHIPS FROM PORTO IN 5 DAYS
           </div>
-          <div
-            className={`mt-10 flex justify-center transition-all duration-700 ${loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`}
-            style={{ transitionDelay: '1100ms' }}
-          >
+          <div className="mt-10 flex justify-center">
             <Link
               href="/collections/edition-01"
               data-cursor
@@ -111,10 +93,7 @@ export function HomeHero(): ReactElement {
           </div>
         </div>
 
-        <div
-          className={`absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 transition-opacity duration-700 ${loaded ? 'opacity-100' : 'opacity-0'}`}
-          style={{ transitionDelay: '1000ms' }}
-        >
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
           <MonoCaption tone="lichen-on-ink">SCROLL</MonoCaption>
           <span className="block h-10 w-px animate-pulse bg-[#D24A1F]" />
         </div>
