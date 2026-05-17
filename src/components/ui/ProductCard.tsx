@@ -152,16 +152,14 @@ export function ProductCard({ product, dossierNumber }: ProductCardProps): React
               {swatches.map((swatch, index) => {
                 const isActive = index === activeIndex;
                 const isPreviewed = index === previewIndex;
-                // Visible swatch stays 16px (brand chip size). Tap-target is
-                // extended to 24×24 via the ::after pseudo so we meet WCAG 2.5.8.
-                const baseClass =
-                  "relative h-4 w-4 cursor-pointer rounded-full border transition-[outline,transform] duration-200 after:content-[''] after:absolute after:inset-[-4px]";
-                const stateClass = isActive
+                // Button hit-box is 24×24 (WCAG 2.5.8); the visible chip is a
+                // 16×16 inner span so the brand chip size stays unchanged.
+                const innerStateClass = isActive
                   ? 'border-[rgba(11,15,14,0.55)] outline outline-2 outline-offset-2 outline-[#0B0F0E]'
                   : isPreviewed
                     ? 'border-[rgba(11,15,14,0.55)] outline outline-1 outline-offset-2 outline-[rgba(11,15,14,0.55)]'
                     : 'border-[rgba(11,15,14,0.35)]';
-                const style: CSSProperties = { background: swatch.hex };
+                const chipStyle: CSSProperties = { background: swatch.hex };
                 return (
                   <button
                     type="button"
@@ -172,9 +170,14 @@ export function ProductCard({ product, dossierNumber }: ProductCardProps): React
                     onBlur={onSwatchLeave}
                     aria-label={`Preview ${swatch.name} colorway`}
                     aria-pressed={isActive}
-                    className={`${baseClass} ${stateClass}`}
-                    style={style}
-                  />
+                    className="grid h-6 w-6 cursor-pointer place-items-center bg-transparent p-0"
+                  >
+                    <span
+                      aria-hidden="true"
+                      className={`block h-4 w-4 rounded-full border transition-[outline,transform] duration-200 ${innerStateClass}`}
+                      style={chipStyle}
+                    />
+                  </button>
                 );
               })}
               <span className="ml-2 font-mono text-[10px] uppercase tracking-[0.08em] text-[#5C6B5A]">
