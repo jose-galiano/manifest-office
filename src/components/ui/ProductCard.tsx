@@ -152,8 +152,10 @@ export function ProductCard({ product, dossierNumber }: ProductCardProps): React
               {swatches.map((swatch, index) => {
                 const isActive = index === activeIndex;
                 const isPreviewed = index === previewIndex;
+                // Visible swatch stays 16px (brand chip size). Tap-target is
+                // extended to 24×24 via the ::after pseudo so we meet WCAG 2.5.8.
                 const baseClass =
-                  'h-4 w-4 cursor-pointer rounded-full border transition-[outline,transform] duration-200';
+                  "relative h-4 w-4 cursor-pointer rounded-full border transition-[outline,transform] duration-200 after:content-[''] after:absolute after:inset-[-4px]";
                 const stateClass = isActive
                   ? 'border-[rgba(11,15,14,0.55)] outline outline-2 outline-offset-2 outline-[#0B0F0E]'
                   : isPreviewed
