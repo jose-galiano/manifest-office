@@ -67,46 +67,33 @@ export function Practitioners({
         </h2>
       </header>
 
-      {/* Mobile: horizontal swipe carousel — 3 cards don't fit at 375px.
-          Desktop (>= md): static 3-up grid, max-width 1400px, gap-60px.
-          Same article markup in both paths so the markup-level a11y is
-          identical; only the wrapper layout differs. */}
-      <div className="md:hidden -mx-5">
-        <div className="flex gap-5 overflow-x-auto overflow-y-hidden snap-x snap-mandatory no-scrollbar px-5 pb-4">
-          {PRACTITIONERS.map((person) => (
-            <article
-              key={person.name}
-              className="group flex w-[280px] shrink-0 snap-start flex-col gap-6 sm:w-[360px]"
-            >
-              <div className="aspect-[3/4] overflow-hidden bg-[#1a1a1a]">
-                <Image
-                  src={person.portrait}
-                  alt={person.portraitAlt}
-                  width={600}
-                  height={800}
-                  sizes="80vw"
-                  className="h-full w-full object-cover"
-                />
+      <div className="mx-auto flex max-w-[1400px] flex-col gap-14 px-5 md:hidden">
+        {PRACTITIONERS.map((person) => (
+          <article key={person.name} className="flex flex-col gap-6">
+            <div className="aspect-[3/4] overflow-hidden bg-[#1a1a1a]">
+              <Image
+                src={person.portrait}
+                alt={person.portraitAlt}
+                width={600}
+                height={800}
+                sizes="100vw"
+                className="h-full w-full object-cover"
+              />
+            </div>
+            <div>
+              <div className="font-mono text-[10px] tracking-[0.1em] uppercase text-signal">
+                {person.role}
               </div>
-              <div>
-                <div className="font-mono text-[10px] tracking-[0.1em] uppercase text-signal">
-                  {person.role}
-                </div>
-                <h3 className="mt-2 font-display text-[28px] font-bold leading-[1] tracking-[-0.015em]">
-                  {person.name}
-                </h3>
-              </div>
-              <p className="text-[15px] leading-[1.6] text-[#F2EFE8]/85">{person.bio}</p>
-              <div className="border-t border-[rgba(242,239,232,0.18)] pt-4 font-display text-[16px] font-medium italic leading-[1.4] text-[#F2EFE8]/80">
-                {person.quote}
-              </div>
-            </article>
-          ))}
-        </div>
-        <style>{`
-          .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
-          .no-scrollbar::-webkit-scrollbar { display: none; }
-        `}</style>
+              <h3 className="mt-2 font-display text-[28px] font-bold leading-[1] tracking-[-0.015em]">
+                {person.name}
+              </h3>
+            </div>
+            <p className="text-[15px] leading-[1.6] text-[#F2EFE8]/85">{person.bio}</p>
+            <div className="border-t border-[rgba(242,239,232,0.18)] pt-4 font-display text-[16px] font-medium italic leading-[1.4] text-[#F2EFE8]/80">
+              {person.quote}
+            </div>
+          </article>
+        ))}
       </div>
 
       <div className="mx-auto hidden md:grid max-w-[1400px] md:grid-cols-3 md:gap-[60px] px-10">
