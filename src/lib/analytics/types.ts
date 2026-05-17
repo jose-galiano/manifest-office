@@ -57,6 +57,10 @@ export const CUSTOM_EVENTS = {
    * Lead generation report.
    */
   manifestComplete: 'manifest_complete',
+  checkoutView: 'checkout_view',
+  checkoutExpressClick: 'checkout_express_click',
+  bookCall: 'book_call',
+  callBookedConfirmationView: 'call_booked_confirmation_view',
   teletypeComplete: 'teletype_complete',
   variantView: 'variant_view',
   dossierFilter: 'dossier_filter',

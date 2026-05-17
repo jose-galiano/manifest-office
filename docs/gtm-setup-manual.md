@@ -60,7 +60,7 @@ one, then duplicate-and-rename the rest.
 - Event name: **paste exactly** (and tick "Use regex matching"):
 
 ```
-^(page_view|section_view|section_dwell|scroll_depth|element_click|outbound_click|rage_click|dead_click|reserve_click|viewer_3d_rotate|viewer_3d_explode|viewer_3d_assemble|scroll_pin_panel|cart_drawer_open|cart_drawer_close|audio_play|audio_pause|manifest_complete|variant_view|email_capture_submit|consent_granted|consent_denied|view_item|view_item_list|select_item|add_to_cart|remove_from_cart|view_cart|begin_checkout|generate_lead|teletype_complete|dossier_filter)$
+^(page_view|section_view|section_dwell|scroll_depth|element_click|outbound_click|rage_click|dead_click|reserve_click|viewer_3d_rotate|viewer_3d_explode|viewer_3d_assemble|scroll_pin_panel|cart_drawer_open|cart_drawer_close|audio_play|audio_pause|manifest_complete|checkout_view|checkout_express_click|book_call|call_booked_confirmation_view|variant_view|email_capture_submit|consent_granted|consent_denied|view_item|view_item_list|select_item|add_to_cart|remove_from_cart|view_cart|begin_checkout|generate_lead|teletype_complete|dossier_filter)$
 ```
 
 - This trigger fires on: **All Custom Events**

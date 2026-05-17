@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useId, useMemo, useState } from 'react';
 
 import { useCart, useCartImageForHandle } from '@/hooks/use-cart';
-import { ECOMMERCE_EVENTS, track } from '@/lib/analytics';
+import { CUSTOM_EVENTS, ECOMMERCE_EVENTS, track } from '@/lib/analytics';
 import { FLAT_SHIPPING_EUR, FREE_SHIP_THRESHOLD } from '@/lib/constants/commerce';
 import { toStorefrontHandle } from '@/lib/shopify/handle';
 import { validateEmail } from '@/lib/utils/email';
@@ -17,7 +17,36 @@ import type { FormEvent, ReactElement } from 'react';
 
 const EMAIL_STORAGE_KEY = 'mo_email';
 const ORDER_NUMBER_KEY = 'mo_order_number';
+const BOOKING_PAYLOAD_KEY = 'mo_booking_payload';
 const BOOK_CALL_HREF = 'https://www.maelify.com/pages/book';
+
+const ROLE_OPTIONS = [
+  { value: '', label: 'Pick one…' },
+  { value: 'founder', label: 'Founder / Owner' },
+  { value: 'cto', label: 'CTO or eng lead' },
+  { value: 'growth', label: 'Head of Growth / Performance' },
+  { value: 'product', label: 'Product / Ops' },
+  { value: 'designer', label: 'Designer' },
+  { value: 'student', label: 'Student / Just learning' },
+  { value: 'other', label: 'Other' },
+] as const;
+
+const PLAN_OPTIONS = [
+  { value: '', label: 'Pick one…' },
+  { value: 'plus', label: 'Shopify Plus' },
+  { value: 'advanced', label: 'Advanced Shopify' },
+  { value: 'basic', label: 'Basic / Standard Shopify' },
+  { value: 'considering', label: 'Considering Shopify' },
+  { value: 'other_platform', label: 'On another platform' },
+  { value: 'na', label: 'Not running a store' },
+] as const;
+
+const ICP_ROLES: ReadonlySet<string> = new Set(['founder', 'cto', 'growth', 'product']);
+const ICP_PLANS: ReadonlySet<string> = new Set(['plus', 'advanced']);
+
+function computeIcpMatch(role: string, plan: string): boolean {
+  return ICP_ROLES.has(role) || ICP_PLANS.has(plan);
+}
 
 function readLocalStorage(key: string): string {
   if (typeof window === 'undefined') return '';
@@ -85,12 +114,18 @@ export default function CheckoutPage(): ReactElement {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [company, setCompany] = useState('');
+  const [role, setRole] = useState('');
+  const [plan, setPlan] = useState('');
+  const [wouldHavePaid, setWouldHavePaid] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const emailId = useId();
   const firstNameId = useId();
   const lastNameId = useId();
   const companyId = useId();
+  const roleId = useId();
+  const planId = useId();
+  const wouldHavePaidId = useId();
 
   useEffect(() => {
     setIsMounted(true);
@@ -123,12 +158,44 @@ export default function CheckoutPage(): ReactElement {
 
   useEffect(() => {
     if (!isMounted) return;
+    if (items.length === 0) return;
+    track(CUSTOM_EVENTS.checkoutView, {
+      params: {
+        item_count: items.length,
+        subtotal_eur: subtotalEur,
+        total_eur: total,
+      },
+      ecommerce: {
+        currency: 'EUR',
+        value: total,
+        items: items.map((item, index) => ({
+          item_id: item.handle,
+          item_name: item.title,
+          item_brand: 'Manifest Office',
+          price: item.price,
+          quantity: 1,
+          currency: 'EUR',
+          index,
+        })),
+      },
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isMounted]);
+
+  useEffect(() => {
+    if (!isMounted) return;
     if (items.length === 0) {
       router.replace('/collections/edition-01');
     }
   }, [isMounted, items.length, router]);
 
   const itemNames = useMemo(() => items.map((item) => item.title).join(' · '), [items]);
+
+  const handleExpressClick = useCallback((variant: 'book_now' | 'email_direct'): void => {
+    track(CUSTOM_EVENTS.checkoutExpressClick, {
+      params: { variant },
+    });
+  }, []);
 
   const handleSubmit = useCallback(
     (event: FormEvent<HTMLFormElement>): void => {
@@ -142,30 +209,57 @@ export default function CheckoutPage(): ReactElement {
         );
         return;
       }
+      if (!role) {
+        setError('Tell me what you do — pick a role.');
+        return;
+      }
+      if (!plan) {
+        setError('Pick where your store sits today.');
+        return;
+      }
       setError(null);
       setIsSubmitting(true);
       const cleanedEmail = validation.email;
       const orderNumber = mintOrderNumber();
+      const icpMatch = computeIcpMatch(role, plan);
       writeSessionStorage(ORDER_NUMBER_KEY, orderNumber);
+      writeSessionStorage(
+        BOOKING_PAYLOAD_KEY,
+        JSON.stringify({
+          email: cleanedEmail,
+          firstName,
+          lastName,
+          company,
+          role,
+          plan,
+          wouldHavePaid,
+          icpMatch,
+          itemCount: items.length,
+          subtotalEur,
+          totalEur: total,
+          itemNames,
+        }),
+      );
       try {
         window.localStorage.setItem(EMAIL_STORAGE_KEY, cleanedEmail);
       } catch {
         /* ignore */
       }
-      track('portfolio_checkout_submitted', {
+      track(CUSTOM_EVENTS.bookCall, {
         params: {
           first_name: firstName || undefined,
           last_name: lastName || undefined,
           company: company || undefined,
+          role,
+          shopify_plan: plan,
+          would_have_paid: wouldHavePaid,
+          icp_match: icpMatch,
           order_number: orderNumber,
           item_count: items.length,
           subtotal_eur: subtotalEur,
           total_eur: total,
           items: itemNames,
         },
-        fanout: { klaviyo: true, email: cleanedEmail },
-      });
-      track(ECOMMERCE_EVENTS.beginCheckout, {
         ecommerce: {
           currency: 'EUR',
           value: total,
@@ -181,9 +275,38 @@ export default function CheckoutPage(): ReactElement {
         },
         fanout: { klaviyo: true, email: cleanedEmail },
       });
+      track(ECOMMERCE_EVENTS.generateLead, {
+        params: { method: 'portfolio_checkout', would_have_paid: wouldHavePaid },
+        ecommerce: {
+          currency: 'EUR',
+          value: total,
+          items: items.map((item, index) => ({
+            item_id: item.handle,
+            item_name: item.title,
+            item_brand: 'Manifest Office',
+            price: item.price,
+            quantity: 1,
+            currency: 'EUR',
+            index,
+          })),
+        },
+      });
       router.push('/checkout/thank-you');
     },
-    [company, email, firstName, itemNames, items, lastName, router, subtotalEur, total],
+    [
+      company,
+      email,
+      firstName,
+      itemNames,
+      items,
+      lastName,
+      plan,
+      role,
+      router,
+      subtotalEur,
+      total,
+      wouldHavePaid,
+    ],
   );
 
   if (!isMounted) {
@@ -240,12 +363,14 @@ export default function CheckoutPage(): ReactElement {
                   href={BOOK_CALL_HREF}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => handleExpressClick('book_now')}
                   className="flex h-[44px] items-center justify-center rounded-[4px] bg-[var(--color-ink)] font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-paper)] transition-[background-color] hover:bg-[var(--color-signal)]"
                 >
                   Book a 30-min call
                 </Link>
                 <a
                   href="mailto:hello@maelify.com?subject=Manifest%20Office%20demo"
+                  onClick={() => handleExpressClick('email_direct')}
                   className="flex h-[44px] items-center justify-center rounded-[4px] border border-[var(--color-rule-strong)] font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-ink)] transition-colors hover:border-[var(--color-ink)] hover:text-[var(--color-signal)]"
                 >
                   Email Jose directly
@@ -349,6 +474,76 @@ export default function CheckoutPage(): ReactElement {
                     className="h-[58px] w-full rounded-[4px] border border-[rgba(11,15,14,0.18)] bg-[var(--color-paper)] px-3 pt-5 pb-1.5 text-[15px] text-[var(--color-ink)] outline-none transition-[border-color,box-shadow] focus:border-[var(--color-ink)] focus:shadow-[0_0_0_3px_rgba(11,15,14,0.12)]"
                   />
                 </div>
+                <div className="relative">
+                  <label
+                    htmlFor={roleId}
+                    className="absolute left-3 top-2 font-mono text-[10px] uppercase tracking-[0.06em] text-[var(--color-lichen)]"
+                  >
+                    Your role
+                  </label>
+                  <select
+                    id={roleId}
+                    required
+                    value={role}
+                    onChange={(event) => {
+                      setRole(event.target.value);
+                      setError(null);
+                    }}
+                    aria-invalid={error?.includes('role') ? true : undefined}
+                    className="h-[58px] w-full appearance-none rounded-[4px] border border-[rgba(11,15,14,0.18)] bg-[var(--color-paper)] px-3 pt-5 pb-1.5 text-[15px] text-[var(--color-ink)] outline-none transition-[border-color,box-shadow] focus:border-[var(--color-ink)] focus:shadow-[0_0_0_3px_rgba(11,15,14,0.12)]"
+                  >
+                    {ROLE_OPTIONS.map((option) => (
+                      <option
+                        key={option.value}
+                        value={option.value}
+                        disabled={option.value === ''}
+                      >
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                  <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 font-mono text-[12px] text-[var(--color-lichen)]"
+                  >
+                    ▾
+                  </span>
+                </div>
+                <div className="relative">
+                  <label
+                    htmlFor={planId}
+                    className="absolute left-3 top-2 font-mono text-[10px] uppercase tracking-[0.06em] text-[var(--color-lichen)]"
+                  >
+                    Your store today
+                  </label>
+                  <select
+                    id={planId}
+                    required
+                    value={plan}
+                    onChange={(event) => {
+                      setPlan(event.target.value);
+                      setError(null);
+                    }}
+                    aria-invalid={error?.includes('store') ? true : undefined}
+                    className="h-[58px] w-full appearance-none rounded-[4px] border border-[rgba(11,15,14,0.18)] bg-[var(--color-paper)] px-3 pt-5 pb-1.5 text-[15px] text-[var(--color-ink)] outline-none transition-[border-color,box-shadow] focus:border-[var(--color-ink)] focus:shadow-[0_0_0_3px_rgba(11,15,14,0.12)]"
+                  >
+                    {PLAN_OPTIONS.map((option) => (
+                      <option
+                        key={option.value}
+                        value={option.value}
+                        disabled={option.value === ''}
+                      >
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                  <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 font-mono text-[12px] text-[var(--color-lichen)]"
+                  >
+                    ▾
+                  </span>
+                </div>
               </div>
               <p className="mt-3 font-mono text-[10px] leading-[1.6] uppercase tracking-[0.04em] text-[var(--color-lichen)]">
                 Real checkout collects an address. This one collects context. Same conversion goal,
@@ -376,10 +571,27 @@ export default function CheckoutPage(): ReactElement {
               </div>
             </fieldset>
 
+            <label
+              htmlFor={wouldHavePaidId}
+              className="mt-7 flex cursor-pointer items-start gap-3 rounded-[4px] border border-[rgba(11,15,14,0.18)] bg-[var(--color-paper)] px-4 py-3.5 text-[13px] leading-[1.5] text-[var(--color-ink)] transition-[border-color,background-color] hover:border-[var(--color-ink)] hover:bg-[rgba(11,15,14,0.02)]"
+            >
+              <input
+                id={wouldHavePaidId}
+                type="checkbox"
+                checked={wouldHavePaid}
+                onChange={(event) => setWouldHavePaid(event.target.checked)}
+                className="mt-0.5 h-4 w-4 cursor-pointer accent-[var(--color-signal)]"
+              />
+              <span>
+                If this were my store and I trusted the brand, I would have hit{' '}
+                <span className="font-medium">Pay Now</span>.
+              </span>
+            </label>
+
             <button
               type="submit"
               disabled={isSubmitting}
-              className="mt-9 flex h-[58px] w-full items-center justify-center rounded-[4px] bg-[var(--color-ink)] font-mono text-[13px] font-medium uppercase tracking-[0.14em] text-[var(--color-paper)] transition-[background-color,letter-spacing] duration-[280ms] ease-out hover:bg-[var(--color-signal)] hover:tracking-[0.18em] disabled:cursor-not-allowed disabled:opacity-60"
+              className="mt-7 flex h-[58px] w-full items-center justify-center rounded-[4px] bg-[var(--color-ink)] font-mono text-[13px] font-medium uppercase tracking-[0.14em] text-[var(--color-paper)] transition-[background-color,letter-spacing] duration-[280ms] ease-out hover:bg-[var(--color-signal)] hover:tracking-[0.18em] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isSubmitting ? 'Booking…' : 'Book the call →'}
             </button>
