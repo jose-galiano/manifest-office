@@ -1,17 +1,3 @@
-/**
- * `/checkout/thank-you` — Shopify-Plus-style order confirmation, reframed
- * as the portfolio funnel's terminal step. Renders a synthetic order
- * number, lists the items, and pivots the messaging from "your order is
- * confirmed" to "thanks, I'll be in touch about your storefront".
- *
- * State flow:
- *  - Order number is minted on the checkout page and stashed in
- *    sessionStorage as `mo_order_number`.
- *  - Cart items remain in Zustand and are rendered here for the receipt
- *    feel, then cleared on unmount to prevent stale state for a refresh.
- *  - Email is read from localStorage so the receipt header can echo it.
- */
-
 'use client';
 
 import Image from 'next/image';
@@ -27,7 +13,7 @@ import type { ReactElement } from 'react';
 
 const EMAIL_STORAGE_KEY = 'mo_email';
 const ORDER_NUMBER_KEY = 'mo_order_number';
-const BOOK_CALL_HREF = 'https://www.maelify.com/pages/contact';
+const BOOK_CALL_HREF = 'https://www.maelify.com/pages/book';
 
 function readSession(key: string): string {
   if (typeof window === 'undefined') return '';
@@ -90,15 +76,12 @@ export default function ThankYouPage(): ReactElement {
     const order = readSession(ORDER_NUMBER_KEY) || 'MO-000000';
     setOrderNumber(order);
     setEmail(readLocal(EMAIL_STORAGE_KEY));
-    // Snapshot the cart so the receipt stays stable even though we clear
-    // the Zustand store immediately to keep state honest on refresh.
+    // Snapshot before clearing so the receipt survives the cart reset.
     setSnapshot(items);
     setSnapshotSubtotal(subtotalEur);
     track(CUSTOM_EVENTS.manifestComplete, {
       params: { order_number: order, source: 'checkout_thank_you' },
     });
-    // Clear the cart after the snapshot so a back-button doesn't re-render
-    // the checkout with the same items pre-loaded.
     const handle = window.setTimeout(() => clear(), 200);
     return () => window.clearTimeout(handle);
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -1,28 +1,3 @@
-/**
- * Global cart drawer — slide-in-from-right, mounted in `app/layout.tsx`.
- *
- * Visible on every route, opens via `useCart().openDrawer()`:
- *  - Header `CartBadge` click.
- *  - After a successful reserve (Wave 3A Buybox calls `openDrawer()` post-
- *    `add()`).
- *  - Programmatic opens from the desk recommender etc.
- *
- * Layout ported from `deploy/pdp.html` lines 395–540 (CSS) and 1103–1140
- * (markup). Visual rules:
- *  - 440px wide, paper background, ink-12 left shadow rule.
- *  - 1px progress bar (free-shipping threshold from `commerce.ts`).
- *  - Quiet meta row: "add €X for free shipping" + cutoff countdown.
- *  - Item list with hard rules between rows.
- *  - Up to 2 upsell cards (products not in cart).
- *  - Email capture (writes Klaviyo `Manifest Email Saved` event).
- *  - Total + "Manifest complete" CTA → fires `Manifest Complete Clicked`.
- *
- * Coordination:
- *  - Drawer open/close is a Zustand slice (`isDrawerOpen`). NOT persisted —
- *    re-opening the drawer after a page nav would be confusing UX.
- *  - Wave 3A (Buybox) must call `useCart().openDrawer()` after a reserve.
- */
-
 'use client';
 
 import Image from 'next/image';
@@ -104,9 +79,6 @@ function readManifestFiledFromSession(): boolean {
   }
 }
 
-/** Footer renderer split out of CartDrawer to keep the parent under the
- *  SonarJS cognitive-complexity ceiling. Owns the "filed vs form" branch
- *  and the email validation surface only. */
 type ManifestFooterProps = {
   readonly manifestFiled: boolean;
   readonly cartIsEmpty: boolean;
@@ -250,8 +222,6 @@ export function CartDrawer(): ReactElement | null {
   const anonymousIdRef = useRef<string>('');
   const emailInputId = useId();
 
-  // Mount-time bootstrap: anonymous id + persisted email + first countdown
-  // sample. Single effect — no further reads of localStorage during render.
   useEffect(() => {
     setIsMounted(true);
     anonymousIdRef.current = ensureAnonymousId();
@@ -295,8 +265,6 @@ export function CartDrawer(): ReactElement | null {
     return () => abort.abort();
   }, [isMounted, setImageForHandle]);
 
-  // Body scroll lock when the drawer is open. Restores prior `overflow` so we
-  // don't trample a value some other component set.
   useEffect(() => {
     if (typeof document === 'undefined') return;
     if (!isDrawerOpen) return;
@@ -307,7 +275,6 @@ export function CartDrawer(): ReactElement | null {
     };
   }, [isDrawerOpen]);
 
-  // Esc-to-close.
   useEffect(() => {
     if (!isDrawerOpen) return;
     function onKey(event: KeyboardEvent): void {
@@ -317,9 +284,7 @@ export function CartDrawer(): ReactElement | null {
     return () => window.removeEventListener('keydown', onKey);
   }, [isDrawerOpen, closeDrawer]);
 
-  // Fire open/close events on real transitions only. Without the ref-based
-  // guard, the effect fires `cart_drawer_close` on initial mount because the
-  // default state is closed — that's not a transition, just startup.
+  // Ref-guarded so cart_drawer_close doesn't fire on initial mount.
   const drawerWasOpenRef = useRef(false);
   useEffect(() => {
     if (!isMounted) return;
@@ -354,8 +319,6 @@ export function CartDrawer(): ReactElement | null {
         params: { cart_item_count: items.length, cart_subtotal: subtotalEur },
       });
     }
-    // Items/subtotal are read at fire time but should not re-fire the effect
-    // when they change mid-open.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDrawerOpen, isMounted]);
 
@@ -399,20 +362,10 @@ export function CartDrawer(): ReactElement | null {
     [addCartItem, items.length],
   );
 
-  /**
-   * Unified Manifest-Complete handler. Replaces the previous two-step flow
-   * (separate email save + separate Manifest-Complete click). Now: one form,
-   * email is required, submit captures the email AND fires the conversion
-   * events together. There's no real checkout — this is the closest proxy
-   * to purchase intent the demo can produce.
-   */
   const handleManifestSubmit = useCallback(
     (event: React.FormEvent<HTMLFormElement>): void => {
       event.preventDefault();
-      // Email is an optional pre-fill in the drawer — the canonical email
-      // capture lives in /checkout (real Shopify checkout flow). If the
-      // visitor typed one here we validate + persist for hydration; if it
-      // fails validation we surface the same error and stop. Empty is fine.
+      // Email is an optional pre-fill — canonical capture lives in /checkout.
       const trimmed = email.trim();
       if (trimmed.length > 0) {
         const validation = validateEmail(email);
@@ -433,9 +386,6 @@ export function CartDrawer(): ReactElement | null {
     [closeDrawer, email, router],
   );
 
-  // Hydration safety: server renders nothing for the drawer's open state.
-  // Once mounted, the closed state is rendered (transformed off-canvas) so
-  // the open transition still animates on first open.
   if (!isMounted) return null;
 
   const cartIsEmpty = items.length === 0;
@@ -446,7 +396,6 @@ export function CartDrawer(): ReactElement | null {
 
   return (
     <>
-      {/* Scrim */}
       <button
         type="button"
         aria-hidden="true"
@@ -473,7 +422,6 @@ export function CartDrawer(): ReactElement | null {
           isDrawerOpen ? 'translate-x-0' : 'translate-x-full',
         ].join(' ')}
       >
-        {/* Head */}
         <div className="flex items-baseline justify-between px-9 pb-6 pt-9">
           <h3 className="font-display text-[22px] font-medium leading-none tracking-[-0.01em]">
             Manifest
@@ -487,7 +435,6 @@ export function CartDrawer(): ReactElement | null {
           </button>
         </div>
 
-        {/* Progress whisper */}
         <div className="relative mx-9 h-px bg-[var(--color-rule)]">
           <div
             className={[
@@ -499,7 +446,6 @@ export function CartDrawer(): ReactElement | null {
           />
         </div>
 
-        {/* Micro */}
         <div className="flex flex-col gap-1 px-9 pb-1 pt-[14px] font-mono text-[10px] uppercase tracking-[0.06em] text-[var(--color-lichen)]">
           <span
             className={progress.freeShip ? 'text-[var(--color-lichen)]' : 'text-[var(--color-ink)]'}
@@ -509,7 +455,6 @@ export function CartDrawer(): ReactElement | null {
           <span>{microCutoffText}</span>
         </div>
 
-        {/* Items */}
         <div className="flex-1 overflow-y-auto px-9 pb-2 pt-7">
           {cartIsEmpty ? (
             <div className="py-6 font-mono text-[11px] uppercase tracking-[0.06em] text-[var(--color-lichen)]">
@@ -529,7 +474,6 @@ export function CartDrawer(): ReactElement | null {
           )}
         </div>
 
-        {/* Upsells */}
         {!cartIsEmpty && upsellCandidates.length > 0 ? (
           <div className="flex gap-3 overflow-x-auto px-9 py-6" style={{ scrollbarWidth: 'none' }}>
             {upsellCandidates.map((product) => (
@@ -562,7 +506,6 @@ export function CartDrawer(): ReactElement | null {
           </div>
         ) : null}
 
-        {/* Total */}
         <div className="flex items-baseline justify-between px-9 pb-4 pt-7">
           <span className="font-display text-[28px] font-medium leading-none tracking-[-0.015em]">
             €{Math.round(totalWithShipping)}

@@ -1,25 +1,8 @@
-/**
- * Shared email validation. Two layers:
- *  1. Format regex — catches anything that isn't shaped like an email.
- *  2. Typo-TLD guard — rejects domains ending in common .com/.net/.org
- *     keyboard slips (`.xom`, `.con`, `.ner`, etc.). A real production stack
- *     would call out to a verification service; for this demo a small
- *     allowlist trades zero perfectionism for catching the obvious cases.
- *
- * Used by both client code (cart drawer + homepage capture form) and the
- * `/api/track` route so the server can refuse to create Klaviyo profiles for
- * obviously-bad submissions.
- */
-
 export const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[A-Za-z]{2,24}$/;
 
-/**
- * Common keyboard-adjacent typos of `.com`, `.net`, `.org`. Lowercase, no
- * leading dot. If a submitted email's TLD lands in this set, treat it as a
- * typo rather than a valid address.
- */
+// Common keyboard slips for .com/.net/.org. Domains ending in one of these
+// are treated as a typo rather than a valid TLD.
 export const TYPO_TLDS: ReadonlySet<string> = new Set([
-  // .com slips
   'con',
   'cm',
   'cmo',
@@ -33,11 +16,9 @@ export const TYPO_TLDS: ReadonlySet<string> = new Set([
   'cim',
   'cum',
   'cpm',
-  // .net slips
   'ner',
   'ent',
   'nte',
-  // .org slips
   'ort',
   'rg',
   'orgg',
@@ -48,7 +29,6 @@ export type EmailValidation =
   | { readonly ok: true; readonly email: string }
   | { readonly ok: false; readonly reason: 'format' | 'typo' };
 
-/** Returns the lowercase TLD (e.g. "xom" from "foo@bar.xom") or null. */
 function extractTld(email: string): string | null {
   const at = email.lastIndexOf('@');
   if (at < 0) return null;

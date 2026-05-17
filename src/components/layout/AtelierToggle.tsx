@@ -1,20 +1,3 @@
-/**
- * Atelier ambient-sound toggle + volume control.
- *
- * Off by default (brand-bible §11: the site is silent unless asked). Once on,
- * the pill expands inline to reveal a volume slider. State, playhead, and
- * volume all persist in `sessionStorage` so navigation between pages resumes
- * cleanly. `prefers-reduced-motion` disables the dot pulse.
- *
- * Implementation notes:
- *  - The `<audio>` element is owned via a `useRef`.
- *  - Fade-in/-out runs as a single rAF interpolation (smoother + cancellable
- *    than a `setInterval` chain).
- *  - Volume drags bypass the fade for immediate response — the fade is only
- *    used for the play/pause transitions.
- *  - We never call `audio.play()` outside a user gesture.
- */
-
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -26,19 +9,14 @@ import type { ChangeEvent, ReactElement } from 'react';
 const SESSION_KEY = 'mo_audio_session';
 const POSITION_KEY = 'mo_audio_pos';
 const VOLUME_KEY = 'mo_audio_volume';
-// Set after the very first toggle (on or off). Used to stop the attention
-// pulse — once the visitor has noticed the control, drop the hint.
 const SEEN_KEY = 'mo_audio_seen';
 const AUDIO_SRC = '/audio/atelier.mp3';
 const FADE_MS = 1400;
 const DEFAULT_VOLUME = 0.18;
 const POSITION_FLUSH_INTERVAL_MS = 1000;
 
-// CSS waveform — 5 bars with hand-picked stagger so the cycle doesn't look
-// regular. Total cycle ~1100ms; `prefers-reduced-motion` kills the animation
-// in the stylesheet below. Cheaper than `AnalyserNode` + canvas redraws; if
-// real FFT is ever needed, replace this strip with a `<canvas>` driven by
-// the existing `<audio>` element.
+// Staggered animation-delays (ms) — irregular by design so the wave cycle
+// doesn't read mechanical.
 const WAVE_BARS: readonly number[] = [0, 240, 480, 120, 360];
 
 function readSessionStorage(key: string): string | null {
@@ -77,18 +55,12 @@ function readSavedVolume(): number {
 export function AtelierToggle(): ReactElement {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const fadeFrameRef = useRef<number | null>(null);
-  // Mark of the wall-clock moment the user pressed play, so the pause event
-  // can carry `listened_ms`. We only set this from the user-gesture path
-  // (handleToggle), never from the sessionStorage auto-resume effect — that
-  // way one visitor crossing several pages still counts as one audio_play.
+  // Set on user-gesture play only (not on auto-resume) so `listened_ms`
+  // measures a single visitor's session rather than each page nav.
   const playStartedAtRef = useRef<number | null>(null);
   const [isOn, setIsOn] = useState<boolean>(false);
   const [isMounted, setIsMounted] = useState<boolean>(false);
   const [volume, setVolume] = useState<number>(DEFAULT_VOLUME);
-  // True once the visitor has touched the audio control this session. Until
-  // then we render an attention pulse + a "TRY WITH AUDIO" hint to make the
-  // affordance obvious — feedback indicated the original muji-quiet pill
-  // wasn't being noticed on either platform.
   const [hasSeenAudio, setHasSeenAudio] = useState<boolean>(true);
 
   const cancelFade = useCallback((): void => {
@@ -135,7 +107,6 @@ export function AtelierToggle(): ReactElement {
   useEffect(() => {
     setIsMounted(true);
     setVolume(readSavedVolume());
-    // Persist "seen" so the attention pulse + hint only show once per session.
     setHasSeenAudio(readSessionStorage(SEEN_KEY) === '1');
 
     const willResume = readSessionStorage(SESSION_KEY) === '1';
@@ -227,7 +198,6 @@ export function AtelierToggle(): ReactElement {
   }, [isMounted]);
 
   const handleToggle = useCallback((): void => {
-    // Drop the attention pulse once the visitor has noticed the control.
     setHasSeenAudio(true);
     writeSessionStorage(SEEN_KEY, '1');
     setIsOn((previous) => {
@@ -257,8 +227,7 @@ export function AtelierToggle(): ReactElement {
       const next = Math.max(0, Math.min(1, Number.parseFloat(event.target.value)));
       setVolume(next);
       writeSessionStorage(VOLUME_KEY, String(next));
-      // Live drag: skip the fade so the slider feels responsive. The fade is
-      // only used for the on/off transition.
+      // Live drag bypasses the fade so slider input feels immediate.
       const audioElement = audioRef.current;
       if (audioElement && isOn) {
         cancelFade();
@@ -301,7 +270,6 @@ export function AtelierToggle(): ReactElement {
         ].join(' ')}
         data-state={isOn ? 'on' : 'off'}
       >
-        {/* Play icon (filled triangle) when off · pause-bars when on */}
         <span
           aria-hidden="true"
           className="relative inline-flex h-2.5 w-2.5 items-center justify-center"
@@ -317,16 +285,10 @@ export function AtelierToggle(): ReactElement {
             </svg>
           )}
         </span>
-        {/* Compact label on mobile, fuller label from sm:. Keeps the audio
-            affordance legible at every viewport — original ATELIER-only label
-            was invisible below sm. */}
         <span className="inline sm:hidden text-[var(--color-signal)]">♪ AUDIO</span>
         <span className="hidden sm:inline">♪ ATELIER</span>
       </button>
 
-      {/* Attention hint — visible until the visitor has interacted once.
-          Signal-orange microcopy + arrow pointing at the button. Drops
-          permanently after the first toggle. */}
       {showAttention ? (
         <span
           aria-hidden="true"
@@ -336,8 +298,6 @@ export function AtelierToggle(): ReactElement {
         </span>
       ) : null}
 
-      {/* Waveform — pure-CSS bars. Only animate when audio is playing
-          (data-state="on") so we pay zero CPU while paused. */}
       <span
         aria-hidden="true"
         className="atelier-wave inline-flex items-end gap-[2px] h-3 ml-1"
@@ -348,8 +308,6 @@ export function AtelierToggle(): ReactElement {
         ))}
       </span>
 
-      {/* Volume — collapsed by default; reveals on hover/focus-within so the
-          banner stays Muji-tight unless the user is actually adjusting. */}
       {isOn ? (
         <div
           aria-label="Volume control"
@@ -386,10 +344,6 @@ export function AtelierToggle(): ReactElement {
       ) : null}
 
       <style>{`
-        /* Attention pulse — signal-orange ring around the play button while
-           the visitor has not interacted with the audio control yet this
-           session. Dropped permanently on first toggle. Inside-out fade so
-           it reads as a beacon, not a click target. */
         .atelier-toggle[data-attention='on'] .atelier-button::before {
           content: '';
           position: absolute;
@@ -425,9 +379,6 @@ export function AtelierToggle(): ReactElement {
           }
         }
 
-        /* Waveform — 5 vertical bars. Idle (off) is a flat strip of dim
-           lichen pips so the affordance hints at audio. Active (on) animates
-           each bar's height with offset delays so the cycle reads organic. */
         .atelier-wave .atelier-bar {
           display: block;
           width: 2px;
@@ -453,8 +404,6 @@ export function AtelierToggle(): ReactElement {
           }
         }
 
-        /* Cross-browser styled range. Track is a thin paper-on-ink stripe
-           that fills from the left up to the current volume. */
         .atelier-volume {
           -webkit-appearance: none;
           appearance: none;

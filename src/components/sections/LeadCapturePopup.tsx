@@ -1,28 +1,3 @@
-/**
- * `<LeadCapturePopup />` — the portfolio-conversion modal.
- *
- * Reframes the demo's value at the moment of intent. The fictional brand
- * (Manifest Office) is the hook; the real CTA is for the audience visiting
- * this site — recruiters, DTC CTOs, agency leads — to start a conversation
- * with Maelify (the agency behind the build).
- *
- * Triggers:
- *  - Desktop: exit-intent (pointer crosses the top edge of the viewport).
- *  - Mobile: 30s dwell on any PDP (no native exit-intent on touch devices).
- *  - Never fires on /checkout, /thank-you, or after dismiss/submit this
- *    session (sessionStorage flag).
- *
- * Style: muji discipline. Paper-on-ink card, mono microcopy, signal-orange
- * accent. Same vocabulary as the rest of the storefront so the pivot from
- * "Manifest Office" to "Maelify" reads as a director's cut, not a hijack.
- *
- * Wiring:
- *  - Email submit → `/api/track` with event `Portfolio Lead Captured`. The
- *    server gate accepts because email is present.
- *  - "Book a call" → external link to maelify.com/contact (user-owned
- *    calendar booking flow on the main site).
- */
-
 'use client';
 
 import Link from 'next/link';
@@ -37,7 +12,7 @@ import type { FormEvent, ReactElement } from 'react';
 const DISMISS_KEY = 'mo_lead_dismissed';
 const SUBMIT_KEY = 'mo_lead_submitted';
 const MOBILE_PDP_DWELL_MS = 30_000;
-const BOOK_CALL_HREF = 'https://www.maelify.com/pages/contact';
+const BOOK_CALL_HREF = 'https://www.maelify.com/pages/book';
 
 type ShowReason = 'exit_intent' | 'pdp_dwell' | 'manual';
 
@@ -55,7 +30,7 @@ function writeSessionFlag(key: string): void {
   try {
     window.sessionStorage.setItem(key, '1');
   } catch {
-    /* private mode — silently drop. */
+    /* private mode */
   }
 }
 
@@ -73,7 +48,6 @@ export function LeadCapturePopup(): ReactElement | null {
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState<boolean>(false);
 
-  // Suppress on checkout-flow routes and after submit/dismiss this session.
   const suppressed =
     pathname.startsWith('/checkout') ||
     pathname.startsWith('/thank-you') ||
@@ -92,9 +66,6 @@ export function LeadCapturePopup(): ReactElement | null {
     [pathname, suppressed],
   );
 
-  // Desktop exit-intent: pointer crosses the top edge of the viewport with
-  // a slight velocity (filters incidental cursor moves). Coarse-pointer
-  // devices (touch) get the dwell-based trigger instead.
   useEffect(() => {
     if (suppressed) return;
     if (isCoarsePointer()) return;
@@ -107,7 +78,6 @@ export function LeadCapturePopup(): ReactElement | null {
     return () => document.removeEventListener('pointermove', handler);
   }, [suppressed, triggerOpen]);
 
-  // Mobile: dwell trigger on any product page. Cleared on route change.
   useEffect(() => {
     if (suppressed) return;
     if (!isCoarsePointer()) return;
@@ -116,7 +86,6 @@ export function LeadCapturePopup(): ReactElement | null {
     return () => window.clearTimeout(handle);
   }, [pathname, suppressed, triggerOpen]);
 
-  // Esc closes.
   useEffect(() => {
     if (!open) return;
     const onKey = (event: KeyboardEvent): void => {
@@ -129,7 +98,6 @@ export function LeadCapturePopup(): ReactElement | null {
     return () => window.removeEventListener('keydown', onKey);
   }, [open]);
 
-  // Body scroll lock while open.
   useEffect(() => {
     if (!open) return;
     const previous = document.body.style.overflow;
@@ -191,7 +159,6 @@ export function LeadCapturePopup(): ReactElement | null {
       aria-labelledby={`${inputId}-heading`}
       className="fixed inset-0 z-[1000] flex items-end justify-center sm:items-center sm:p-6"
     >
-      {/* Scrim */}
       <button
         type="button"
         aria-label="Close"
@@ -199,7 +166,6 @@ export function LeadCapturePopup(): ReactElement | null {
         className="absolute inset-0 bg-[rgba(11,15,14,0.55)] backdrop-blur-[2px] cursor-default"
       />
 
-      {/* Card */}
       <div className="relative w-full max-w-[480px] bg-[var(--color-paper)] text-[var(--color-ink)] shadow-[0_24px_60px_-24px_rgba(0,0,0,0.45)]">
         <button
           type="button"

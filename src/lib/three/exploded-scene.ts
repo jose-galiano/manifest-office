@@ -1,42 +1,23 @@
-// Exploded-latch scene used by `ExplodedLatchViewer`. Loads four STL parts
-// from `/public/models/latch/` and arranges them into an assembled/exploded
-// pair the React component tweens between.
-//
-// Geometry credit: Lockable Latch by Mattsmith3065 on Thingiverse
-// (thing #3283176), licensed CC-BY. Attribution is rendered in the viewer's
-// chrome — keep both that DOM line and the LICENSE.txt under
-// /public/models/latch/ in place if you touch this file.
-//
-// The component owns scene lifecycle (rAF, IO, DOM labels, disposal). This
-// module only knows about geometry, materials, lights, and the
-// assembled/exploded XYZ tuples used by the tween.
+// Geometry: Lockable Latch by Mattsmith3065 on Thingiverse #3283176, CC-BY.
+// Attribution is rendered in the viewer chrome — see LICENSE.txt alongside
+// the STL files. Removing either is a license violation.
 
 import * as THREE from 'three';
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js';
 
 import type { PartMetadata, Vec3Tuple } from './types';
 
-// --- Palette (mirrors design tokens in `globals.css`) ---------------------
 const COLOR_BODY = 0x4a4540;
-const COLOR_LEVER = 0xd24a1f; // signal orange
-const COLOR_HOOK = 0xc0c0c0; // silver machined hardware
+const COLOR_LEVER = 0xd24a1f;
+const COLOR_HOOK = 0xc0c0c0;
 const COLOR_PLATE = 0x46494a;
 const COLOR_RIM_LIGHT = 0xd24a1f;
 const COLOR_FILL_LIGHT = 0xf2efe8;
 
-/** Scale applied to each STL mesh. STLs are in millimetres; the scene
- * camera frames roughly ±10 world units, so 0.10 puts a ~50mm part at
- * 5 units — large enough to read every face at the section's 640px height. */
+// STLs are in mm; the camera frames ±10 world units.
 const STL_SCALE = 0.1;
-
-/** Honest material descriptor — the source STLs are FDM print-ready, so
- * "PRINTED · PLA / ABS" describes the upstream artifact, not a Manifest
- * Office fabrication claim. Shared across the four parts. */
 const PRINTED_MATERIAL = 'PRINTED · PLA / ABS';
 
-/** Aggregate handle returned by `buildExplodedScene()`. The component owns
- * disposal via `dispose()`; everything else is read-only state used inside
- * the render loop. */
 export interface ExplodedSceneHandle {
   readonly scene: THREE.Scene;
   readonly camera: THREE.PerspectiveCamera;
@@ -45,7 +26,6 @@ export interface ExplodedSceneHandle {
   readonly dispose: () => void;
 }
 
-/** Pre-loaded STL geometries. Centered, oriented Y-up, vertex-normals computed. */
 export interface LatchGeometries {
   readonly p1: THREE.BufferGeometry;
   readonly p2: THREE.BufferGeometry;
@@ -61,8 +41,6 @@ function readPartMetadata(object: THREE.Object3D): PartMetadata | null {
   return data as PartMetadata;
 }
 
-/** Lerps every labelled part between assembled (t=0) and exploded (t=1).
- * The caller passes pre-eased `t`. */
 export function applyExplodeState(parts: readonly THREE.Object3D[], explodedT: number): void {
   for (const part of parts) {
     const data = readPartMetadata(part);
@@ -77,8 +55,6 @@ export function applyExplodeState(parts: readonly THREE.Object3D[], explodedT: n
   }
 }
 
-/** Loads the four STL parts, centers each at origin, rotates Z-up → Y-up,
- * and pre-computes vertex normals so MeshStandardMaterial lights them. */
 export async function loadLatchGeometries(): Promise<LatchGeometries> {
   const loader = new STLLoader();
   const loadOne = (url: string): Promise<THREE.BufferGeometry> =>
@@ -105,7 +81,6 @@ export async function loadLatchGeometries(): Promise<LatchGeometries> {
   return { p1, p2, p3, clip };
 }
 
-// --- Lighting --------------------------------------------------------------
 function addLights(scene: THREE.Scene): void {
   scene.add(new THREE.AmbientLight(0xffffff, 0.65));
 
@@ -128,9 +103,6 @@ interface PartSpec {
   readonly metadata: PartMetadata;
 }
 
-/** Assembled state stacks the four parts vertically along Y. Exploded state
- * fans them out so each label has clear airspace. Tuples in scene-units
- * (post-scale). */
 function partSpecs(
   geos: LatchGeometries,
   materials: {
@@ -192,7 +164,6 @@ function partSpecs(
   ];
 }
 
-// --- Public builder -------------------------------------------------------
 export function buildExplodedScene(aspect: number, geos: LatchGeometries): ExplodedSceneHandle {
   const scene = new THREE.Scene();
   addLights(scene);
@@ -244,8 +215,6 @@ export function buildExplodedScene(aspect: number, geos: LatchGeometries): Explo
   applyExplodeState(labelledParts, 0);
 
   const materials: THREE.Material[] = [matBody, matLever, matArm, matClip];
-  // Geometries are loaded once and shared with this scene; the scene owns
-  // their disposal. The component disposes the renderer separately.
   const geometries: THREE.BufferGeometry[] = [geos.p1, geos.p2, geos.p3, geos.clip];
 
   const dispose = (): void => {
@@ -253,14 +222,11 @@ export function buildExplodedScene(aspect: number, geos: LatchGeometries): Explo
     for (const material of materials) material.dispose();
   };
 
-  // Silence unused Vec3Tuple import for downstream tooling that wants the
-  // satisfies-style boundary check.
   void ({} as Vec3Tuple);
 
   return { scene, camera, rootGroup, labelledParts, dispose };
 }
 
-/** Cubic-bezier ease used by the explode tween. */
 export function easeInOutCubic(t: number): number {
   return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }

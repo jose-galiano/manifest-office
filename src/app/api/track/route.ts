@@ -1,13 +1,6 @@
-// POST /api/track — Klaviyo Client API event ingest. Open CORS (analytics
-// must work from any storefront origin during the demo).
-//
-// Identification gate: events without a real email are dropped at the
-// boundary (200 + { skipped: "no_email" }). Anonymous events would otherwise
-// create a fresh Klaviyo profile per visitor per session — that bloats the
-// profile count, breaks identity resolution, and burns the Klaviyo free-tier
-// cap with low-signal noise. Identified events (Manifest Email Saved,
-// Manifest Complete, etc.) still go through; visitor-level behavioural data
-// stays in GA4 where it belongs.
+// Klaviyo Client API event ingest. Requests without a verified email are
+// accepted with `{ skipped: "no_email" }` so anonymous behavioural events
+// don't create Klaviyo profiles.
 
 import { NextResponse } from 'next/server';
 
@@ -60,7 +53,6 @@ async function parseTrackBody(request: Request): Promise<ParseResult> {
   }
   const rawEmail = typeof raw.email === 'string' ? raw.email.trim() : '';
   if (rawEmail.length === 0) {
-    // Anonymous event — accept the call but don't forward to Klaviyo.
     return { ok: false, status: 200, skip: 'no_email' };
   }
   const validation = validateEmail(rawEmail);
@@ -82,9 +74,6 @@ async function parseTrackBody(request: Request): Promise<ParseResult> {
 export async function POST(request: Request): Promise<Response> {
   const parsed = await parseTrackBody(request);
   if (!parsed.ok) {
-    // Skip path: identification-gate misses (anonymous or typo). Return 200
-    // so fire-and-forget clients don't log retryable failures; include a
-    // `skipped` field for anyone tailing the network panel during QA.
     if ('skip' in parsed) {
       return NextResponse.json(
         { ok: false, skipped: parsed.skip },

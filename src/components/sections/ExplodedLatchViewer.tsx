@@ -15,25 +15,6 @@ import {
 import type { ExplodedSceneHandle, LatchGeometries } from '@/lib/three/exploded-scene';
 import type { ReactElement } from 'react';
 
-// ExplodedLatchViewer — the PDP section that lets a visitor drag-rotate the
-// MO-A1 Anchor Latch (6 components) and the seven kit items it ties
-// together, then explode or assemble the whole system on demand.
-//
-// Provenance: ported from `deploy/pdp.html` lines 2084-2351. Behavioural
-// invariants preserved:
-//   - hand-rolled spherical-coordinate drag-orbit (no OrbitControls).
-//   - cubic-bezier ease over ~600ms between assembled and exploded.
-//   - HTML label overlays positioned via `Vector3.project()` every frame.
-//   - render loop pauses when the canvas is off-screen.
-//   - prefers-reduced-motion: jump-cut to exploded, no animation tween.
-//   - React strict-mode safe: a `useRef` init guard survives the dev
-//     double-mount; full cleanup on unmount disposes geometries, materials,
-//     and DOM labels, and removes window listeners.
-//
-// Performance budget (Maelify §11): < 50 kB on top of three-core (already
-// loaded by HomeHero). Bundle delta is ~9 kB minified after tree-shake.
-
-// --- Constants -----------------------------------------------------------
 const ROTATION_LERP = 0.08;
 const EXPLODE_LERP = 0.05;
 const DRAG_SENSITIVITY_X = 0.008;
@@ -93,19 +74,14 @@ export function ExplodedLatchViewer(): ReactElement {
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const initialisedRef = useRef<boolean>(false);
 
-  // Toggle text + active state lives in React; the actual tween target is
-  // mirrored into a ref so the rAF loop reads without triggering re-renders.
+  // `explodedRef` mirrors `exploded` so the rAF loop reads without forcing
+  // a re-render every frame.
   const [exploded, setExploded] = useState<boolean>(false);
   const [geometries, setGeometries] = useState<LatchGeometries | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const explodedRef = useRef<boolean>(false);
-
-  // Hold the underlying toggle function so the button onClick stays a
-  // stable callback rather than a re-bound closure.
   const toggleRef = useRef<() => void>(() => {});
 
-  // Load the STL parts once. The scene effect waits on the resulting state
-  // so the rAF loop only spins up when geometry is in hand.
   useEffect(() => {
     let cancelled = false;
     loadLatchGeometries()
@@ -125,9 +101,7 @@ export function ExplodedLatchViewer(): ReactElement {
   useEffect(() => {
     if (!geometries) return;
 
-    // Strict-mode double-mount guard. The effect runs twice in dev; the
-    // second pass bails immediately and the first cleanup tears everything
-    // down before the second init can run.
+    // Strict-mode double-mount guard.
     if (initialisedRef.current) return;
     initialisedRef.current = true;
 
@@ -138,7 +112,6 @@ export function ExplodedLatchViewer(): ReactElement {
       initialisedRef.current = false;
       return;
     }
-    // Local const aliases lock the narrowed non-null type for nested closures.
     const wrapper: HTMLDivElement = wrapperNode;
 
     const reducedMotion = prefersReducedMotion();
@@ -157,14 +130,12 @@ export function ExplodedLatchViewer(): ReactElement {
     const sceneHandle: ExplodedSceneHandle = buildExplodedScene(aspect, geometries);
     const { scene, camera, rootGroup, labelledParts } = sceneHandle;
 
-    // --- Label DOM ------------------------------------------------------
     const labels: LabelHandle[] = [];
     for (const part of labelledParts) {
       const handle = createLabel(part, uiHost);
       if (handle) labels.push(handle);
     }
 
-    // --- Visibility (pause rAF when off-screen) -------------------------
     let visible = false;
     const visibilityObserver = new IntersectionObserver(
       (entries) => {
@@ -174,7 +145,6 @@ export function ExplodedLatchViewer(): ReactElement {
     );
     visibilityObserver.observe(wrapper);
 
-    // --- Drag-orbit (hand-rolled spherical) -----------------------------
     let isDragging = false;
     let lastPointerX = 0;
     let lastPointerY = 0;
@@ -183,9 +153,8 @@ export function ExplodedLatchViewer(): ReactElement {
     let currentRotY = targetRotY;
     let currentRotX = targetRotX;
 
-    // Single `viewer_3d_rotate` event per drag session, fired on pointer-up
-    // with total dragged distance + duration. We deliberately don't fire on
-    // every mousemove (would flood GA4).
+    // One viewer_3d_rotate event per drag (fires on pointer-up), not per
+    // mousemove — would otherwise flood GA4.
     let dragStartAt = 0;
     let dragStartX = 0;
     let dragStartY = 0;
@@ -249,7 +218,6 @@ export function ExplodedLatchViewer(): ReactElement {
     window.addEventListener('touchmove', onTouchMove, { passive: true });
     window.addEventListener('touchend', onPointerUp);
 
-    // --- Resize ---------------------------------------------------------
     const onResize = (): void => {
       const width = wrapper.clientWidth;
       const height = wrapper.clientHeight;
@@ -259,14 +227,11 @@ export function ExplodedLatchViewer(): ReactElement {
     };
     window.addEventListener('resize', onResize);
 
-    // --- Label refresh --------------------------------------------------
     const projection = new THREE.Vector3();
     function refreshLabels(currentExploded: boolean): void {
       const width = wrapper.clientWidth;
       const height = wrapper.clientHeight;
       for (const label of labels) {
-        // All labels hide in assembled mode to keep the silhouette clean —
-        // the user only needs them when actively inspecting the exploded view.
         label.element.style.opacity = currentExploded ? '1' : '0';
 
         label.part.getWorldPosition(projection);
@@ -278,7 +243,6 @@ export function ExplodedLatchViewer(): ReactElement {
       }
     }
 
-    // --- Explode tween --------------------------------------------------
     let explodeT = 0;
     let explodeTarget = 0;
 
@@ -287,8 +251,6 @@ export function ExplodedLatchViewer(): ReactElement {
       explodedRef.current = next;
       explodeTarget = next ? 1 : 0;
       setExploded(next);
-      // Reduced motion: snap immediately and refresh labels so they swap
-      // visibility without an interpolated tween.
       if (reducedMotion) {
         explodeT = explodeTarget;
         applyExplodeState(labelledParts, explodeT);
@@ -300,7 +262,6 @@ export function ExplodedLatchViewer(): ReactElement {
     };
     toggleRef.current = () => toggle('user');
 
-    // Auto-explode once the section first enters the viewport.
     let autoTriggered = false;
     const autoObserver = new IntersectionObserver(
       (entries) => {
@@ -316,7 +277,6 @@ export function ExplodedLatchViewer(): ReactElement {
     );
     autoObserver.observe(wrapper);
 
-    // --- Render loop ----------------------------------------------------
     let frameId = 0;
     const animate = (): void => {
       frameId = requestAnimationFrame(animate);
@@ -337,7 +297,6 @@ export function ExplodedLatchViewer(): ReactElement {
     };
     animate();
 
-    // --- Cleanup --------------------------------------------------------
     return (): void => {
       cancelAnimationFrame(frameId);
       visibilityObserver.disconnect();
@@ -358,7 +317,6 @@ export function ExplodedLatchViewer(): ReactElement {
       sceneHandle.dispose();
       renderer.dispose();
 
-      // Allow the second strict-mode pass to re-initialise cleanly.
       initialisedRef.current = false;
     };
   }, [geometries]);
@@ -396,7 +354,6 @@ export function ExplodedLatchViewer(): ReactElement {
         />
         <div ref={uiRef} className="absolute inset-0 pointer-events-none" />
 
-        {/* Loading + error overlay — only visible while STLs haven't arrived. */}
         {geometries === null ? (
           <div className="absolute inset-0 flex items-center justify-center font-mono text-[11px] tracking-[0.08em] uppercase text-[#5C6B5A]">
             {loadError ? `× ${loadError}` : 'Loading geometry…'}
@@ -420,7 +377,7 @@ export function ExplodedLatchViewer(): ReactElement {
         </div>
       </div>
 
-      {/* Attribution — CC-BY requires visible credit wherever the work appears. */}
+      {/* CC-BY attribution — required wherever the model appears. */}
       <p className="mt-6 font-mono text-[10px] tracking-[0.06em] uppercase text-[#5C6B5A]">
         Model{' '}
         <a

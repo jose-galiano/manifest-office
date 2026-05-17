@@ -18,13 +18,9 @@ import { getAnonymousId, getSessionId } from './identity';
 
 import type { DataLayerEvent, EcommercePayload, EventParams } from './types';
 
-/**
- * Klaviyo metric-name aliases. GA4 events use snake_case; Klaviyo's built-in
- * flows (cart recovery, predictive analytics, browse abandonment) key off
- * Title Case metric names. Mapping the wire format on fan-out lets one
- * `track()` call drive BOTH GA4 reports AND Klaviyo's standard automation.
- * Events not in this map are forwarded with their GA4 name unchanged.
- */
+// GA4 snake_case → Klaviyo Title Case for events that hit Klaviyo's built-in
+// flows (cart recovery, predictive analytics, browse abandonment). Unmapped
+// events forward with their GA4 name unchanged.
 const KLAVIYO_EVENT_MAP: Record<string, string> = {
   add_to_cart: 'Added to Cart',
   remove_from_cart: 'Removed from Cart',
@@ -71,10 +67,6 @@ function pushToDataLayer(event: DataLayerEvent): void {
   window.dataLayer.push(event);
 }
 
-// Field-mapping for first-item flattening. Each entry pairs a GA4Item field
-// name with the Klaviyo property name and an optional value transform. Driving
-// the flattening from a table keeps `enrichForKlaviyo` under the SonarJS
-// cognitive-complexity ceiling.
 type FirstItemMap = {
   readonly source:
     | 'item_id'
@@ -97,14 +89,6 @@ const FIRST_ITEM_MAPPINGS: readonly FirstItemMap[] = [
   { source: 'quantity', target: 'Quantity' },
 ];
 
-/**
- * Flattens a GA4 ecommerce payload into Klaviyo's expected top-level
- * properties. The first item's fields are surfaced verbatim (ProductID,
- * ProductName, Brand, Variant, Price, Quantity, Categories) so Klaviyo's
- * built-in Browse Abandonment / Cart Recovery flows can hydrate their
- * dynamic blocks without custom mappings. The full items array is preserved
- * as `Items` for any analyses that need quantity/variant breakdowns.
- */
 function enrichForKlaviyo(
   params: EventParams,
   ecommerce: EcommercePayload | undefined,
@@ -151,9 +135,8 @@ function fanoutToKlaviyo(
       page_url: window.location.href,
     },
   };
-  // Fire-and-forget. `keepalive` lets the request survive a page nav,
-  // which is critical for events like `reserve_click` that immediately
-  // open a drawer or navigate.
+  // `keepalive` lets the request survive a page nav (matters for
+  // `reserve_click` and any event followed by an immediate redirect).
   fetch('/api/track', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -176,10 +159,7 @@ export function track(eventName: string, options: TrackOptions = {}): void {
     ...(ecommerce ? { ecommerce } : {}),
   };
   pushToDataLayer(envelope);
-  // Klaviyo fan-out is gated on a known email. The `/api/track` route also
-  // refuses anonymous events server-side, but skipping locally saves the
-  // round trip and keeps the network panel quiet during the long-tail of
-  // anonymous behavioural events (view_item, viewer_3d_rotate, etc.).
+  // Email-gated client-side; /api/track also refuses anonymous events.
   if (fanout?.klaviyo && fanout.email) {
     fanoutToKlaviyo(eventName, params ?? {}, ecommerce, fanout.email);
   }

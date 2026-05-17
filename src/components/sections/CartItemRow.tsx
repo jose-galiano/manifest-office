@@ -1,26 +1,3 @@
-/**
- * Shared cart row primitive.
- *
- * Used by both `CartDrawer` (compact 56px thumb) and `/cart` (large 120px
- * thumb). Receives a typed `CartItem` plus presentation knobs.
- *
- * Two cart-row behaviours that look small but matter:
- *
- * 1. **Image fallback.** Cart items persist in `sessionStorage` with the
- *    `imageUrl` they had at reserve-time. If that URL is stale or was empty
- *    (e.g. an item added before variant images were wired), we fall back to
- *    the live image-by-handle map populated when the drawer or cart page
- *    fetches the product feed (`useCartImageForHandle`). The row never
- *    shows a gray void if the product is reachable.
- *
- * 2. **Inline engraving edit.** Items whose SKU supports the +€22
- *    engraving upcharge can be edited *inside the row*. The editor swaps
- *    in place of the engraving sub-line — same vertical space, zero
- *    layout shift. Sanitisation regex + 15-char cap mirror the PDP
- *    buybox; the update goes through `useCart().updateEngraving()` and
- *    persists to sessionStorage immediately.
- */
-
 'use client';
 
 import Image from 'next/image';
@@ -56,12 +33,6 @@ function sanitiseEngraving(raw: string): string {
   return raw.toUpperCase().replace(ENGRAVING_ALLOWED_REGEX, '').slice(0, ENGRAVING_MAX);
 }
 
-/**
- * Inline engraving sub-line. Three rendered states share the same vertical
- * slot so the row's height never shifts: a) editing, b) engraved + edit
- * affordance, c) engravable + "+ ENGRAVE" affordance. Hardware SKUs render
- * nothing.
- */
 type EngravingSlotProps = {
   readonly item: CartItem;
 };

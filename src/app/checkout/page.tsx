@@ -1,26 +1,3 @@
-/**
- * `/checkout` — a faux Shopify-Plus-style checkout that completes the
- * portfolio funnel.
- *
- * Visually mirrors the Shopify Plus checkout layout (split form left,
- * order summary right, secure-lock header, express row, contact + delivery
- * fields, "Pay now" CTA). The narrative pivots in three places:
- *  - A subtle paper card at the top of the form column explains the trick:
- *    the form is a lead capture, the Pay button books a call.
- *  - The express row replaces Apple Pay / Shop Pay buttons with
- *    "Express: Book a quick call" affordances.
- *  - The Pay button is labelled "Book the call" and submits the lead.
- *
- * Submission posts a portfolio_checkout_submitted event to /api/track and
- * navigates to /checkout/thank-you with a synthetic order number. No card
- * data is collected. The visible fields exist to sell the illusion; the
- * only field that's read on submit is email.
- *
- * Order summary pulls real cart data from the Zustand store via useCart.
- * If the visitor lands here with an empty cart we redirect them back
- * to /collections/edition-01 — same UX a real checkout would enforce.
- */
-
 'use client';
 
 import Image from 'next/image';
@@ -40,7 +17,7 @@ import type { FormEvent, ReactElement } from 'react';
 
 const EMAIL_STORAGE_KEY = 'mo_email';
 const ORDER_NUMBER_KEY = 'mo_order_number';
-const BOOK_CALL_HREF = 'https://www.maelify.com/pages/contact';
+const BOOK_CALL_HREF = 'https://www.maelify.com/pages/book';
 
 function readLocalStorage(key: string): string {
   if (typeof window === 'undefined') return '';
@@ -56,13 +33,10 @@ function writeSessionStorage(key: string, value: string): void {
   try {
     window.sessionStorage.setItem(key, value);
   } catch {
-    /* private mode — silently drop. */
+    /* private mode */
   }
 }
 
-/** Synthetic order number for the thank-you page. Shopify uses incremental
- *  six-digit numbers; we generate one client-side so the receipt page can
- *  display it without round-tripping to a backend. */
 function mintOrderNumber(): string {
   const base = Math.floor(Math.random() * 900_000) + 100_000;
   return `MO-${base}`;
@@ -123,7 +97,6 @@ export default function CheckoutPage(): ReactElement {
     setEmail(readLocalStorage(EMAIL_STORAGE_KEY));
   }, []);
 
-  // Hydrate the cart store's image map so the summary thumbnails resolve.
   useEffect(() => {
     if (!isMounted) return;
     const abort = new AbortController();
@@ -224,7 +197,6 @@ export default function CheckoutPage(): ReactElement {
 
   return (
     <div className="bg-[var(--color-paper)] text-[var(--color-ink)]">
-      {/* Header — narrow, secure-checkout style. */}
       <header className="border-b border-[rgba(11,15,14,0.10)] bg-[var(--color-paper)]">
         <div className="mx-auto flex max-w-[1180px] items-center justify-between px-5 py-5 sm:px-8">
           <Link
@@ -245,14 +217,8 @@ export default function CheckoutPage(): ReactElement {
         </div>
       </header>
 
-      {/* Two-column body: form on the left, summary on the right.
-          Stacks on mobile (summary appears as a collapsible at the top of
-          the page on real Shopify checkout — we render it after the form
-          for now to keep the demo focused). */}
       <div className="mx-auto grid max-w-[1180px] grid-cols-1 lg:grid-cols-[1fr_440px]">
-        {/* ── Form column ─────────────────────────────────────────── */}
         <section className="px-5 py-8 sm:px-8 lg:pr-12 lg:py-12">
-          {/* Pitch card — discloses the trick before the form even starts. */}
           <div className="mb-9 border border-[var(--color-rule-strong)] bg-[rgba(210,74,31,0.06)] px-5 py-4 text-[13px] leading-[1.5] text-[var(--color-ink)]">
             <span className="block font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--color-signal)]">
               PORTFOLIO CHECKOUT
@@ -265,9 +231,6 @@ export default function CheckoutPage(): ReactElement {
           </div>
 
           <form onSubmit={handleSubmit} noValidate>
-            {/* Express row — replaces Apple Pay / Shop Pay grid with direct
-                "express call" buttons. Same visual weight as real express
-                checkout so the parallel reads. */}
             <div className="mb-8">
               <span className="block text-center font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--color-lichen)]">
                 Express
@@ -297,7 +260,6 @@ export default function CheckoutPage(): ReactElement {
               </div>
             </div>
 
-            {/* Contact */}
             <fieldset className="border-0 p-0">
               <legend className="mb-4 font-display text-[18px] font-medium tracking-[-0.005em]">
                 Contact
@@ -334,8 +296,6 @@ export default function CheckoutPage(): ReactElement {
               ) : null}
             </fieldset>
 
-            {/* "Delivery" section — repurposed as the qualification fields a
-                real intro call would want. Optional except for email. */}
             <fieldset className="mt-9 border-0 p-0">
               <legend className="mb-4 font-display text-[18px] font-medium tracking-[-0.005em]">
                 How can I help?
@@ -396,9 +356,6 @@ export default function CheckoutPage(): ReactElement {
               </p>
             </fieldset>
 
-            {/* Payment section — fake card row that mirrors Shopify's "Pay
-                with card" style but is non-interactive. The visible parity
-                sells the trick before the CTA discloses it. */}
             <fieldset className="mt-9 border-0 p-0">
               <legend className="mb-4 font-display text-[18px] font-medium tracking-[-0.005em]">
                 Payment
@@ -433,7 +390,6 @@ export default function CheckoutPage(): ReactElement {
           </form>
         </section>
 
-        {/* ── Order summary ─────────────────────────────────────────── */}
         <aside
           aria-label="Order summary"
           className="border-t border-[rgba(11,15,14,0.10)] bg-[rgba(11,15,14,0.04)] px-5 py-8 sm:px-8 lg:border-t-0 lg:border-l lg:py-12"
