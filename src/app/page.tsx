@@ -8,6 +8,7 @@ import { HomeHero } from '@/components/sections/HomeHero';
 import { Manifesto } from '@/components/sections/Manifesto';
 import { Practitioners } from '@/components/sections/Practitioners';
 import { Process } from '@/components/sections/Process';
+import { ScrollLatchReveal } from '@/components/sections/ScrollLatchReveal';
 import { TrustStrip } from '@/components/sections/TrustStrip';
 
 import type { ReactElement } from 'react';
@@ -36,6 +37,7 @@ export default function HomePage(): ReactElement {
       <FeaturedDossiers />
       <TrustStrip />
       <Manifesto />
+      <ScrollLatchReveal />
       <EditorialGallery />
       <EditionFeature />
       <Process />

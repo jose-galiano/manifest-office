@@ -39,6 +39,8 @@ export const CUSTOM_EVENTS = {
   viewer3dExplode: 'viewer_3d_explode',
   viewer3dAssemble: 'viewer_3d_assemble',
   scrollPinPanel: 'scroll_pin_panel',
+  scrollVideoView: 'scroll_video_view',
+  scrollVideoComplete: 'scroll_video_complete',
   cartDrawerOpen: 'cart_drawer_open',
   cartDrawerClose: 'cart_drawer_close',
   audioPlay: 'audio_play',
