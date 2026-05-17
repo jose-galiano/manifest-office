@@ -30,6 +30,9 @@ type BookingPayload = {
   subtotalEur?: number;
   totalEur?: number;
   itemNames?: string;
+  bookingIso?: string;
+  bookingDateLabel?: string;
+  bookingTimeLabel?: string;
 };
 
 function readSession(key: string): string {
@@ -201,12 +204,22 @@ export default function ThankYouPage(): ReactElement {
         <h1 className="mt-3 font-display text-[36px] font-medium leading-[1.05] tracking-[-0.015em] sm:text-[48px]">
           Confirmed, {firstName}. Let&apos;s talk architecture.
         </h1>
-        <p className="mt-4 max-w-[52ch] text-[16px] leading-[1.6] text-[var(--color-ink)]/85">
-          I&apos;ll reach out within one business day at{' '}
+        {bookingPayload.bookingDateLabel && bookingPayload.bookingTimeLabel ? (
+          <div className="mt-6 inline-flex flex-col items-start gap-1 rounded-[4px] border border-[var(--color-ink)] bg-[var(--color-ink)] px-5 py-4 text-[var(--color-paper)] sm:flex-row sm:items-baseline sm:gap-4">
+            <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--color-paper)]/70">
+              Slot held
+            </span>
+            <span className="font-display text-[18px] font-medium tracking-[-0.005em] sm:text-[20px]">
+              {bookingPayload.bookingDateLabel} · {bookingPayload.bookingTimeLabel} CET
+            </span>
+          </div>
+        ) : null}
+        <p className="mt-5 max-w-[52ch] text-[16px] leading-[1.6] text-[var(--color-ink)]/85">
+          Calendar invite mails to{' '}
           <span className="font-mono text-[14px] text-[var(--color-ink)]">
             {email || 'your email'}
-          </span>
-          . If you&apos;d rather lock a slot now, pick one below.
+          </span>{' '}
+          within the next minute. Reply to it with anything you want me to read before the call.
         </p>
 
         <section

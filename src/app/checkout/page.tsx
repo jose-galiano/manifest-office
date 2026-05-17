@@ -5,6 +5,10 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useId, useMemo, useState } from 'react';
 
+import {
+  CheckoutBookingPicker,
+  type BookingSlot,
+} from '@/components/sections/CheckoutBookingPicker';
 import { useCart, useCartImageForHandle } from '@/hooks/use-cart';
 import { CUSTOM_EVENTS, ECOMMERCE_EVENTS, track } from '@/lib/analytics';
 import { FLAT_SHIPPING_EUR, FREE_SHIP_THRESHOLD } from '@/lib/constants/commerce';
@@ -117,6 +121,7 @@ export default function CheckoutPage(): ReactElement {
   const [role, setRole] = useState('');
   const [plan, setPlan] = useState('');
   const [wouldHavePaid, setWouldHavePaid] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState<BookingSlot | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const emailId = useId();
@@ -217,6 +222,10 @@ export default function CheckoutPage(): ReactElement {
         setError('Pick where your store sits today.');
         return;
       }
+      if (!selectedSlot) {
+        setError('Pick a call slot to confirm.');
+        return;
+      }
       setError(null);
       setIsSubmitting(true);
       const cleanedEmail = validation.email;
@@ -238,6 +247,9 @@ export default function CheckoutPage(): ReactElement {
           subtotalEur,
           totalEur: total,
           itemNames,
+          bookingIso: selectedSlot.iso,
+          bookingDateLabel: selectedSlot.dateLabel,
+          bookingTimeLabel: selectedSlot.timeLabel,
         }),
       );
       try {
@@ -259,6 +271,9 @@ export default function CheckoutPage(): ReactElement {
           subtotal_eur: subtotalEur,
           total_eur: total,
           items: itemNames,
+          booking_iso: selectedSlot.iso,
+          booking_date: selectedSlot.dateLabel,
+          booking_time: selectedSlot.timeLabel,
         },
         ecommerce: {
           currency: 'EUR',
@@ -303,6 +318,7 @@ export default function CheckoutPage(): ReactElement {
       plan,
       role,
       router,
+      selectedSlot,
       subtotalEur,
       total,
       wouldHavePaid,
@@ -551,25 +567,9 @@ export default function CheckoutPage(): ReactElement {
               </p>
             </fieldset>
 
-            <fieldset className="mt-9 border-0 p-0">
-              <legend className="mb-4 font-display text-[18px] font-medium tracking-[-0.005em]">
-                Payment
-              </legend>
-              <div className="rounded-[4px] border border-[rgba(11,15,14,0.18)]">
-                <div className="border-b border-[rgba(11,15,14,0.10)] px-4 py-4 text-[14px]">
-                  <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-[var(--color-lichen)]">
-                    No card needed
-                  </span>
-                  <p className="mt-1 text-[var(--color-ink)]">
-                    This checkout is a portfolio piece. The button below books a call instead of
-                    charging a card.
-                  </p>
-                </div>
-                <div className="px-4 py-4 font-mono text-[11px] uppercase tracking-[0.04em] text-[var(--color-lichen)]">
-                  → REAL VERSION FOR YOUR BRAND? THAT&apos;S THE CALL.
-                </div>
-              </div>
-            </fieldset>
+            <div className="mt-9">
+              <CheckoutBookingPicker selected={selectedSlot} onSelect={setSelectedSlot} />
+            </div>
 
             <label
               htmlFor={wouldHavePaidId}
@@ -590,10 +590,14 @@ export default function CheckoutPage(): ReactElement {
 
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || !selectedSlot}
               className="mt-7 flex h-[58px] w-full items-center justify-center rounded-[4px] bg-[var(--color-ink)] font-mono text-[13px] font-medium uppercase tracking-[0.14em] text-[var(--color-paper)] transition-[background-color,letter-spacing] duration-[280ms] ease-out hover:bg-[var(--color-signal)] hover:tracking-[0.18em] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {isSubmitting ? 'Booking…' : 'Book the call →'}
+              {isSubmitting
+                ? 'Booking…'
+                : selectedSlot
+                  ? `Confirm · ${selectedSlot.dateLabel} · ${selectedSlot.timeLabel} CET →`
+                  : 'Pick a slot to confirm'}
             </button>
 
             <p className="mt-4 text-center font-mono text-[10px] uppercase tracking-[0.06em] text-[var(--color-lichen)]">
