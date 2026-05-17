@@ -111,7 +111,7 @@ export function EditionsRoadmap(): ReactElement {
                     <dl className="mb-8 grid grid-cols-[140px_1fr] gap-x-7 gap-y-2 border-t border-[rgba(11,15,14,0.12)] pt-6 font-mono text-[11px] tracking-[0.04em] uppercase">
                       {entry.meta.map((row) => (
                         <div key={row.term} className="contents">
-                          <dt className="text-[#5C6B5A]">{row.term}</dt>
+                          <dt className="text-[#9CAA98]">{row.term}</dt>
                           <dd className="text-[#0B0F0E]">{row.definition}</dd>
                         </div>
                       ))}

@@ -508,7 +508,7 @@ function renderStepPanel(props: {
               className={
                 option.active
                   ? 'text-[rgba(242,239,232,0.65)] text-[11px]'
-                  : 'text-[#5C6B5A] text-[11px]'
+                  : 'text-[#9CAA98] text-[11px]'
               }
             >
               {option.meta}

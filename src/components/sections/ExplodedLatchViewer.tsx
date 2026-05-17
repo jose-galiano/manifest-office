@@ -56,7 +56,7 @@ function createLabel(part: THREE.Object3D, uiHost: HTMLDivElement): LabelHandle 
   leader.className = 'block w-8 h-px bg-[rgba(242,239,232,0.18)] my-1.5';
 
   const material = document.createElement('span');
-  material.className = 'text-[#5C6B5A] text-[9px]';
+  material.className = 'text-[#9CAA98] text-[9px]';
   material.textContent = data.material;
 
   element.appendChild(key);
@@ -333,7 +333,7 @@ export function ExplodedLatchViewer(): ReactElement {
         <br />
         Pull it apart.
       </h2>
-      <div className="font-mono text-[12px] tracking-[0.06em] uppercase text-[#5C6B5A] mb-14">
+      <div className="font-mono text-[12px] tracking-[0.06em] uppercase text-[#9CAA98] mb-14">
         Open-hardware lockable latch · four parts · loaded from STL into Three.js, exploded on an
         eased tween. Click and drag to rotate. Toggle to pull it apart.
       </div>
@@ -355,12 +355,12 @@ export function ExplodedLatchViewer(): ReactElement {
         <div ref={uiRef} className="absolute inset-0 pointer-events-none" />
 
         {geometries === null ? (
-          <div className="absolute inset-0 flex items-center justify-center font-mono text-[11px] tracking-[0.08em] uppercase text-[#5C6B5A]">
+          <div className="absolute inset-0 flex items-center justify-center font-mono text-[11px] tracking-[0.08em] uppercase text-[#9CAA98]">
             {loadError ? `× ${loadError}` : 'Loading geometry…'}
           </div>
         ) : null}
 
-        <div className="absolute bottom-6 left-6 right-6 flex justify-between items-center font-mono text-[11px] tracking-[0.08em] uppercase text-[#5C6B5A] pointer-events-none">
+        <div className="absolute bottom-6 left-6 right-6 flex justify-between items-center font-mono text-[11px] tracking-[0.08em] uppercase text-[#9CAA98] pointer-events-none">
           <span className="flex items-center gap-2">
             <span className="text-[#D24A1F]">↻</span>
             DRAG TO ROTATE
@@ -378,7 +378,7 @@ export function ExplodedLatchViewer(): ReactElement {
       </div>
 
       {/* CC-BY attribution — required wherever the model appears. */}
-      <p className="mt-6 font-mono text-[10px] tracking-[0.06em] uppercase text-[#5C6B5A]">
+      <p className="mt-6 font-mono text-[10px] tracking-[0.06em] uppercase text-[#9CAA98]">
         Model{' '}
         <a
           href="https://www.thingiverse.com/thing:3283176"
@@ -394,19 +394,19 @@ export function ExplodedLatchViewer(): ReactElement {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-12 pt-8 border-t border-[rgba(242,239,232,0.18)] font-mono text-[11px] tracking-[0.06em] uppercase">
         <div>
-          <span className="block text-[#5C6B5A] mb-1.5">Parts</span>
+          <span className="block text-[#9CAA98] mb-1.5">Parts</span>
           <span className="text-[#F2EFE8]">04 STL components</span>
         </div>
         <div>
-          <span className="block text-[#5C6B5A] mb-1.5">Format</span>
+          <span className="block text-[#9CAA98] mb-1.5">Format</span>
           <span className="text-[#F2EFE8]">Binary STL</span>
         </div>
         <div>
-          <span className="block text-[#5C6B5A] mb-1.5">Loader</span>
+          <span className="block text-[#9CAA98] mb-1.5">Loader</span>
           <span className="text-[#F2EFE8]">Three.js · STLLoader</span>
         </div>
         <div>
-          <span className="block text-[#5C6B5A] mb-1.5">License</span>
+          <span className="block text-[#9CAA98] mb-1.5">License</span>
           <span className="text-[#F2EFE8]">CC-BY · attributed</span>
         </div>
       </div>

@@ -50,7 +50,7 @@ export function EditionFeature(): ReactElement {
           <dl className="mt-12 grid grid-cols-[140px_1fr] gap-x-8 gap-y-3 border-t border-[rgba(242,239,232,0.18)] pt-8 font-mono text-[12px] tracking-[0.04em] uppercase">
             {META_ROWS.map((row) => (
               <div key={row.term} className="contents">
-                <dt className="text-[#5C6B5A]">{row.term}</dt>
+                <dt className="text-[#9CAA98]">{row.term}</dt>
                 <dd className="text-[#F2EFE8]">{row.definition}</dd>
               </div>
             ))}

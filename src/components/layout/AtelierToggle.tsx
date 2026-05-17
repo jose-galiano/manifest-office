@@ -255,13 +255,18 @@ export function AtelierToggle(): ReactElement {
     >
       <button
         type="button"
-        aria-label={isOn ? 'Pause atelier ambience' : 'Play atelier ambience'}
+        // WCAG 2.5.3 (Label in Name): the accessible name must begin with the
+        // visible text. Visible label is "♪ AUDIO" / "♪ ATELIER".
+        aria-label={isOn ? '♪ AUDIO — pause atelier ambience' : '♪ AUDIO — play atelier ambience'}
         aria-pressed={isOn}
         onClick={handleToggle}
         className={[
           'atelier-button',
           'relative flex items-center gap-2 rounded-full',
-          'bg-transparent border-0 px-0.5 py-0.5',
+          'bg-transparent border-0 px-1 py-0.5',
+          // WCAG 2.5.8: ≥44×44 hit area extended via the after-pseudo (CSS
+          // below). Visible chrome stays inside the 36px EditionBanner.
+          "after:content-[''] after:absolute after:inset-x-[-12px] after:inset-y-[-14px]",
           'text-inherit cursor-pointer',
           'transition-colors duration-[280ms] ease-out',
           'hover:text-[var(--color-signal)]',

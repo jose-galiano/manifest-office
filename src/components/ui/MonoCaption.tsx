@@ -5,11 +5,15 @@ import type { ReactElement, ReactNode } from 'react';
 interface MonoCaptionProps {
   children: ReactNode;
   className?: string;
-  tone?: 'lichen' | 'paper' | 'signal' | 'ink';
+  tone?: 'lichen' | 'lichen-on-ink' | 'paper' | 'signal' | 'ink';
 }
 
+// `lichen-on-ink` is the WCAG-AA-passing variant for lichen text rendered
+// over the ink (#0B0F0E) background. Standard lichen #5C6B5A is ~3.5:1 on
+// ink — below 4.5:1 normal-text. #9CAA98 lifts it to ~6.6:1.
 const toneClass: Record<NonNullable<MonoCaptionProps['tone']>, string> = {
   lichen: 'text-[#5C6B5A]',
+  'lichen-on-ink': 'text-[#9CAA98]',
   paper: 'text-[#F2EFE8]',
   signal: 'text-[#D24A1F]',
   ink: 'text-[#0B0F0E]',
