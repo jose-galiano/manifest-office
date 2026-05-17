@@ -6,6 +6,7 @@ import { ConsoleSignature } from '@/components/layout/ConsoleSignature';
 import { Footer } from '@/components/layout/Footer';
 import { Nav } from '@/components/layout/Nav';
 import { EditionBanner } from '@/components/sections/EditionBanner';
+import { LeadCapturePopup } from '@/components/sections/LeadCapturePopup';
 import { CONSENT_DEFAULT_SCRIPT } from '@/lib/analytics';
 import { JsonLd, buildOrganizationSchema, buildWebsiteSchema } from '@/lib/seo';
 
@@ -86,6 +87,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         <main className="flex-1">{children}</main>
         <Footer />
         <CartDrawer />
+        <LeadCapturePopup />
         <ConsoleSignature />
       </body>
     </html>

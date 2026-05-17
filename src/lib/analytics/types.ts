@@ -43,6 +43,10 @@ export const CUSTOM_EVENTS = {
   cartDrawerClose: 'cart_drawer_close',
   audioPlay: 'audio_play',
   audioPause: 'audio_pause',
+  /** Portfolio-conversion modal openings/dismissals/submits. */
+  leadPopupOpen: 'lead_popup_open',
+  leadPopupDismiss: 'lead_popup_dismiss',
+  leadPopupSubmit: 'lead_popup_submit',
   /**
    * Soft-conversion event. Fired when the visitor submits an email through
    * the cart-drawer "Manifest complete" form. The site has no real checkout

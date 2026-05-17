@@ -27,6 +27,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 
 import { CartItemRow } from '@/components/sections/CartItemRow';
@@ -103,15 +104,6 @@ function readManifestFiledFromSession(): boolean {
   }
 }
 
-function writeManifestFiledToSession(): void {
-  if (typeof window === 'undefined') return;
-  try {
-    window.sessionStorage.setItem(MANIFEST_FILED_SESSION_KEY, '1');
-  } catch {
-    /* private mode — caller's local state still reflects the submission. */
-  }
-}
-
 /** Footer renderer split out of CartDrawer to keep the parent under the
  *  SonarJS cognitive-complexity ceiling. Owns the "filed vs form" branch
  *  and the email validation surface only. */
@@ -167,18 +159,17 @@ function ManifestFooter(props: ManifestFooterProps): ReactElement {
     >
       <div className="flex items-stretch border border-[var(--color-rule-strong)] focus-within:border-[var(--color-ink)]">
         <label htmlFor={emailInputId} className="sr-only">
-          Email · required to file manifest
+          Email · optional pre-fill for checkout
         </label>
         <input
           id={emailInputId}
           type="email"
           inputMode="email"
           autoComplete="email"
-          required
           value={email}
           onChange={(event) => onEmailChange(event.target.value)}
           aria-invalid={emailError !== null}
-          placeholder="email · required to file manifest"
+          placeholder="email · optional (saved for checkout)"
           disabled={cartIsEmpty}
           className="flex-1 border-0 bg-transparent px-4 py-[14px] font-mono text-[12px] tracking-[0.02em] text-[var(--color-ink)] outline-none placeholder:text-[var(--color-lichen)] focus:bg-[rgba(11,15,14,0.02)] disabled:opacity-50"
         />
@@ -197,7 +188,7 @@ function ManifestFooter(props: ManifestFooterProps): ReactElement {
         disabled={cartIsEmpty}
         className="w-full bg-[var(--color-ink)] px-4 py-[18px] font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--color-paper)] transition-[background-color,letter-spacing] duration-[360ms] ease-out hover:bg-[var(--color-signal)] hover:tracking-[0.18em] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-[var(--color-ink)] disabled:hover:tracking-[0.14em]"
       >
-        Manifest complete
+        Checkout →
       </button>
       <Link
         href="/cart"
@@ -208,65 +199,6 @@ function ManifestFooter(props: ManifestFooterProps): ReactElement {
       </Link>
     </form>
   );
-}
-
-type ManifestCompletePayload = {
-  readonly email: string;
-  readonly anonymousId: string;
-  readonly items: readonly CartItem[];
-  readonly subtotalEur: number;
-  readonly totalWithShipping: number;
-  readonly freeShip: boolean;
-};
-
-/**
- * Fan-out for the Manifest-Complete soft conversion. Lifted out of the
- * component so the React function stays under the SonarJS cognitive-
- * complexity ceiling. Three destinations:
- *   1. `manifest_complete` custom event (mark as Conversion in GA4 admin).
- *   2. `generate_lead` GA4 canonical event (auto-counted in Lead reports).
- *   3. Klaviyo `Manifest Complete` event via the existing /api/track route.
- */
-function fireManifestCompleteEvents(payload: ManifestCompletePayload): void {
-  const ecommerceItems = payload.items.map((item, index) => ({
-    item_id: item.handle,
-    item_name: item.title,
-    item_brand: 'Manifest Office',
-    price: item.price,
-    quantity: 1,
-    currency: 'EUR',
-    index,
-  }));
-  const ecommerce = {
-    currency: 'EUR',
-    value: payload.totalWithShipping,
-    items: ecommerceItems,
-  };
-
-  track(CUSTOM_EVENTS.manifestComplete, {
-    params: {
-      cart_item_count: payload.items.length,
-      cart_subtotal: payload.subtotalEur,
-      cart_total: payload.totalWithShipping,
-      free_shipping_unlocked: payload.freeShip,
-    },
-    ecommerce,
-    fanout: { klaviyo: true, email: payload.email },
-  });
-
-  track(ECOMMERCE_EVENTS.generateLead, {
-    params: { method: 'cart_drawer_manifest_complete' },
-    ecommerce,
-  });
-
-  void postTrack('Manifest Complete', payload.anonymousId, payload.email, {
-    email_captured: true,
-    cart_item_count: payload.items.length,
-    cart_subtotal: payload.subtotalEur,
-    cart_total: payload.totalWithShipping,
-    free_shipping_unlocked: payload.freeShip,
-    interested_in_edition: '01',
-  });
 }
 
 type TrackProperties = Record<string, string | number | boolean | null>;
@@ -298,6 +230,7 @@ async function postTrack(
 }
 
 export function CartDrawer(): ReactElement | null {
+  const router = useRouter();
   const {
     items,
     subtotalEur,
@@ -476,30 +409,28 @@ export function CartDrawer(): ReactElement | null {
   const handleManifestSubmit = useCallback(
     (event: React.FormEvent<HTMLFormElement>): void => {
       event.preventDefault();
-      const validation = validateEmail(email);
-      if (!validation.ok) {
-        setEmailError(
-          validation.reason === 'typo'
-            ? 'Looks like a typo in the domain — double-check the TLD.'
-            : 'Please enter a valid email.',
-        );
-        return;
+      // Email is an optional pre-fill in the drawer — the canonical email
+      // capture lives in /checkout (real Shopify checkout flow). If the
+      // visitor typed one here we validate + persist for hydration; if it
+      // fails validation we surface the same error and stop. Empty is fine.
+      const trimmed = email.trim();
+      if (trimmed.length > 0) {
+        const validation = validateEmail(email);
+        if (!validation.ok) {
+          setEmailError(
+            validation.reason === 'typo'
+              ? 'Looks like a typo in the domain — double-check the TLD.'
+              : 'Please enter a valid email.',
+          );
+          return;
+        }
+        writeLocalStorage(EMAIL_STORAGE_KEY, validation.email);
       }
-      const trimmed = validation.email;
       setEmailError(null);
-      writeLocalStorage(EMAIL_STORAGE_KEY, trimmed);
-      fireManifestCompleteEvents({
-        email: trimmed,
-        anonymousId: anonymousIdRef.current,
-        items,
-        subtotalEur,
-        totalWithShipping,
-        freeShip: progress.freeShip,
-      });
-      writeManifestFiledToSession();
-      setManifestFiled(true);
+      closeDrawer();
+      router.push('/checkout');
     },
-    [email, items, subtotalEur, totalWithShipping, progress.freeShip],
+    [closeDrawer, email, router],
   );
 
   // Hydration safety: server renders nothing for the drawer's open state.
