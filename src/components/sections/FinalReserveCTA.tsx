@@ -84,7 +84,7 @@ export async function FinalReserveCTA(): Promise<ReactElement> {
               data-cursor
               data-track="final_cta_reserve"
               data-track-remaining={String(remaining)}
-              className="group inline-flex items-center justify-center gap-3 border border-[#D24A1F] bg-[#D24A1F] px-9 py-4 font-mono text-[12px] uppercase tracking-[0.14em] text-[#F2EFE8] transition-[background-color,letter-spacing] duration-[280ms] ease-out hover:bg-transparent hover:tracking-[0.18em]"
+              className="group inline-flex items-center justify-center gap-3 border border-[#D24A1F] bg-[#A8350F] px-9 py-4 font-mono text-[12px] uppercase tracking-[0.14em] text-[#F2EFE8] transition-[background-color,letter-spacing] duration-[280ms] ease-out hover:bg-transparent hover:tracking-[0.18em]"
             >
               <span>Reserve from Edition 01</span>
               <span

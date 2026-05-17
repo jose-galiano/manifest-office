@@ -565,7 +565,7 @@ function renderSummaryPanel(props: {
         data-track="build_system_reserve_manifest"
         data-track-skus={String(skuCount)}
         data-track-total-eur={totalLabel.replace(/[^\d.]/g, '')}
-        className="self-start bg-[#D24A1F] text-[#F2EFE8] border-none cursor-pointer px-9 py-5 font-mono text-[13px] tracking-[0.12em] uppercase transition-[letter-spacing,background] duration-300 ease-out hover:tracking-[0.18em] hover:bg-[#B83C16]"
+        className="self-start bg-[#A8350F] text-[#F2EFE8] border-none cursor-pointer px-9 py-5 font-mono text-[13px] tracking-[0.12em] uppercase transition-[letter-spacing,background] duration-300 ease-out hover:tracking-[0.18em] hover:bg-[#B83C16]"
       >
         Reserve this manifest →
       </button>

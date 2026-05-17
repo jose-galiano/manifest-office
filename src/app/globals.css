@@ -146,3 +146,13 @@
     color: var(--color-signal-text-ink);
   }
 }
+
+/*
+ * Surface-aware lichen. The base #5c6b5a passes AA on paper (~5:1) but
+ * fails on ink (~3.4:1). Inside ink containers we redeclare --color-lichen
+ * to a brighter sage (#9caa98 ≈ 6.6:1) so any `var(--color-lichen)`
+ * consumer auto-adapts.
+ */
+[data-surface='ink'] {
+  --color-lichen: #9caa98;
+}

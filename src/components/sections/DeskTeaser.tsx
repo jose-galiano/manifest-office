@@ -29,7 +29,7 @@ export function DeskTeaser(): ReactElement {
         </p>
         <Link
           href="/products/tech-pouch-m#desk"
-          className="inline-block bg-[#D24A1F] px-9 py-5 font-mono text-[13px] tracking-[0.12em] uppercase transition-all duration-300 hover:bg-[#B83C16] hover:tracking-[0.18em]"
+          className="inline-block bg-[#A8350F] px-9 py-5 font-mono text-[13px] tracking-[0.12em] uppercase transition-all duration-300 hover:bg-[#B83C16] hover:tracking-[0.18em]"
         >
           ↗ Brief the desk
         </Link>

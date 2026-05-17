@@ -568,7 +568,7 @@ export function DeskBrief({ anchorId = 'desk' }: DeskBriefProps): ReactElement {
 
         {reservedCount !== null && (
           <div className="mt-6 border-t border-[rgba(242,239,232,0.15)] pt-5">
-            <span className="bg-[#D24A1F] px-4 py-2 font-mono text-[11px] uppercase tracking-[0.14em] text-[#F2EFE8]">
+            <span className="bg-[#A8350F] px-4 py-2 font-mono text-[11px] uppercase tracking-[0.14em] text-[#F2EFE8]">
               ✓ {reservedCount} DOSSIERS ISSUED
             </span>
           </div>
