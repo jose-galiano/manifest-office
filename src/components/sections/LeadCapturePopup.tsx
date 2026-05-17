@@ -177,7 +177,7 @@ export function LeadCapturePopup(): ReactElement | null {
         </button>
 
         <div className="px-7 py-9 sm:px-9 sm:py-11">
-          <span className="block font-mono text-[10px] tracking-[0.14em] uppercase text-[var(--color-signal)]">
+          <span className="block font-mono text-[10px] tracking-[0.14em] uppercase text-signal">
             BUILT BY MAELIFY
           </span>
           <h2
@@ -226,7 +226,7 @@ export function LeadCapturePopup(): ReactElement | null {
               {error ? (
                 <p
                   role="alert"
-                  className="font-mono text-[10px] uppercase tracking-[0.06em] text-[var(--color-signal)]"
+                  className="font-mono text-[10px] uppercase tracking-[0.06em] text-signal"
                 >
                   {error}
                 </p>
@@ -242,7 +242,7 @@ export function LeadCapturePopup(): ReactElement | null {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={handleBookCall}
-                className="text-center font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-ink)] underline decoration-[var(--color-rule-strong)] underline-offset-[6px] transition-colors hover:text-[var(--color-signal)] hover:decoration-[var(--color-signal)]"
+                className="text-center font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-ink)] underline decoration-[var(--color-rule-strong)] underline-offset-[6px] transition-colors hover:text-signal hover:decoration-[var(--color-signal)]"
               >
                 Or book a 30-min call →
               </Link>

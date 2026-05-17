@@ -12,9 +12,7 @@ interface EyebrowProps {
 export function Eyebrow({ children, className = '', flanked = false }: EyebrowProps): ReactElement {
   const label = flanked ? `— ${children} —` : children;
   return (
-    <span
-      className={`font-mono text-[11px] tracking-[0.18em] uppercase text-[#D24A1F] ${className}`}
-    >
+    <span className={`font-mono text-[11px] tracking-[0.18em] uppercase text-signal ${className}`}>
       {label}
     </span>
   );

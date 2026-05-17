@@ -88,7 +88,7 @@ export function EmailCapture(): ReactElement {
     >
       <div className="mx-auto grid max-w-[1100px] grid-cols-1 items-center gap-12 md:grid-cols-[1fr_1.1fr] md:gap-20">
         <div>
-          <span className="mb-4 block font-mono text-[11px] tracking-[0.12em] uppercase text-[#D24A1F]">
+          <span className="mb-4 block font-mono text-[11px] tracking-[0.12em] uppercase text-signal">
             — EDITION 02 · UNNAMED ANCHOR —
           </span>
           <h3 className="font-display font-bold leading-[1] tracking-[-0.02em] text-[clamp(28px,3.5vw,44px)]">
@@ -139,7 +139,7 @@ export function EmailCapture(): ReactElement {
               <p
                 id="footer-email-error"
                 role="alert"
-                className="font-mono text-[10px] tracking-[0.06em] uppercase text-[#D24A1F]"
+                className="font-mono text-[10px] tracking-[0.06em] uppercase text-signal"
               >
                 {errorMessage || 'Could not submit.'}
               </p>

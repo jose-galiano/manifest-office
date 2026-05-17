@@ -269,8 +269,8 @@ export function AtelierToggle(): ReactElement {
           "after:content-[''] after:absolute after:inset-x-[-12px] after:inset-y-[-14px]",
           'text-inherit cursor-pointer',
           'transition-colors duration-[280ms] ease-out',
-          'hover:text-[var(--color-signal)]',
-          'data-[state=on]:text-[var(--color-signal)]',
+          'hover:text-signal',
+          'data-[state=on]:text-signal',
           'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--color-paper)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0F0E]',
         ].join(' ')}
         data-state={isOn ? 'on' : 'off'}
@@ -290,14 +290,14 @@ export function AtelierToggle(): ReactElement {
             </svg>
           )}
         </span>
-        <span className="inline sm:hidden text-[var(--color-signal)]">♪ AUDIO</span>
+        <span className="inline sm:hidden text-signal">♪ AUDIO</span>
         <span className="hidden sm:inline">♪ ATELIER</span>
       </button>
 
       {showAttention ? (
         <span
           aria-hidden="true"
-          className="atelier-hint hidden md:inline-flex items-center gap-1.5 text-[10px] tracking-[0.16em] text-[var(--color-signal)]"
+          className="atelier-hint hidden md:inline-flex items-center gap-1.5 text-[10px] tracking-[0.16em] text-signal"
         >
           <span>← TRY WITH AUDIO</span>
         </span>

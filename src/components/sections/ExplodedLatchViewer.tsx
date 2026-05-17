@@ -46,7 +46,7 @@ function createLabel(part: THREE.Object3D, uiHost: HTMLDivElement): LabelHandle 
   element.style.transform = 'translate(-50%, -50%)';
 
   const key = document.createElement('span');
-  key.className = 'text-[#D24A1F] mr-2';
+  key.className = 'text-signal mr-2';
   key.textContent = data.key;
 
   const label = document.createElement('span');
@@ -324,8 +324,11 @@ export function ExplodedLatchViewer(): ReactElement {
   const buttonLabel = exploded ? '↘ ASSEMBLE' : '↗ EXPLODE';
 
   return (
-    <section className="bg-[#0B0F0E] text-[#F2EFE8] px-5 md:px-10 py-24 border-t border-[rgba(242,239,232,0.18)]">
-      <span className="font-mono text-[11px] tracking-[0.08em] uppercase text-[#D24A1F] block mb-3">
+    <section
+      data-surface="ink"
+      className="bg-[#0B0F0E] text-[#F2EFE8] px-5 md:px-10 py-24 border-t border-[rgba(242,239,232,0.18)]"
+    >
+      <span className="font-mono text-[11px] tracking-[0.08em] uppercase text-signal block mb-3">
         REFERENCE GEOMETRY · INTERACTIVE
       </span>
       <h2 className="font-display font-bold text-[clamp(48px,7vw,72px)] leading-[0.95] tracking-[-0.02em] max-w-[16ch] mb-4">
@@ -362,7 +365,7 @@ export function ExplodedLatchViewer(): ReactElement {
 
         <div className="absolute bottom-6 left-6 right-6 flex justify-between items-center font-mono text-[11px] tracking-[0.08em] uppercase text-[#9CAA98] pointer-events-none">
           <span className="flex items-center gap-2">
-            <span className="text-[#D24A1F]">↻</span>
+            <span className="text-signal">↻</span>
             DRAG TO ROTATE
           </span>
           <button
@@ -384,7 +387,7 @@ export function ExplodedLatchViewer(): ReactElement {
           href="https://www.thingiverse.com/thing:3283176"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-[#F2EFE8] underline decoration-[rgba(242,239,232,0.32)] underline-offset-[3px] transition-colors hover:text-[#D24A1F] hover:decoration-[#D24A1F]"
+          className="text-[#F2EFE8] underline decoration-[rgba(242,239,232,0.32)] underline-offset-[3px] transition-colors hover:text-signal hover:decoration-[#D24A1F]"
         >
           Lockable Latch
         </a>{' '}

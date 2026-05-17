@@ -114,7 +114,7 @@ export function ProductCard({ product, dossierNumber }: ProductCardProps): React
       <span className="pointer-events-none absolute left-6 top-6 z-10 font-mono text-[11px] uppercase tracking-[0.06em] text-[#5C6B5A]">
         {dossierLabel}
       </span>
-      <span className="pointer-events-none absolute right-6 top-6 z-10 font-mono text-[10px] uppercase tracking-[0.06em] text-[#D24A1F]">
+      <span className="pointer-events-none absolute right-6 top-6 z-10 font-mono text-[10px] uppercase tracking-[0.06em] text-signal">
         {allocationLabel}
       </span>
 

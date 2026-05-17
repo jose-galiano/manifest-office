@@ -15,7 +15,7 @@ const toneClass: Record<NonNullable<MonoCaptionProps['tone']>, string> = {
   lichen: 'text-[#5C6B5A]',
   'lichen-on-ink': 'text-[#9CAA98]',
   paper: 'text-[#F2EFE8]',
-  signal: 'text-[#D24A1F]',
+  signal: 'text-signal',
   ink: 'text-[#0B0F0E]',
 };
 

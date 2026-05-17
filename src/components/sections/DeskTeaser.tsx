@@ -11,7 +11,10 @@ import type { ReactElement } from 'react';
 
 export function DeskTeaser(): ReactElement {
   return (
-    <section className="border-t border-[rgba(242,239,232,0.18)] bg-[#0B0F0E] px-5 md:px-10 py-20 md:py-[160px] text-[#F2EFE8]">
+    <section
+      data-surface="ink"
+      className="border-t border-[rgba(242,239,232,0.18)] bg-[#0B0F0E] px-5 md:px-10 py-20 md:py-[160px] text-[#F2EFE8]"
+    >
       <div className="mx-auto max-w-[1100px] text-center">
         <Eyebrow className="mb-6 block">THE DESK · BETA</Eyebrow>
         <h2 className="mb-8 font-display font-bold leading-[0.95] tracking-[-0.02em] text-[clamp(56px,8vw,120px)]">

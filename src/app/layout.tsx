@@ -1,6 +1,7 @@
 import { Inter, JetBrains_Mono, Space_Grotesk } from 'next/font/google';
 
 import { Analytics, AnalyticsNoScript } from '@/components/analytics/Analytics';
+import { ClarityLoader } from '@/components/analytics/ClarityLoader';
 import { CartDrawer } from '@/components/layout/CartDrawer';
 import { ConsoleSignature } from '@/components/layout/ConsoleSignature';
 import { Footer } from '@/components/layout/Footer';
@@ -69,12 +70,16 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
             synchronous so it doesn't block FCP. */}
         <script dangerouslySetInnerHTML={{ __html: CONSENT_DEFAULT_SCRIPT }} />
       </head>
-      <body className="min-h-full flex flex-col bg-[var(--color-paper)] text-[var(--color-ink)]">
+      <body
+        data-surface="paper"
+        className="min-h-full flex flex-col bg-[var(--color-paper)] text-[var(--color-ink)]"
+      >
         {/* Trackers live in <body>, not <head>. Client components inside
             <head> render but their effects/hooks behave unreliably (the
             PageViewTracker silently misses its first push). */}
         <Analytics />
         <AnalyticsNoScript />
+        <ClarityLoader />
         <JsonLd id="org-jsonld" schema={buildOrganizationSchema()} />
         <JsonLd id="website-jsonld" schema={buildWebsiteSchema()} />
         {/* Global header: thin Edition status bar (h=36px, fixed top:0) plus

@@ -41,7 +41,7 @@ export default function CollectionsIndexPage(): ReactElement {
               <div className="font-mono text-[11px] uppercase tracking-[0.08em] text-[#5C6B5A]">
                 {String(collection.productHandles.length).padStart(2, '0')} DOSSIERS
               </div>
-              <h2 className="mt-3 font-display text-[clamp(36px,5vw,64px)] font-bold leading-[0.95] tracking-[-0.02em] transition-colors duration-300 group-hover:text-[#D24A1F]">
+              <h2 className="mt-3 font-display text-[clamp(36px,5vw,64px)] font-bold leading-[0.95] tracking-[-0.02em] transition-colors duration-300 group-hover:text-signal">
                 {collection.title}
               </h2>
             </div>

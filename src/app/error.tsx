@@ -34,7 +34,7 @@ export default function RouteError({ error, reset }: ErrorBoundaryProps): ReactE
 
   return (
     <main className="flex min-h-[70vh] flex-col items-center justify-center bg-[#F2EFE8] px-10 py-32 text-center text-[#0B0F0E]">
-      <span className="mb-4 font-mono text-[11px] uppercase tracking-[0.08em] text-[#D24A1F]">
+      <span className="mb-4 font-mono text-[11px] uppercase tracking-[0.08em] text-signal">
         SYSTEM · UNEXPECTED ERROR
       </span>
       <h1 className="max-w-[20ch] font-display text-[clamp(48px,7vw,96px)] font-bold leading-[0.95] tracking-[-0.02em]">

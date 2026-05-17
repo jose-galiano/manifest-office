@@ -426,7 +426,7 @@ function renderIntroPanel({ isMobile }: { isMobile: boolean }): ReactElement {
       className={`${panelBaseClasses(isMobile)} bg-[#0B0F0E] !text-[#F2EFE8]`}
       style={{ background: '#0B0F0E', color: '#F2EFE8' }}
     >
-      <span className="font-mono text-[11px] tracking-[0.18em] uppercase text-[#D24A1F] mb-6">
+      <span className="font-mono text-[11px] tracking-[0.18em] uppercase text-signal mb-6">
         THE SYSTEM · STEP 01 / 04
       </span>
       <h2 className="font-display font-bold leading-[0.9] tracking-[-0.03em] mb-6 text-[clamp(64px,14vw,200px)]">
@@ -438,7 +438,7 @@ function renderIntroPanel({ isMobile }: { isMobile: boolean }): ReactElement {
         Four steps. Pick the trip. Pick the cubes. Pick the pouch. Pick the monogram. The Anchor
         Latch does the rest. {isMobile ? 'Scroll down.' : 'Scroll right.'}
       </p>
-      <span className="font-mono text-[12px] tracking-[0.16em] uppercase text-[#D24A1F]">
+      <span className="font-mono text-[12px] tracking-[0.16em] uppercase text-signal">
         {isMobile ? '↓ SCROLL VERTICALLY' : '→ SCROLL HORIZONTALLY'}
       </span>
     </article>
@@ -468,13 +468,13 @@ function renderStepPanel(props: {
       className={`${panelBaseClasses(false)} relative overflow-hidden`}
     >
       <div
-        className="absolute right-[5vw] bottom-[8vh] font-display font-bold text-[#D24A1F] opacity-[0.18] pointer-events-none leading-[0.85] tracking-[-0.04em]"
+        className="absolute right-[5vw] bottom-[8vh] font-display font-bold text-signal opacity-[0.18] pointer-events-none leading-[0.85] tracking-[-0.04em]"
         style={{ fontSize: 'clamp(160px, 30vw, 480px)' }}
         aria-hidden="true"
       >
         {number}
       </div>
-      <div className="font-mono text-[12px] tracking-[0.12em] uppercase text-[#D24A1F] mb-4 relative z-[1]">
+      <div className="font-mono text-[12px] tracking-[0.12em] uppercase text-signal mb-4 relative z-[1]">
         {label}
       </div>
       <h3 className="font-display font-bold leading-[0.9] tracking-[-0.03em] mb-16 relative z-[1] text-[clamp(56px,10vw,144px)]">
@@ -502,7 +502,7 @@ function renderStepPanel(props: {
             }`}
             aria-pressed={option.active}
           >
-            <span className="text-[#D24A1F] font-medium">{option.reference}</span>
+            <span className="text-signal font-medium">{option.reference}</span>
             <span>{option.name}</span>
             <span
               className={
@@ -534,7 +534,7 @@ function renderSummaryPanel(props: {
       className={`${panelBaseClasses(isMobile)} bg-[#0B0F0E] text-[#F2EFE8]`}
       style={{ background: '#0B0F0E', color: '#F2EFE8' }}
     >
-      <span className="font-mono text-[11px] tracking-[0.18em] uppercase text-[#D24A1F] mb-6">
+      <span className="font-mono text-[11px] tracking-[0.18em] uppercase text-signal mb-6">
         YOUR MANIFEST
       </span>
       <h2 className="font-display font-bold leading-[0.9] tracking-[-0.03em] mb-12 text-[clamp(64px,14vw,200px)]">

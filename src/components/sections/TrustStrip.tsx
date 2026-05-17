@@ -56,7 +56,7 @@ export function TrustStrip(): ReactElement {
                 : ''
             }`}
           >
-            <span className="font-mono text-[10px] tracking-[0.14em] uppercase text-[#D24A1F]">
+            <span className="font-mono text-[10px] tracking-[0.14em] uppercase text-signal">
               {item.label}
             </span>
             <span className="font-display text-[24px] font-bold leading-[1.05] tracking-tight">

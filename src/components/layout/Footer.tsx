@@ -40,7 +40,7 @@ const OFFICE_LINKS: readonly FooterLink[] = [
 
 function renderLink(link: FooterLink): ReactElement {
   const className =
-    'block py-1 text-[14px] text-[var(--color-paper)]/85 hover:text-[var(--color-signal)] transition-colors';
+    'block py-1 text-[14px] text-[var(--color-paper)]/85 hover:text-signal transition-colors';
   if (link.external) {
     return (
       <a key={link.label} href={link.href} className={className}>

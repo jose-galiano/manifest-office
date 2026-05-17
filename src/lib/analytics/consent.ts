@@ -100,9 +100,14 @@ function persistConsent(choice: ConsentChoice): void {
   }
 }
 
+export const CONSENT_GRANTED_EVENT = 'mo:consent-granted';
+
 export function grantConsent(): void {
   ensureGtag()('consent', 'update', GRANTED_CONSENT);
   persistConsent('granted');
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new Event(CONSENT_GRANTED_EVENT));
+  }
 }
 
 export function denyConsent(): void {

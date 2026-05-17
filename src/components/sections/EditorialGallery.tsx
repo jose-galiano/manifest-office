@@ -96,7 +96,7 @@ export function EditorialGallery(): ReactElement {
       className="border-t border-[rgba(11,15,14,0.12)] bg-[#F2EFE8] py-16 md:py-[120px] text-[#0B0F0E]"
     >
       <header className="mx-auto mb-10 max-w-[1800px] px-5 md:px-10">
-        <span className="mb-3 block font-mono text-[11px] tracking-[0.12em] uppercase text-[#D24A1F]">
+        <span className="mb-3 block font-mono text-[11px] tracking-[0.12em] uppercase text-signal">
           — EDITORIAL · EDITION 01 —
         </span>
         <h2 className="font-display font-bold leading-[0.95] tracking-[-0.02em] text-[clamp(32px,4.5vw,56px)]">
@@ -120,7 +120,7 @@ export function EditorialGallery(): ReactElement {
               </div>
               <figcaption className="mt-4 flex items-baseline justify-between gap-4 font-mono text-[10px] tracking-[0.08em] uppercase text-[#5C6B5A]">
                 <span>{item.caption}</span>
-                <span className="text-[#D24A1F]">{item.register}</span>
+                <span className="text-signal">{item.register}</span>
               </figcaption>
             </figure>
           ))}

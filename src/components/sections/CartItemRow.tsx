@@ -139,7 +139,7 @@ function EngravingSlot({ item }: EngravingSlotProps): ReactElement | null {
                 type="button"
                 onMouseDown={(event) => event.preventDefault()}
                 onClick={commitEdit}
-                className="px-2 py-1.5 text-[var(--color-signal)] transition-colors hover:text-[var(--color-ink)] sm:px-1 sm:py-0"
+                className="px-2 py-1.5 text-signal transition-colors hover:text-[var(--color-ink)] sm:px-1 sm:py-0"
                 aria-label="Save engraving"
               >
                 Save
@@ -149,7 +149,7 @@ function EngravingSlot({ item }: EngravingSlotProps): ReactElement | null {
                   type="button"
                   onMouseDown={(event) => event.preventDefault()}
                   onClick={removeEngraving}
-                  className="px-2 py-1.5 text-[var(--color-lichen)] transition-colors hover:text-[var(--color-signal)] sm:px-1 sm:py-0"
+                  className="px-2 py-1.5 text-[var(--color-lichen)] transition-colors hover:text-signal sm:px-1 sm:py-0"
                   aria-label="Remove engraving"
                 >
                   Clear
@@ -182,7 +182,7 @@ function EngravingSlot({ item }: EngravingSlotProps): ReactElement | null {
           <button
             type="button"
             onClick={() => setEditing(true)}
-            className="ml-1 underline underline-offset-4 decoration-[var(--color-rule-strong)] transition-colors hover:text-[var(--color-signal)] hover:decoration-[var(--color-signal)]"
+            className="ml-1 underline underline-offset-4 decoration-[var(--color-rule-strong)] transition-colors hover:text-signal hover:decoration-[var(--color-signal)]"
             aria-label={`Edit engraving on ${item.title}`}
           >
             Edit
@@ -197,7 +197,7 @@ function EngravingSlot({ item }: EngravingSlotProps): ReactElement | null {
       <button
         type="button"
         onClick={() => setEditing(true)}
-        className="font-mono text-[10px] uppercase tracking-[0.06em] text-[var(--color-lichen)] transition-colors hover:text-[var(--color-signal)]"
+        className="font-mono text-[10px] uppercase tracking-[0.06em] text-[var(--color-lichen)] transition-colors hover:text-signal"
         aria-label={`Add engraving to ${item.title}`}
       >
         + Engrave · +€{ENGRAVING_UPCHARGE_EUR}
@@ -276,7 +276,7 @@ export function CartItemRow({
           <button
             type="button"
             onClick={() => onRemove(item)}
-            className="mt-2 self-start font-mono text-[10px] uppercase tracking-[0.08em] text-[var(--color-lichen)] transition-colors hover:text-[var(--color-signal)]"
+            className="mt-2 self-start font-mono text-[10px] uppercase tracking-[0.08em] text-[var(--color-lichen)] transition-colors hover:text-signal"
             aria-label={`Remove ${item.title} from manifest`}
           >
             Remove

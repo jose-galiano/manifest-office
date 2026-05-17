@@ -146,7 +146,7 @@ export default function CartPage(): ReactElement {
   if (items.length === 0) {
     return (
       <div className="mx-auto max-w-[760px] px-5 md:px-10 pb-24 pt-[110px] md:pt-[140px] text-center">
-        <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--color-signal)]">
+        <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-signal">
           MANIFEST · EMPTY
         </span>
         <h1 className="mt-4 font-display text-[56px] font-medium leading-[1.05] tracking-[-0.015em] text-[var(--color-ink)]">
@@ -177,7 +177,7 @@ export default function CartPage(): ReactElement {
   return (
     <div className="mx-auto max-w-[1280px] px-5 md:px-10 pb-24 pt-[110px] md:pt-[140px]">
       <header className="mb-12 flex flex-col gap-3">
-        <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--color-signal)]">
+        <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-signal">
           MANIFEST · YOUR ORDER
         </span>
         <h1 className="font-display text-[56px] font-medium leading-none tracking-[-0.015em] text-[var(--color-ink)]">
@@ -203,7 +203,7 @@ export default function CartPage(): ReactElement {
           </div>
           <Link
             href="/collections/edition-01"
-            className="mt-8 inline-block font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--color-lichen)] hover:text-[var(--color-signal)] transition-colors"
+            className="mt-8 inline-block font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--color-lichen)] hover:text-signal transition-colors"
           >
             ← Continue browsing
           </Link>

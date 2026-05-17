@@ -114,7 +114,7 @@ function ManifestFooter(props: ManifestFooterProps): ReactElement {
         <Link
           href="/cart"
           onClick={onClose}
-          className="text-center font-mono text-[10px] uppercase tracking-[0.08em] text-[var(--color-lichen)] hover:text-[var(--color-signal)] transition-colors"
+          className="text-center font-mono text-[10px] uppercase tracking-[0.08em] text-[var(--color-lichen)] hover:text-signal transition-colors"
         >
           View full manifest
         </Link>
@@ -150,7 +150,7 @@ function ManifestFooter(props: ManifestFooterProps): ReactElement {
         <p
           id={`${emailInputId}-error`}
           role="alert"
-          className="font-mono text-[10px] uppercase tracking-[0.06em] text-[var(--color-signal)]"
+          className="font-mono text-[10px] uppercase tracking-[0.06em] text-signal"
         >
           {emailError}
         </p>
@@ -165,7 +165,7 @@ function ManifestFooter(props: ManifestFooterProps): ReactElement {
       <Link
         href="/cart"
         onClick={onClose}
-        className="text-center font-mono text-[10px] uppercase tracking-[0.08em] text-[var(--color-lichen)] hover:text-[var(--color-signal)] transition-colors"
+        className="text-center font-mono text-[10px] uppercase tracking-[0.08em] text-[var(--color-lichen)] hover:text-signal transition-colors"
       >
         View full manifest
       </Link>

@@ -19,7 +19,10 @@ const META_ROWS: readonly { term: string; definition: string }[] = [
 
 export function EditionFeature(): ReactElement {
   return (
-    <section className="border-t border-[rgba(242,239,232,0.18)] bg-[#0B0F0E] px-5 md:px-10 py-20 md:py-[160px] text-[#F2EFE8]">
+    <section
+      data-surface="ink"
+      className="border-t border-[rgba(242,239,232,0.18)] bg-[#0B0F0E] px-5 md:px-10 py-20 md:py-[160px] text-[#F2EFE8]"
+    >
       <div className="mx-auto grid max-w-[1400px] grid-cols-1 items-center gap-20 md:grid-cols-2">
         <div className="aspect-[3/4] overflow-hidden">
           <Image

@@ -26,7 +26,10 @@ export function EditionBanner({
   allocation = 'ALLOCATION 00855 / 1200',
 }: EditionBannerProps): ReactElement {
   return (
-    <div className="fixed inset-x-0 top-0 z-[60] grid h-9 grid-cols-[1fr_auto_1fr] items-center bg-[#0B0F0E] px-5 md:px-10 text-[#F2EFE8]">
+    <div
+      data-surface="ink"
+      className="fixed inset-x-0 top-0 z-[60] grid h-9 grid-cols-[1fr_auto_1fr] items-center bg-[#0B0F0E] px-5 md:px-10 text-[#F2EFE8]"
+    >
       <span className="justify-self-start font-mono text-[10px] md:text-[11px] tracking-[0.04em] uppercase">
         <span
           aria-hidden="true"
@@ -40,7 +43,7 @@ export function EditionBanner({
       <div className="justify-self-center">
         <AtelierToggle />
       </div>
-      <span className="justify-self-end font-mono text-[10px] md:text-[11px] tracking-[0.04em] uppercase text-[#D24A1F]">
+      <span className="justify-self-end font-mono text-[10px] md:text-[11px] tracking-[0.04em] uppercase text-signal">
         {/* Just the issued/total numbers on mobile to keep the strip readable. */}
         <span className="md:hidden tabular-nums">{allocation.replace(/^ALLOCATION\s*/i, '')}</span>
         <span className="hidden md:inline">{allocation}</span>

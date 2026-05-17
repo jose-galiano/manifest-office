@@ -31,7 +31,10 @@ const PARTS: readonly PartRow[] = [
 export function SystemAnchorLatch(): ReactElement {
   return (
     <>
-      <section className="relative overflow-hidden bg-[#0B0F0E] px-5 md:px-10 pt-[110px] md:pt-[140px] pb-14 md:pb-[100px] text-[#F2EFE8]">
+      <section
+        data-surface="ink"
+        className="relative overflow-hidden bg-[#0B0F0E] px-5 md:px-10 pt-[110px] md:pt-[140px] pb-14 md:pb-[100px] text-[#F2EFE8]"
+      >
         <div className="mx-auto grid max-w-[1400px] grid-cols-1 items-end gap-20 md:grid-cols-2">
           <div>
             <Eyebrow className="mb-8 block" flanked>
@@ -40,7 +43,7 @@ export function SystemAnchorLatch(): ReactElement {
             <h1 className="mb-8 font-display font-bold leading-[0.88] tracking-[-0.035em] text-[clamp(40px,6.5vw,96px)]">
               One closure.
               <br />
-              Every <span className="text-[#D24A1F]">component</span>.
+              Every <span className="text-signal">component</span>.
               <br />
               The system holds.
             </h1>
@@ -103,8 +106,8 @@ export function SystemAnchorLatch(): ReactElement {
             <dl className="grid grid-cols-[140px_1fr] gap-x-8 gap-y-4 font-mono text-[12px] tracking-[0.04em] uppercase">
               {PARTS.map((part) => (
                 <div key={part.term} className="contents">
-                  <dt className={part.accent ? 'text-[#D24A1F]' : 'text-[#5C6B5A]'}>{part.term}</dt>
-                  <dd className={part.accent ? 'text-[#D24A1F]' : 'text-[#0B0F0E]'}>
+                  <dt className={part.accent ? 'text-signal' : 'text-[#5C6B5A]'}>{part.term}</dt>
+                  <dd className={part.accent ? 'text-signal' : 'text-[#0B0F0E]'}>
                     {part.definition}
                   </dd>
                 </div>

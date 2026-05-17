@@ -63,7 +63,7 @@ export async function FeaturedDossiers(): Promise<ReactElement | null> {
       <div className="mx-auto max-w-[1800px]">
         <header className="mb-14 grid grid-cols-1 items-end gap-8 md:grid-cols-[2fr_1fr] md:gap-20">
           <div>
-            <span className="mb-5 block font-mono text-[11px] tracking-[0.12em] uppercase text-[#D24A1F]">
+            <span className="mb-5 block font-mono text-[11px] tracking-[0.12em] uppercase text-signal">
               — EDITION 01 · FEATURED DOSSIERS —
             </span>
             <h2 className="font-display font-bold leading-[0.95] tracking-[-0.02em] text-[clamp(40px,5.5vw,80px)]">
@@ -76,7 +76,7 @@ export async function FeaturedDossiers(): Promise<ReactElement | null> {
             <Link
               href="/collections/edition-01"
               data-cursor
-              className="group inline-flex items-center gap-2 border-b border-[#0B0F0E] pb-1 font-mono text-[12px] uppercase tracking-[0.12em] text-[#0B0F0E] transition-colors duration-200 hover:text-[#D24A1F] hover:border-[#D24A1F]"
+              className="group inline-flex items-center gap-2 border-b border-[#0B0F0E] pb-1 font-mono text-[12px] uppercase tracking-[0.12em] text-[#0B0F0E] transition-colors duration-200 hover:text-signal hover:border-[#D24A1F]"
             >
               <span>View all 10 dossiers</span>
               <span

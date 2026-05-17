@@ -452,7 +452,7 @@ export function PdpBuybox({
         {formatPrice(priceEur)}
       </div>
       {supportsEngraving && engravingOn ? (
-        <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.1em] text-[#D24A1F]">
+        <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.1em] text-signal">
           + €{ENGRAVING_FEE} ENGRAVING
         </div>
       ) : null}

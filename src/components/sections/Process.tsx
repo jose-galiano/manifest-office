@@ -56,7 +56,7 @@ export function Process(): ReactElement {
                 key={step.number}
                 className="flex w-[280px] shrink-0 snap-start flex-col gap-5 border-l-2 border-[#D24A1F] pl-5"
               >
-                <div className="font-display font-bold leading-[0.9] tracking-[-0.03em] text-[80px] text-[#D24A1F]">
+                <div className="font-display font-bold leading-[0.9] tracking-[-0.03em] text-[80px] text-signal">
                   {step.number}
                 </div>
                 <div>
@@ -77,7 +77,7 @@ export function Process(): ReactElement {
         <div className="hidden md:grid md:grid-cols-3 gap-12">
           {STEPS.map((step) => (
             <div key={step.number} className="flex flex-col gap-6">
-              <div className="font-display font-bold leading-[0.9] tracking-[-0.03em] text-[96px] text-[#D24A1F]">
+              <div className="font-display font-bold leading-[0.9] tracking-[-0.03em] text-[96px] text-signal">
                 {step.number}
               </div>
               <div>

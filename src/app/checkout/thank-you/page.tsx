@@ -195,7 +195,7 @@ export default function ThankYouPage(): ReactElement {
       </header>
 
       <div className="mx-auto max-w-[760px] px-5 py-12 sm:px-8 sm:py-16">
-        <span className="block font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--color-signal)]">
+        <span className="block font-mono text-[10px] uppercase tracking-[0.14em] text-signal">
           ✓ CALL BOOKED
         </span>
         <h1 className="mt-3 font-display text-[36px] font-medium leading-[1.05] tracking-[-0.015em] sm:text-[48px]">
@@ -213,18 +213,18 @@ export default function ThankYouPage(): ReactElement {
           aria-label="What we'll cover"
           className="mt-9 border-l-2 border-[var(--color-signal)] bg-[rgba(210,74,31,0.04)] px-5 py-5"
         >
-          <span className="block font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--color-signal)]">
+          <span className="block font-mono text-[10px] uppercase tracking-[0.14em] text-signal">
             What we&apos;ll cover (30 min)
           </span>
           <ul className="mt-3 space-y-2 text-[14px] leading-[1.55] text-[var(--color-ink)]">
             <li className="flex gap-3">
-              <span aria-hidden="true" className="font-mono text-[var(--color-signal)]">
+              <span aria-hidden="true" className="font-mono text-signal">
                 →
               </span>
               <span>Your current stack and the ceiling it&apos;s hitting.</span>
             </li>
             <li className="flex gap-3">
-              <span aria-hidden="true" className="font-mono text-[var(--color-signal)]">
+              <span aria-hidden="true" className="font-mono text-signal">
                 →
               </span>
               <span>
@@ -233,7 +233,7 @@ export default function ThankYouPage(): ReactElement {
               </span>
             </li>
             <li className="flex gap-3">
-              <span aria-hidden="true" className="font-mono text-[var(--color-signal)]">
+              <span aria-hidden="true" className="font-mono text-signal">
                 →
               </span>
               <span>A concrete next step — pod engagement, audit, or fit-check.</span>
@@ -274,7 +274,7 @@ export default function ThankYouPage(): ReactElement {
             </Link>
             <Link
               href="/"
-              className="flex h-[48px] items-center justify-center rounded-[4px] border border-[var(--color-rule-strong)] px-6 font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-ink)] transition-colors hover:border-[var(--color-ink)] hover:text-[var(--color-signal)]"
+              className="flex h-[48px] items-center justify-center rounded-[4px] border border-[var(--color-rule-strong)] px-6 font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-ink)] transition-colors hover:border-[var(--color-ink)] hover:text-signal"
             >
               Keep exploring
             </Link>
@@ -342,7 +342,7 @@ export default function ThankYouPage(): ReactElement {
             href="https://github.com/jose-galiano/manifest-office"
             target="_blank"
             rel="noopener noreferrer"
-            className="underline decoration-[var(--color-rule-strong)] underline-offset-[3px] transition-colors hover:text-[var(--color-signal)] hover:decoration-[var(--color-signal)]"
+            className="underline decoration-[var(--color-rule-strong)] underline-offset-[3px] transition-colors hover:text-signal hover:decoration-[var(--color-signal)]"
           >
             github.com/jose-galiano/manifest-office
           </a>

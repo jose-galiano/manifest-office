@@ -29,6 +29,7 @@ export function HomeHero(): ReactElement {
 
   return (
     <section
+      data-surface="ink"
       ref={wrapperRef}
       className="relative h-screen min-h-[760px] overflow-hidden bg-[#0B0F0E] text-[#F2EFE8]"
     >
@@ -44,7 +45,7 @@ export function HomeHero(): ReactElement {
       <div className="relative z-[2] flex h-full flex-col justify-center px-5 md:px-10 pt-[110px] md:pt-[140px] pb-10">
         <div className="text-center">
           <div
-            className={`mb-6 font-mono text-[12px] tracking-[0.2em] uppercase text-[#D24A1F] transition-all duration-700 ${loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}
+            className={`mb-6 font-mono text-[12px] tracking-[0.2em] uppercase text-signal transition-all duration-700 ${loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}
             style={{ transitionDelay: '180ms' }}
           >
             — ISSUED TO OPERATORS —
@@ -73,7 +74,9 @@ export function HomeHero(): ReactElement {
               href="/collections/edition-01"
               data-cursor
               data-track="hero_cta_reserve"
-              className="group inline-flex items-center gap-3 border border-[var(--color-signal)] bg-[var(--color-signal)] px-9 py-4 font-mono text-[12px] uppercase tracking-[0.14em] text-[var(--color-paper)] transition-[background-color,color,letter-spacing] duration-[280ms] ease-out hover:bg-transparent hover:tracking-[0.18em]"
+              // Default state: ink text on signal-orange fill (~5.5:1, passes AA).
+              // Hover state: orange-on-paper-ish via paper text over ink hero bg.
+              className="group inline-flex items-center gap-3 border border-[var(--color-signal)] bg-[var(--color-signal)] px-9 py-4 font-mono text-[12px] font-medium uppercase tracking-[0.14em] text-[var(--color-ink)] transition-[background-color,color,letter-spacing] duration-[280ms] ease-out hover:bg-transparent hover:text-[var(--color-paper)] hover:tracking-[0.18em]"
             >
               <span>Reserve from Edition 01</span>
               <span

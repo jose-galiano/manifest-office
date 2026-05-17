@@ -110,7 +110,7 @@ export function Nav({ forceSolid }: NavProps = {}): ReactElement {
         <Link
           href="/"
           data-track="nav_logo"
-          className="font-display text-[13px] md:text-[14px] font-bold tracking-[0.06em] uppercase hover:text-[var(--color-signal)] transition-colors"
+          className="font-display text-[13px] md:text-[14px] font-bold tracking-[0.06em] uppercase hover:text-signal transition-colors"
         >
           Manifest Office
         </Link>
@@ -125,7 +125,7 @@ export function Nav({ forceSolid }: NavProps = {}): ReactElement {
                 data-track="nav_link"
                 data-track-label={link.label.toLowerCase()}
                 data-track-surface="desktop"
-                className="text-[13px] tracking-[0.02em] hover:text-[var(--color-signal)] transition-colors"
+                className="text-[13px] tracking-[0.02em] hover:text-signal transition-colors"
               >
                 {link.label}
               </Link>
@@ -190,7 +190,7 @@ export function Nav({ forceSolid }: NavProps = {}): ReactElement {
                 data-track="nav_link"
                 data-track-label={link.label.toLowerCase()}
                 data-track-surface="mobile"
-                className="block py-5 font-display text-[28px] font-bold tracking-[-0.01em] transition-colors hover:text-[var(--color-signal)]"
+                className="block py-5 font-display text-[28px] font-bold tracking-[-0.01em] transition-colors hover:text-signal"
               >
                 {link.label}
               </Link>

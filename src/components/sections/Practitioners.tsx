@@ -56,7 +56,10 @@ export function Practitioners({
   eyebrow = '— THE OPERATORS BEHIND THE OFFICE —',
 }: PractitionersProps): ReactElement {
   return (
-    <section className="border-t border-[rgba(242,239,232,0.18)] bg-[#0B0F0E] py-16 md:py-[120px] text-[#F2EFE8]">
+    <section
+      data-surface="ink"
+      className="border-t border-[rgba(242,239,232,0.18)] bg-[#0B0F0E] py-16 md:py-[120px] text-[#F2EFE8]"
+    >
       <header className="mx-auto mb-12 max-w-[1400px] px-5 md:px-10 md:mb-16">
         <Eyebrow className="mb-6 block">{eyebrow}</Eyebrow>
         <h2 className="whitespace-pre-line font-display font-bold leading-[0.95] tracking-[-0.02em] text-[clamp(40px,5vw,72px)]">
@@ -86,7 +89,7 @@ export function Practitioners({
                 />
               </div>
               <div>
-                <div className="font-mono text-[10px] tracking-[0.1em] uppercase text-[#D24A1F]">
+                <div className="font-mono text-[10px] tracking-[0.1em] uppercase text-signal">
                   {person.role}
                 </div>
                 <h3 className="mt-2 font-display text-[28px] font-bold leading-[1] tracking-[-0.015em]">
@@ -120,7 +123,7 @@ export function Practitioners({
               />
             </div>
             <div>
-              <div className="font-mono text-[10px] tracking-[0.1em] uppercase text-[#D24A1F]">
+              <div className="font-mono text-[10px] tracking-[0.1em] uppercase text-signal">
                 {person.role}
               </div>
               <h3 className="mt-2 font-display text-[30px] font-bold leading-[1] tracking-[-0.015em]">

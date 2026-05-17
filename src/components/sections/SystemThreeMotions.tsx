@@ -40,7 +40,10 @@ const MOTIONS: readonly Motion[] = [
 
 export function SystemThreeMotions(): ReactElement {
   return (
-    <section className="border-t border-[rgba(242,239,232,0.18)] bg-[#0B0F0E] px-5 md:px-10 py-20 md:py-[140px] text-[#F2EFE8]">
+    <section
+      data-surface="ink"
+      className="border-t border-[rgba(242,239,232,0.18)] bg-[#0B0F0E] px-5 md:px-10 py-20 md:py-[140px] text-[#F2EFE8]"
+    >
       <div className="mx-auto max-w-[1400px]">
         <Eyebrow className="mb-6 block" flanked>
           HOW IT HOLDS
@@ -60,7 +63,7 @@ export function SystemThreeMotions(): ReactElement {
                   className="h-full w-full object-cover transition-transform duration-[1500ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.06]"
                 />
               </div>
-              <div className="font-display font-bold leading-[0.9] tracking-[-0.03em] text-[96px] text-[#D24A1F]">
+              <div className="font-display font-bold leading-[0.9] tracking-[-0.03em] text-[96px] text-signal">
                 {motion.number}
               </div>
               <div>

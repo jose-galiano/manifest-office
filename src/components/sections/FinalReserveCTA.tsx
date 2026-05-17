@@ -33,12 +33,13 @@ export async function FinalReserveCTA(): Promise<ReactElement> {
 
   return (
     <section
+      data-surface="ink"
       aria-label="Reserve from Edition 01"
       className="bg-[#0B0F0E] px-5 md:px-10 py-20 md:py-[140px] text-[#F2EFE8]"
     >
       <div className="mx-auto grid max-w-[1400px] grid-cols-1 items-end gap-16 md:grid-cols-[1.5fr_1fr] md:gap-24">
         <div>
-          <span className="mb-7 block font-mono text-[11px] tracking-[0.12em] uppercase text-[#D24A1F]">
+          <span className="mb-7 block font-mono text-[11px] tracking-[0.12em] uppercase text-signal">
             <span
               aria-hidden="true"
               className="mr-2 inline-block h-2 w-2 rounded-full bg-[#D24A1F] align-middle"
@@ -61,7 +62,7 @@ export async function FinalReserveCTA(): Promise<ReactElement> {
           <dl className="border-t border-[rgba(242,239,232,0.18)] pt-6 font-mono text-[11px] tracking-[0.08em] uppercase">
             <div className="flex items-baseline justify-between gap-6 py-2.5">
               <dt className="text-[#F2EFE8]/55">Allocation</dt>
-              <dd className="text-[#D24A1F] tabular-nums">
+              <dd className="text-signal tabular-nums">
                 {padded} / {total.toLocaleString('en-GB')}
               </dd>
             </div>

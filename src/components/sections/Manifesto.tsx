@@ -60,7 +60,7 @@ export function Manifesto(): ReactElement {
                 style={{ transitionDelay: `${lineIndex * 120}ms` }}
               >
                 {line.text}
-                {line.accent ? <span className="text-[#D24A1F]">{line.accent}</span> : null}
+                {line.accent ? <span className="text-signal">{line.accent}</span> : null}
                 {line.tail}
               </span>
             </span>

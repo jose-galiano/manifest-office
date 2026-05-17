@@ -343,7 +343,7 @@ export default function CheckoutPage(): ReactElement {
       <div className="mx-auto grid max-w-[1180px] grid-cols-1 lg:grid-cols-[1fr_440px]">
         <section className="px-5 py-8 sm:px-8 lg:pr-12 lg:py-12">
           <div className="mb-9 border border-[var(--color-rule-strong)] bg-[rgba(210,74,31,0.06)] px-5 py-4 text-[13px] leading-[1.5] text-[var(--color-ink)]">
-            <span className="block font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--color-signal)]">
+            <span className="block font-mono text-[10px] uppercase tracking-[0.14em] text-signal">
               PORTFOLIO CHECKOUT
             </span>
             <p className="mt-1.5">
@@ -371,7 +371,7 @@ export default function CheckoutPage(): ReactElement {
                 <a
                   href="mailto:hello@maelify.com?subject=Manifest%20Office%20demo"
                   onClick={() => handleExpressClick('email_direct')}
-                  className="flex h-[44px] items-center justify-center rounded-[4px] border border-[var(--color-rule-strong)] font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-ink)] transition-colors hover:border-[var(--color-ink)] hover:text-[var(--color-signal)]"
+                  className="flex h-[44px] items-center justify-center rounded-[4px] border border-[var(--color-rule-strong)] font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-ink)] transition-colors hover:border-[var(--color-ink)] hover:text-signal"
                 >
                   Email Jose directly
                 </a>
@@ -414,7 +414,7 @@ export default function CheckoutPage(): ReactElement {
               {error ? (
                 <p
                   role="alert"
-                  className="mt-2 font-mono text-[11px] tracking-[0.04em] text-[var(--color-signal)]"
+                  className="mt-2 font-mono text-[11px] tracking-[0.04em] text-signal"
                 >
                   {error}
                 </p>

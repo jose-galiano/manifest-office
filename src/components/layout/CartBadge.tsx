@@ -35,7 +35,7 @@ export function CartBadge(): ReactElement {
       type="button"
       onClick={openDrawer}
       data-cursor
-      className="flex items-center gap-[6px] text-[12px] hover:text-[var(--color-signal)] transition-colors bg-transparent border-0 p-0 cursor-pointer"
+      className="flex items-center gap-[6px] text-[12px] hover:text-signal transition-colors bg-transparent border-0 p-0 cursor-pointer"
       aria-label={`Open manifest, ${displayedCount} ${displayedCount === 1 ? 'item' : 'items'}`}
     >
       <span className="font-mono tracking-[0.04em] uppercase">CART</span>

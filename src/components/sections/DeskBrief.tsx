@@ -457,11 +457,12 @@ export function DeskBrief({ anchorId = 'desk' }: DeskBriefProps): ReactElement {
   // --- Render ------------------------------------------------------------
   return (
     <section
+      data-surface="ink"
       id={anchorId}
       className="border-y border-[rgba(11,15,14,0.12)] bg-[#0B0F0E] px-5 md:px-10 py-20 text-[#F2EFE8]"
     >
       <div className="mx-auto max-w-[1100px]">
-        <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#D24A1F]">
+        <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-signal">
           THE DESK · BETA
         </span>
         <h2 className="mt-6 font-display font-bold leading-[0.95] tracking-[-0.02em] text-[clamp(36px,4vw,56px)]">
@@ -487,7 +488,7 @@ export function DeskBrief({ anchorId = 'desk' }: DeskBriefProps): ReactElement {
           </div>
 
           <div className="flex items-start gap-3">
-            <span aria-hidden="true" className="mt-1 font-mono text-[#D24A1F]">
+            <span aria-hidden="true" className="mt-1 font-mono text-signal">
               →
             </span>
             <textarea

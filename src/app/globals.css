@@ -17,6 +17,12 @@
   --color-paper: #f2efe8;
   --color-signal: #d24a1f;
   --color-signal-hover: #b83c16;
+  /* Signal-orange variants for text-only use. The base #d24a1f hits 3.85:1
+   * on paper / 4.35:1 on ink — below WCAG AA 4.5:1 for normal text. These
+   * two variants pass AA when scoped to the appropriate surface. Fills,
+   * borders, dots, and decorative non-text uses keep --color-signal. */
+  --color-signal-text-paper: #a8350f;
+  --color-signal-text-ink: #e66433;
   --color-lichen: #5c6b5a;
   --color-charcoal: #1a1a1a;
 
@@ -84,6 +90,22 @@
   [class*='overflow-x-auto'],
   [class*='snap-x'] {
     overscroll-behavior-x: contain;
+  }
+
+  /*
+   * Signal-orange text utility. Resolves to the appropriate AA-passing
+   * variant based on the surface its container marks itself with
+   * (`data-surface="paper"` or `data-surface="ink"`). Falls back to the
+   * brand base when no surface is declared.
+   */
+  .text-signal {
+    color: var(--color-signal);
+  }
+  [data-surface='paper'] .text-signal {
+    color: var(--color-signal-text-paper);
+  }
+  [data-surface='ink'] .text-signal {
+    color: var(--color-signal-text-ink);
   }
 
   ::selection {

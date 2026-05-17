@@ -22,7 +22,7 @@ export function PdpDossierBody({ title, body }: PdpDossierBodyProps): ReactEleme
   return (
     <section className="border-t border-[rgba(11,15,14,0.12)] px-5 md:px-10 py-24 md:py-32">
       <div className="mx-auto max-w-[1100px]">
-        <span className="mb-4 block font-mono text-[11px] uppercase tracking-[0.08em] text-[#D24A1F]">
+        <span className="mb-4 block font-mono text-[11px] uppercase tracking-[0.08em] text-signal">
           DOSSIER · LONG-FORM
         </span>
         <p className="max-w-[60ch] text-[17px] leading-[1.55] text-[#0B0F0E]/85">
