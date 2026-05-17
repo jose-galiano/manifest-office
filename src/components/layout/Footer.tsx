@@ -58,6 +58,7 @@ function renderLink(link: FooterLink): ReactElement {
 export function Footer(): ReactElement {
   return (
     <footer
+      data-surface="ink"
       className="bg-[var(--color-ink)] text-[var(--color-paper)] border-t border-[var(--color-rule-dark)]"
       role="contentinfo"
     >
