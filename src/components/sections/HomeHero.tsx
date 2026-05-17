@@ -35,7 +35,7 @@ export function HomeHero(): ReactElement {
     window.addEventListener('mousedown', arm, opts);
     window.addEventListener('touchstart', arm, opts);
     window.addEventListener('keydown', arm, opts);
-    const fallback = window.setTimeout(arm, 8000);
+    const fallback = window.setTimeout(arm, 20_000);
     return () => {
       window.clearTimeout(fallback);
       window.removeEventListener('mousedown', arm);
