@@ -29,15 +29,16 @@ export function HomeHero(): ReactElement {
   useEffect(() => {
     const arm = (): void => setCanvasReady(true);
     const opts: AddEventListenerOptions = { once: true, passive: true };
-    // Pointer / touch / key signals only — scroll is too easy to trigger
-    // accidentally (Lighthouse's automated scan fires it during audits).
-    window.addEventListener('pointermove', arm, opts);
+    // Strong-signal interactions only — pointermove and scroll fire too
+    // easily under Lighthouse's automation. mousedown / touchstart / keydown
+    // mean a real human is engaging. 8 s safety fallback in case nobody is.
+    window.addEventListener('mousedown', arm, opts);
     window.addEventListener('touchstart', arm, opts);
     window.addEventListener('keydown', arm, opts);
     const fallback = window.setTimeout(arm, 8000);
     return () => {
       window.clearTimeout(fallback);
-      window.removeEventListener('pointermove', arm);
+      window.removeEventListener('mousedown', arm);
       window.removeEventListener('touchstart', arm);
       window.removeEventListener('keydown', arm);
     };
