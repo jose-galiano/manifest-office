@@ -92,22 +92,6 @@
     overscroll-behavior-x: contain;
   }
 
-  /*
-   * Signal-orange text utility. Resolves to the appropriate AA-passing
-   * variant based on the surface its container marks itself with
-   * (`data-surface="paper"` or `data-surface="ink"`). Falls back to the
-   * brand base when no surface is declared.
-   */
-  .text-signal {
-    color: var(--color-signal);
-  }
-  [data-surface='paper'] .text-signal {
-    color: var(--color-signal-text-paper);
-  }
-  [data-surface='ink'] .text-signal {
-    color: var(--color-signal-text-ink);
-  }
-
   ::selection {
     background-color: var(--color-signal);
     color: var(--color-paper);
@@ -143,5 +127,22 @@
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
+  }
+}
+
+/*
+ * Signal-orange surface-scoped overrides.
+ *
+ * Tailwind 4 auto-generates `.text-signal { color: var(--color-signal) }` as
+ * a utility from the `--color-signal` theme token. To outrank it, these
+ * overrides also live in `@layer utilities` (same layer) and rely on
+ * attribute-selector specificity to win.
+ */
+@layer utilities {
+  [data-surface='paper'] .text-signal {
+    color: var(--color-signal-text-paper);
+  }
+  [data-surface='ink'] .text-signal {
+    color: var(--color-signal-text-ink);
   }
 }

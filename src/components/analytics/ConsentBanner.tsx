@@ -64,7 +64,7 @@ export function ConsentBanner(): ReactElement | null {
           type="button"
           onClick={handleAccept}
           data-track="consent_accept"
-          className="border border-[var(--color-signal)] bg-[var(--color-signal)] px-5 py-2 font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-paper)] transition-colors duration-200 hover:bg-transparent hover:text-signal"
+          className="border border-[var(--color-signal-text-paper)] bg-[var(--color-signal-text-paper)] px-5 py-2 font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-paper)] transition-colors duration-200 hover:bg-transparent hover:text-signal"
         >
           Accept
         </button>

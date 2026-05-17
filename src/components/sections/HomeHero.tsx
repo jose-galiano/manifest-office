@@ -74,9 +74,9 @@ export function HomeHero(): ReactElement {
               href="/collections/edition-01"
               data-cursor
               data-track="hero_cta_reserve"
-              // Default state: ink text on signal-orange fill (~5.5:1, passes AA).
-              // Hover state: orange-on-paper-ish via paper text over ink hero bg.
-              className="group inline-flex items-center gap-3 border border-[var(--color-signal)] bg-[var(--color-signal)] px-9 py-4 font-mono text-[12px] font-medium uppercase tracking-[0.14em] text-[var(--color-ink)] transition-[background-color,color,letter-spacing] duration-[280ms] ease-out hover:bg-transparent hover:text-[var(--color-paper)] hover:tracking-[0.18em]"
+              // Paper text on signal-text-paper fill = 7.36:1 (AA-safe).
+              // Hover: bg transparent over ink hero, paper text stays legible.
+              className="group inline-flex items-center gap-3 border border-[var(--color-signal-text-paper)] bg-[var(--color-signal-text-paper)] px-9 py-4 font-mono text-[12px] font-medium uppercase tracking-[0.14em] text-[var(--color-paper)] transition-[background-color,color,letter-spacing] duration-[280ms] ease-out hover:bg-transparent hover:tracking-[0.18em]"
             >
               <span>Reserve from Edition 01</span>
               <span
