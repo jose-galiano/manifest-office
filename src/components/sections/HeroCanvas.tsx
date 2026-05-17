@@ -6,7 +6,9 @@ import * as THREE from 'three';
 import type { ReactElement } from 'react';
 
 const PLANE_SIZE = 80;
-const PLANE_SEGMENTS = 100;
+// 60×60 = 3,721 vertices (vs 100×100 = 10,201). Cuts per-frame CPU ~64%
+// without a perceptible difference in wireframe density.
+const PLANE_SEGMENTS = 60;
 const BASE_AMPLITUDES = { low: 2.0, mid: 1.1, high: 2.6 } as const;
 const BASE_DRIFT_HZ = 0.05;
 const CURSOR_RADIUS = 11;

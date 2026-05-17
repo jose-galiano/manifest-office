@@ -21,10 +21,22 @@ const HeroCanvas = dynamic(() => import('./HeroCanvas'), {
 export function HomeHero(): ReactElement {
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const [loaded, setLoaded] = useState(false);
+  // The static gradient is the LCP target and pays for itself in HTML.
+  // The WebGL canvas runs ~1.4s of three.js JS on first paint; gating its
+  // mount on requestIdleCallback pushes that work past Speed Index sampling.
+  const [canvasReady, setCanvasReady] = useState(false);
 
   useEffect(() => {
-    const handle = window.setTimeout(() => setLoaded(true), 80);
-    return () => window.clearTimeout(handle);
+    const loadHandle = window.setTimeout(() => setLoaded(true), 80);
+    const hasIdle = typeof window.requestIdleCallback === 'function';
+    const idleHandle = hasIdle
+      ? window.requestIdleCallback(() => setCanvasReady(true), { timeout: 2200 })
+      : window.setTimeout(() => setCanvasReady(true), 1200);
+    return () => {
+      window.clearTimeout(loadHandle);
+      if (hasIdle) window.cancelIdleCallback(idleHandle);
+      else window.clearTimeout(idleHandle);
+    };
   }, []);
 
   return (
@@ -40,7 +52,7 @@ export function HomeHero(): ReactElement {
         className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_40%,rgba(210,74,31,0.12)_0%,rgba(11,15,14,0)_55%),radial-gradient(ellipse_at_50%_100%,rgba(92,107,90,0.18)_0%,rgba(11,15,14,0)_60%)]"
       />
 
-      <HeroCanvas wrapperRef={wrapperRef} />
+      {canvasReady ? <HeroCanvas wrapperRef={wrapperRef} /> : null}
 
       <div className="relative z-[2] flex h-full flex-col justify-center px-5 md:px-10 pt-[110px] md:pt-[140px] pb-10">
         <div className="text-center">
