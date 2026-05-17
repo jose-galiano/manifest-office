@@ -34,24 +34,40 @@ import type { ReactElement } from 'react';
 const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID?.trim();
 const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_ID?.trim();
 
+// GTM + Clarity bootstrap, deferred until `requestIdleCallback` (or a 2s
+// setTimeout fallback). Loading them eagerly pushed ~280 KB of mostly-unused
+// JS onto the main thread before FCP, hurting LCP and Speed Index. Page-view
+// + dataLayer events queued during the wait are flushed when GTM lands.
+const DEFER_HARNESS_OPEN = `
+(function(boot){
+  if (typeof window === 'undefined') return;
+  var run = function(){ try { boot(); } catch (_) {} };
+  if ('requestIdleCallback' in window) {
+    window.requestIdleCallback(run, { timeout: 4000 });
+  } else {
+    window.setTimeout(run, 1200);
+  }
+})(function(){`;
+const DEFER_HARNESS_CLOSE = `});`;
+
 function gtmScript(id: string): string {
-  return `
+  return `${DEFER_HARNESS_OPEN}
 (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','${id}');
-`.trim();
+${DEFER_HARNESS_CLOSE}`;
 }
 
 function clarityScript(id: string): string {
-  return `
+  return `${DEFER_HARNESS_OPEN}
 (function(c,l,a,r,i,t,y){
     c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
     t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
     y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
 })(window, document, "clarity", "script", "${id}");
-`.trim();
+${DEFER_HARNESS_CLOSE}`;
 }
 
 export function Analytics(): ReactElement | null {

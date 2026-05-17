@@ -49,30 +49,15 @@ export function HomeHero(): ReactElement {
           >
             — ISSUED TO OPERATORS —
           </div>
+          {/* H1 paints immediately so it can serve as the LCP candidate.
+              Per-character intro animation removed — the surrounding eyebrow,
+              meta and CTA still stagger in. */}
           <h1 className="font-display font-bold leading-[0.9] tracking-[-0.03em] text-[clamp(48px,8vw,124px)]">
-            {HEADLINE_LINES.map((line, lineIndex) => {
-              const previousChars = HEADLINE_LINES.slice(0, lineIndex).reduce(
-                (total, current) => total + current.length,
-                0,
-              );
-              return (
-                <span key={line} className="block">
-                  {[...line].map((char, charIndex) => (
-                    <span
-                      key={`${line}-${charIndex}`}
-                      className={`inline-block transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                        loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                      }`}
-                      style={{
-                        transitionDelay: `${260 + (previousChars + charIndex) * 28}ms`,
-                      }}
-                    >
-                      {char === ' ' ? ' ' : char}
-                    </span>
-                  ))}
-                </span>
-              );
-            })}
+            {HEADLINE_LINES.map((line) => (
+              <span key={line} className="block">
+                {line}
+              </span>
+            ))}
           </h1>
           <div
             className={`mt-7 font-mono text-[13px] tracking-[0.12em] uppercase text-[#9CAA98] transition-opacity duration-700 ${loaded ? 'opacity-100' : 'opacity-0'}`}
