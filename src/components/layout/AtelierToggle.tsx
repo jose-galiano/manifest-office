@@ -26,6 +26,9 @@ import type { ChangeEvent, ReactElement } from 'react';
 const SESSION_KEY = 'mo_audio_session';
 const POSITION_KEY = 'mo_audio_pos';
 const VOLUME_KEY = 'mo_audio_volume';
+// Set after the very first toggle (on or off). Used to stop the attention
+// pulse — once the visitor has noticed the control, drop the hint.
+const SEEN_KEY = 'mo_audio_seen';
 const AUDIO_SRC = '/audio/atelier.mp3';
 const FADE_MS = 1400;
 const DEFAULT_VOLUME = 0.18;
@@ -82,6 +85,11 @@ export function AtelierToggle(): ReactElement {
   const [isOn, setIsOn] = useState<boolean>(false);
   const [isMounted, setIsMounted] = useState<boolean>(false);
   const [volume, setVolume] = useState<number>(DEFAULT_VOLUME);
+  // True once the visitor has touched the audio control this session. Until
+  // then we render an attention pulse + a "TRY WITH AUDIO" hint to make the
+  // affordance obvious — feedback indicated the original muji-quiet pill
+  // wasn't being noticed on either platform.
+  const [hasSeenAudio, setHasSeenAudio] = useState<boolean>(true);
 
   const cancelFade = useCallback((): void => {
     if (fadeFrameRef.current !== null) {
@@ -127,6 +135,8 @@ export function AtelierToggle(): ReactElement {
   useEffect(() => {
     setIsMounted(true);
     setVolume(readSavedVolume());
+    // Persist "seen" so the attention pulse + hint only show once per session.
+    setHasSeenAudio(readSessionStorage(SEEN_KEY) === '1');
 
     const willResume = readSessionStorage(SESSION_KEY) === '1';
 
@@ -217,6 +227,9 @@ export function AtelierToggle(): ReactElement {
   }, [isMounted]);
 
   const handleToggle = useCallback((): void => {
+    // Drop the attention pulse once the visitor has noticed the control.
+    setHasSeenAudio(true);
+    writeSessionStorage(SEEN_KEY, '1');
     setIsOn((previous) => {
       const next = !previous;
       if (next) {
@@ -257,9 +270,12 @@ export function AtelierToggle(): ReactElement {
 
   const volumePercent = Math.round(volume * 100);
 
+  const showAttention = !isOn && !hasSeenAudio;
+
   return (
     <div
       data-state={isOn ? 'on' : 'off'}
+      data-attention={showAttention ? 'on' : 'off'}
       className={[
         'group',
         'atelier-toggle',
@@ -274,8 +290,9 @@ export function AtelierToggle(): ReactElement {
         aria-pressed={isOn}
         onClick={handleToggle}
         className={[
-          'flex items-center gap-2',
-          'bg-transparent border-0 p-0',
+          'atelier-button',
+          'relative flex items-center gap-2 rounded-full',
+          'bg-transparent border-0 px-0.5 py-0.5',
           'text-inherit cursor-pointer',
           'transition-colors duration-[280ms] ease-out',
           'hover:text-[var(--color-signal)]',
@@ -285,7 +302,10 @@ export function AtelierToggle(): ReactElement {
         data-state={isOn ? 'on' : 'off'}
       >
         {/* Play icon (filled triangle) when off · pause-bars when on */}
-        <span aria-hidden="true" className="inline-flex h-2.5 w-2.5 items-center justify-center">
+        <span
+          aria-hidden="true"
+          className="relative inline-flex h-2.5 w-2.5 items-center justify-center"
+        >
           {isOn ? (
             <svg viewBox="0 0 8 8" className="h-2.5 w-2.5 fill-current">
               <rect x="1" y="0.5" width="2" height="7" />
@@ -297,10 +317,24 @@ export function AtelierToggle(): ReactElement {
             </svg>
           )}
         </span>
-        {/* Label hidden below `sm` to save horizontal space in the 36px banner
-            strip on phones — the icon + waveform carries the affordance. */}
+        {/* Compact label on mobile, fuller label from sm:. Keeps the audio
+            affordance legible at every viewport — original ATELIER-only label
+            was invisible below sm. */}
+        <span className="inline sm:hidden text-[var(--color-signal)]">♪ AUDIO</span>
         <span className="hidden sm:inline">♪ ATELIER</span>
       </button>
+
+      {/* Attention hint — visible until the visitor has interacted once.
+          Signal-orange microcopy + arrow pointing at the button. Drops
+          permanently after the first toggle. */}
+      {showAttention ? (
+        <span
+          aria-hidden="true"
+          className="atelier-hint hidden md:inline-flex items-center gap-1.5 text-[10px] tracking-[0.16em] text-[var(--color-signal)]"
+        >
+          <span>← TRY WITH AUDIO</span>
+        </span>
+      ) : null}
 
       {/* Waveform — pure-CSS bars. Only animate when audio is playing
           (data-state="on") so we pay zero CPU while paused. */}
@@ -352,6 +386,45 @@ export function AtelierToggle(): ReactElement {
       ) : null}
 
       <style>{`
+        /* Attention pulse — signal-orange ring around the play button while
+           the visitor has not interacted with the audio control yet this
+           session. Dropped permanently on first toggle. Inside-out fade so
+           it reads as a beacon, not a click target. */
+        .atelier-toggle[data-attention='on'] .atelier-button::before {
+          content: '';
+          position: absolute;
+          inset: -6px;
+          border-radius: 9999px;
+          border: 1px solid var(--color-signal);
+          opacity: 0;
+          pointer-events: none;
+          animation: atelier-attention 2200ms ease-out infinite;
+        }
+        .atelier-toggle[data-attention='on'] .atelier-hint {
+          animation: atelier-attention-text 2200ms ease-in-out infinite;
+        }
+        @keyframes atelier-attention {
+          0%   { transform: scale(0.7); opacity: 0; }
+          30%  { opacity: 0.85; }
+          70%  { transform: scale(1.45); opacity: 0; }
+          100% { transform: scale(1.45); opacity: 0; }
+        }
+        @keyframes atelier-attention-text {
+          0%, 100% { opacity: 0.45; }
+          50%      { opacity: 1; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .atelier-toggle[data-attention='on'] .atelier-button::before {
+            animation: none;
+            opacity: 0.6;
+            transform: scale(1.1);
+          }
+          .atelier-toggle[data-attention='on'] .atelier-hint {
+            animation: none;
+            opacity: 1;
+          }
+        }
+
         /* Waveform — 5 vertical bars. Idle (off) is a flat strip of dim
            lichen pips so the affordance hints at audio. Active (on) animates
            each bar's height with offset delays so the cycle reads organic. */

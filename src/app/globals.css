@@ -47,6 +47,16 @@
     color: var(--color-ink);
   }
 
+  html {
+    /*
+     * Kill iOS Safari + Android Chrome rubber-band overscroll. Without this,
+     * dragging near the edges reveals the page background (white) on both
+     * axes, which on a paper-on-ink design reads as broken. `none` also
+     * suppresses pull-to-refresh, an acceptable trade for a demo storefront.
+     */
+    overscroll-behavior: none;
+  }
+
   body {
     font-family: var(--font-body);
     font-size: 17px;
@@ -62,6 +72,18 @@
      * container, so `position: sticky` ancestors keep working.
      */
     overflow-x: clip;
+    overscroll-behavior: none;
+  }
+
+  /*
+   * Inner horizontal scrollers (carousels, scroll-rails) shouldn't propagate
+   * their bounce up to the body. `contain` keeps the swipe inertia inside
+   * the container so the page chrome stays still.
+   */
+  .no-scrollbar,
+  [class*='overflow-x-auto'],
+  [class*='snap-x'] {
+    overscroll-behavior-x: contain;
   }
 
   ::selection {
