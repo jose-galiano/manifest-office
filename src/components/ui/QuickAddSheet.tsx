@@ -35,36 +35,40 @@ export function QuickAddSheet({
   success,
   onClose,
   onSubmit,
-}: QuickAddSheetProps): ReactElement {
-  const dialogRef = useRef<HTMLDialogElement>(null);
+}: QuickAddSheetProps): ReactElement | null {
+  const panelRef = useRef<HTMLDivElement>(null);
   const [selectedIndex, setSelectedIndex] = useState<number>(initialIndex);
   const [dragOffset, setDragOffset] = useState<number>(0);
   const dragStartY = useRef<number | null>(null);
 
   useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-    if (open && !dialog.open) {
+    if (open) {
       setSelectedIndex(initialIndex);
       setDragOffset(0);
-      dialog.showModal();
-    } else if (!open && dialog.open) {
-      dialog.close();
     }
   }, [open, initialIndex]);
 
   useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-    function handleClose(): void {
-      onClose();
+    if (!open) return;
+    function handleKey(event: KeyboardEvent): void {
+      if (event.key === 'Escape') onClose();
     }
-    dialog.addEventListener('close', handleClose);
-    return () => dialog.removeEventListener('close', handleClose);
-  }, [onClose]);
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
+  }, [open, onClose]);
 
-  function handleBackdropClick(event: MouseEvent<HTMLDialogElement>): void {
-    if (event.target === dialogRef.current) onClose();
+  useEffect(() => {
+    if (!open) return;
+    const panel = panelRef.current;
+    panel?.focus();
+  }, [open]);
+
+  function stopBubble(event: MouseEvent<HTMLDivElement>): void {
+    event.stopPropagation();
+  }
+
+  function handleBackdropClick(): void {
+    onClose();
   }
 
   function handleTouchStart(event: TouchEvent<HTMLDivElement>): void {
@@ -82,12 +86,12 @@ export function QuickAddSheet({
   }
 
   function handleTouchEnd(): void {
-    if (dragOffset > DISMISS_DRAG_PX) {
-      onClose();
-    }
+    if (dragOffset > DISMISS_DRAG_PX) onClose();
     setDragOffset(0);
     dragStartY.current = null;
   }
+
+  if (!open) return null;
 
   const activeSwatch = swatches[selectedIndex] ?? swatches[0];
   const heroImage = activeSwatch?.imageUrl ?? swatches[0]?.imageUrl ?? null;
@@ -95,13 +99,13 @@ export function QuickAddSheet({
   const ctaDisabled = pending || success;
 
   return (
-    <dialog
-      ref={dialogRef}
-      className="mo-qa"
-      onClick={handleBackdropClick}
-      aria-label={`Quick add: ${title}`}
-    >
+    <div className="mo-qa" role="dialog" aria-modal="true" aria-label={`Quick add: ${title}`}>
+      <div className="mo-qa__backdrop" onClick={handleBackdropClick} aria-hidden="true" />
+
       <div
+        ref={panelRef}
+        tabIndex={-1}
+        onClick={stopBubble}
         className="mo-qa__panel"
         style={
           dragOffset ? { transform: `translateY(${dragOffset}px)`, transition: 'none' } : undefined
@@ -180,40 +184,63 @@ export function QuickAddSheet({
       </div>
 
       <style>{`
-        .mo-qa { padding: 0; border: 0; background: transparent; max-width: 100vw; max-height: 100vh; }
-        .mo-qa::backdrop { background: rgb(11 15 14 / 0.55); backdrop-filter: blur(2px); }
-        .mo-qa[open] { display: flex; }
-
-        .mo-qa__panel {
-          position: fixed;
-          left: 0; right: 0; bottom: 0;
-          background: #F2EFE8;
-          border-radius: 20px 20px 0 0;
-          padding: 18px 20px 24px;
+        .mo-qa {
+          position: absolute;
+          inset: 0;
+          z-index: 30;
           display: flex;
           flex-direction: column;
-          gap: 16px;
-          animation: mo-qa-up 320ms cubic-bezier(0.22, 1, 0.36, 1);
-          transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
-          box-shadow: 0 -8px 40px rgb(11 15 14 / 0.18);
+          justify-content: flex-end;
         }
-        .mo-qa.is-closing .mo-qa__panel { animation: mo-qa-down 240ms cubic-bezier(0.4, 0, 1, 1) forwards; }
+        .mo-qa__backdrop {
+          position: absolute;
+          inset: 0;
+          background: rgb(11 15 14 / 0.45);
+          backdrop-filter: blur(2px);
+          animation: mo-qa-fade 200ms ease-out;
+        }
+        .mo-qa__panel {
+          position: relative;
+          background: #F2EFE8;
+          padding: 18px 20px 20px;
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+          box-shadow: 0 8px 30px rgb(11 15 14 / 0.18);
+          outline: none;
+          animation: mo-qa-grow 220ms cubic-bezier(0.22, 1, 0.36, 1);
+          transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
 
+        /* Desktop / inside-card popover: fills the card */
         @media (min-width: 750px) {
-          .mo-qa { align-items: center; justify-content: center; }
+          .mo-qa { position: absolute; inset: 0; }
           .mo-qa__panel {
-            position: relative;
-            left: auto; right: auto; bottom: auto;
-            width: min(480px, 92vw);
-            border-radius: 16px;
-            animation: mo-qa-fade 240ms cubic-bezier(0.22, 1, 0.36, 1);
-            padding: 22px 24px 24px;
+            margin: auto;
+            width: calc(100% - 24px);
+            max-height: calc(100% - 24px);
+            border-radius: 12px;
+            padding: 20px;
+            overflow: auto;
+          }
+        }
+
+        /* Mobile: classic bottom sheet — break out of card via fixed positioning */
+        @media (max-width: 749px) {
+          .mo-qa {
+            position: fixed;
+            inset: 0;
+            justify-content: flex-end;
+          }
+          .mo-qa__panel {
+            border-radius: 20px 20px 0 0;
+            animation: mo-qa-up 320ms cubic-bezier(0.22, 1, 0.36, 1);
           }
         }
 
         .mo-qa__handle-zone {
           display: flex; justify-content: center; align-items: center;
-          height: 22px; margin: -10px 0 -8px;
+          height: 22px; margin: -10px 0 -4px;
           touch-action: none;
           cursor: grab;
         }
@@ -224,28 +251,29 @@ export function QuickAddSheet({
         @media (min-width: 750px) { .mo-qa__handle-zone { display: none; } }
 
         .mo-qa__close {
-          position: absolute; top: 14px; right: 16px;
-          width: 32px; height: 32px;
-          border: 0; background: transparent;
-          font-size: 16px; color: #5C6B5A;
+          position: absolute; top: 10px; right: 12px;
+          width: 28px; height: 28px;
+          border: 0; background: rgb(11 15 14 / 0.05);
+          font-size: 14px; color: #0B0F0E;
           cursor: pointer;
           display: grid; place-items: center;
           border-radius: 999px;
           transition: background 160ms;
+          z-index: 2;
         }
-        .mo-qa__close:hover { background: rgb(11 15 14 / 0.06); }
+        .mo-qa__close:hover { background: rgb(11 15 14 / 0.12); }
 
-        .mo-qa__body { display: flex; gap: 16px; align-items: stretch; }
+        .mo-qa__body { display: flex; gap: 14px; align-items: stretch; padding-right: 30px; }
         .mo-qa__hero {
-          flex: 0 0 96px;
+          flex: 0 0 84px;
           aspect-ratio: 4 / 5;
           overflow: hidden;
-          border-radius: 8px;
+          border-radius: 6px;
           background: #eae5dc;
         }
-        @media (min-width: 750px) { .mo-qa__hero { flex-basis: 140px; } }
+        @media (min-width: 750px) { .mo-qa__hero { flex-basis: 110px; } }
 
-        .mo-qa__copy { display: flex; flex-direction: column; gap: 6px; flex: 1 1 auto; min-width: 0; }
+        .mo-qa__copy { display: flex; flex-direction: column; gap: 4px; flex: 1 1 auto; min-width: 0; }
         .mo-qa__eyebrow {
           font-family: var(--font-mono, ui-monospace, monospace);
           font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
@@ -253,7 +281,7 @@ export function QuickAddSheet({
         }
         .mo-qa__title {
           font-family: var(--font-display, system-ui);
-          font-size: 22px; line-height: 1.05; font-weight: 700;
+          font-size: 20px; line-height: 1.05; font-weight: 700;
           color: #0B0F0E; margin: 0;
         }
         .mo-qa__price {
@@ -261,10 +289,10 @@ export function QuickAddSheet({
           font-size: 13px; color: #0B0F0E; margin-top: 2px;
         }
 
-        .mo-qa__swatches { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+        .mo-qa__swatches { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
         .mo-qa__swatch {
           display: inline-flex; align-items: center; gap: 6px;
-          padding: 6px 10px 6px 6px;
+          padding: 5px 10px 5px 5px;
           border-radius: 999px;
           border: 1px solid rgb(11 15 14 / 0.15);
           background: transparent;
@@ -277,16 +305,16 @@ export function QuickAddSheet({
         .mo-qa__swatch:hover { border-color: rgb(11 15 14 / 0.45); }
         .mo-qa__swatch.is-active { border-color: #0B0F0E; background: rgb(11 15 14 / 0.04); }
         .mo-qa__swatch-chip {
-          width: 16px; height: 16px; border-radius: 999px;
+          width: 14px; height: 14px; border-radius: 999px;
           border: 1px solid rgb(11 15 14 / 0.25);
           display: inline-block;
         }
 
         .mo-qa__cta {
           width: 100%;
-          padding: 14px 20px;
+          padding: 12px 20px;
           border: 0;
-          border-radius: 8px;
+          border-radius: 6px;
           background: #A8350F;
           color: #F2EFE8;
           font-family: var(--font-mono, ui-monospace, monospace);
@@ -303,7 +331,9 @@ export function QuickAddSheet({
         .mo-qa__cta:disabled { cursor: default; opacity: 0.95; }
         .mo-qa__cta.is-success { background: #2F5D3A; }
         .mo-qa__cta.is-success::after {
-          content: ''; position: absolute; inset: 0;
+          content: '';
+          position: absolute;
+          inset: 0;
           background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.18), transparent);
           animation: mo-qa-shine 600ms ease-out;
         }
@@ -312,13 +342,13 @@ export function QuickAddSheet({
           from { transform: translateY(100%); }
           to { transform: translateY(0); }
         }
-        @keyframes mo-qa-down {
-          from { transform: translateY(0); }
-          to { transform: translateY(100%); }
+        @keyframes mo-qa-grow {
+          from { opacity: 0; transform: scale(0.96); }
+          to { opacity: 1; transform: scale(1); }
         }
         @keyframes mo-qa-fade {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
+          from { opacity: 0; }
+          to { opacity: 1; }
         }
         @keyframes mo-qa-shine {
           from { transform: translateX(-100%); }
@@ -326,9 +356,12 @@ export function QuickAddSheet({
         }
 
         @media (prefers-reduced-motion: reduce) {
-          .mo-qa__panel, .mo-qa__cta { animation: none !important; transition: none !important; }
+          .mo-qa__panel, .mo-qa__cta, .mo-qa__backdrop {
+            animation: none !important;
+            transition: none !important;
+          }
         }
       `}</style>
-    </dialog>
+    </div>
   );
 }

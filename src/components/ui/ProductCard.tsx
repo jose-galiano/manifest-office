@@ -188,7 +188,7 @@ export function ProductCard({ product, dossierNumber }: ProductCardProps): React
   const quickAddLabel = resolveQuickAddLabel(isMultiColorway, showInlinePending, showInlineSuccess);
 
   return (
-    <>
+    <div className="relative">
       <Link
         href={pdpHref}
         className="group relative block bg-[#F2EFE8] transition-colors duration-300 hover:bg-[rgba(11,15,14,0.03)]"
@@ -305,6 +305,6 @@ export function ProductCard({ product, dossierNumber }: ProductCardProps): React
           onSubmit={submitColorway}
         />
       ) : null}
-    </>
+    </div>
   );
 }
