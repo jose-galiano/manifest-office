@@ -24,8 +24,19 @@ export function CartBadge(): ReactElement {
   // Avoid a hydration mismatch when the server renders 0 but the client has a
   // persisted cart — defer to client value after mount.
   const [isMounted, setIsMounted] = useState(false);
+  const [pulse, setPulse] = useState<boolean>(false);
   useEffect(() => {
     setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    function onAdded(): void {
+      setPulse(false);
+      window.requestAnimationFrame(() => setPulse(true));
+      window.setTimeout(() => setPulse(false), 640);
+    }
+    window.addEventListener('mo:cart-added', onAdded);
+    return () => window.removeEventListener('mo:cart-added', onAdded);
   }, []);
 
   const displayedCount = isMounted ? count : 0;
@@ -35,7 +46,8 @@ export function CartBadge(): ReactElement {
       type="button"
       onClick={openDrawer}
       data-cursor
-      className="flex items-center gap-[6px] text-[12px] hover:text-signal transition-colors bg-transparent border-0 p-0 cursor-pointer"
+      data-pulse={pulse ? 'on' : 'off'}
+      className="mo-cart-badge flex items-center gap-[6px] text-[12px] hover:text-signal transition-colors bg-transparent border-0 p-0 cursor-pointer"
       aria-label={`Open manifest, ${displayedCount} ${displayedCount === 1 ? 'item' : 'items'}`}
     >
       <span className="font-mono tracking-[0.04em] uppercase">CART</span>
@@ -46,6 +58,21 @@ export function CartBadge(): ReactElement {
       >
         [{displayedCount}]
       </span>
+      <style>{`
+        .mo-cart-badge[data-pulse='on'] .cart-count {
+          animation: mo-cart-pulse 620ms cubic-bezier(0.22, 1, 0.36, 1);
+          display: inline-block;
+        }
+        @keyframes mo-cart-pulse {
+          0%   { transform: scale(1);    color: var(--color-signal); }
+          25%  { transform: scale(1.35); color: #2F5D3A; }
+          60%  { transform: scale(0.95); color: #2F5D3A; }
+          100% { transform: scale(1);    color: var(--color-signal); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .mo-cart-badge[data-pulse='on'] .cart-count { animation: none; }
+        }
+      `}</style>
     </button>
   );
 }
