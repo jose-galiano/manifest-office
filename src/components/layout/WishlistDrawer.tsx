@@ -8,6 +8,7 @@ import { reserveProductAction } from '@/app/products/[handle]/actions';
 import { useCart } from '@/hooks/use-cart';
 import { useWishlist } from '@/hooks/use-wishlist';
 import { CUSTOM_EVENTS, ECOMMERCE_EVENTS, track } from '@/lib/analytics';
+import { toStorefrontHandle } from '@/lib/shopify/handle';
 
 import type { ManifestProduct, ProductsResponse } from '@/lib/types/product';
 import type { ReactElement } from 'react';
@@ -58,8 +59,9 @@ export function WishlistDrawer(): ReactElement {
         const map: Record<string, { issued: number; total: number }> = {};
         const list: ManifestProduct[] = [];
         for (const product of payload.products) {
-          map[product.handle] = { issued: product.editionIssued, total: product.editionTotal };
-          if (sharedHandles?.includes(product.handle)) list.push(product);
+          const storefrontHandle = toStorefrontHandle(product.handle);
+          map[storefrontHandle] = { issued: product.editionIssued, total: product.editionTotal };
+          if (sharedHandles?.includes(storefrontHandle)) list.push(product);
         }
         setAllocations(map);
         if (sharedHandles) setSharedItems(list);
@@ -71,7 +73,7 @@ export function WishlistDrawer(): ReactElement {
   const visibleItems = useMemo(() => {
     if (isShared) {
       return sharedItems.map((product) => ({
-        handle: product.handle,
+        handle: toStorefrontHandle(product.handle),
         title: product.title,
         priceEur: product.price,
         imageUrl: product.image ?? product.images[0]?.url ?? '',
