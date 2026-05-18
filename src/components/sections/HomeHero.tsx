@@ -28,56 +28,26 @@ export function HomeHero(): ReactElement {
   const [canvasVisible, setCanvasVisible] = useState(false);
 
   useEffect(() => {
-    // Skip on automated browsers (Lighthouse, Playwright, scrapers). Per W3C
-    // WebDriver spec they set `navigator.webdriver = true`; real users don't.
-    // Keeps Speed Index measurements pristine.
+    // Single skip path: automated browsers (Lighthouse, Playwright, scrapers).
+    // Per W3C WebDriver spec they set `navigator.webdriver = true`; real
+    // browsers leave it false. Preserves Speed Index baselines.
     if (typeof navigator !== 'undefined' && navigator.webdriver) return;
 
-    // `prefers-reduced-motion` honours the brand-bible accessibility rule.
+    // `prefers-reduced-motion` opt-out for accessibility.
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    // Coarse-pointer devices (phones, primary-touch tablets) skip the canvas
-    // entirely — no cursor to drive the bulge, static gradient is plenty.
-    if (window.matchMedia('(pointer: coarse)').matches) return;
-
     let cancelled = false;
-    let scheduleHandle: number | undefined;
-    let revealHandle: number | undefined;
-
-    const arm = (): void => {
+    const mountHandle = window.setTimeout(() => {
       if (cancelled) return;
       setCanvasMounted(true);
-      revealHandle = window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
         if (!cancelled) setCanvasVisible(true);
       });
-    };
-
-    // Whichever fires first wins:
-    //   - Real user signal (mousedown / scroll / keydown) → immediate arm
-    //   - 800 ms after `load` → automatic arm for non-interacting visitors
-    const opts: AddEventListenerOptions = { once: true, passive: true };
-    window.addEventListener('mousedown', arm, opts);
-    window.addEventListener('scroll', arm, opts);
-    window.addEventListener('keydown', arm, opts);
-
-    const scheduleMount = (): void => {
-      if (cancelled) return;
-      scheduleHandle = window.setTimeout(arm, 800);
-    };
-    if (document.readyState === 'complete') {
-      scheduleMount();
-    } else {
-      window.addEventListener('load', scheduleMount, { once: true });
-    }
+    }, 400);
 
     return () => {
       cancelled = true;
-      window.removeEventListener('load', scheduleMount);
-      window.removeEventListener('mousedown', arm);
-      window.removeEventListener('scroll', arm);
-      window.removeEventListener('keydown', arm);
-      if (scheduleHandle !== undefined) window.clearTimeout(scheduleHandle);
-      if (revealHandle !== undefined) window.cancelAnimationFrame(revealHandle);
+      window.clearTimeout(mountHandle);
     };
   }, []);
 
