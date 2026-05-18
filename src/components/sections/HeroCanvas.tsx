@@ -160,7 +160,11 @@ export default function HeroCanvas({ wrapperRef }: HeroCanvasProps): ReactElemen
     let smoothPointerNdcY = 0;
     const cursorWorld = new THREE.Vector3(999, 0, 999);
     const cursorWorldTarget = new THREE.Vector3();
+    let pointerActive = false;
+    let pointerActiveAt = 0;
     const handlePointer = (event: MouseEvent): void => {
+      pointerActive = true;
+      pointerActiveAt = performance.now();
       rawPointerNdcX = (event.clientX / window.innerWidth) * 2 - 1;
       rawPointerNdcY = -(event.clientY / window.innerHeight) * 2 + 1;
     };
@@ -169,6 +173,24 @@ export default function HeroCanvas({ wrapperRef }: HeroCanvasProps): ReactElemen
     };
     document.addEventListener('mousemove', handlePointer);
     document.addEventListener('mouseleave', handlePointerLeave);
+
+    // Scroll-driven feedback for touch / no-mouse visitors. Scroll position
+    // through the hero band (top→bottom) sweeps the bulge across the plane
+    // along a smooth lemniscate so the grid reacts to thumb scrolls even
+    // without a cursor. Desktop pointer takes over the moment a mousemove
+    // fires; the scroll path is the fallback ambient signal.
+    const SCROLL_BULGE_RADIUS = 22;
+    let scrollProgress = 0;
+    const updateScrollProgress = (): void => {
+      const rect = wrapper.getBoundingClientRect();
+      const total = rect.height + window.innerHeight;
+      const offset = window.innerHeight - rect.top;
+      scrollProgress = Math.max(0, Math.min(1, offset / total));
+    };
+    updateScrollProgress();
+    const onScroll = (): void => updateScrollProgress();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
 
     let visible = true;
     const visibilityObserver = new IntersectionObserver(
@@ -189,13 +211,29 @@ export default function HeroCanvas({ wrapperRef }: HeroCanvasProps): ReactElemen
       smoothPointerNdcX += (rawPointerNdcX - smoothPointerNdcX) * 0.06;
       smoothPointerNdcY += (rawPointerNdcY - smoothPointerNdcY) * 0.06;
 
-      const projected = projectCursorToGround(
-        camera,
-        smoothPointerNdcX,
-        smoothPointerNdcY,
-        cursorWorldTarget,
-      );
-      if (!projected) cursorWorldTarget.set(999, 0, 999);
+      // Pointer goes "idle" 2.5 s after the last mousemove — scroll-driven
+      // ambient path takes over so the grid never sits still on touch
+      // devices or when a desktop user has stopped moving.
+      const pointerIdle = !pointerActive || performance.now() - pointerActiveAt > 2500;
+
+      if (pointerIdle) {
+        // Lemniscate (figure-8) sweep driven by scroll progress + slow time
+        // drift, so the bulge keeps moving even between scrolls.
+        const phase = scrollProgress * Math.PI * 2 + elapsed * 0.18;
+        cursorWorldTarget.set(
+          Math.cos(phase) * SCROLL_BULGE_RADIUS,
+          0,
+          Math.sin(phase * 2) * (SCROLL_BULGE_RADIUS * 0.5),
+        );
+      } else {
+        const projected = projectCursorToGround(
+          camera,
+          smoothPointerNdcX,
+          smoothPointerNdcY,
+          cursorWorldTarget,
+        );
+        if (!projected) cursorWorldTarget.set(999, 0, 999);
+      }
 
       cursorWorld.x += (cursorWorldTarget.x - cursorWorld.x) * CURSOR_FOLLOW;
       cursorWorld.z += (cursorWorldTarget.z - cursorWorld.z) * CURSOR_FOLLOW;
@@ -247,6 +285,8 @@ export default function HeroCanvas({ wrapperRef }: HeroCanvasProps): ReactElemen
     return () => {
       cancelAnimationFrame(frameId);
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
       document.removeEventListener('mousemove', handlePointer);
       document.removeEventListener('mouseleave', handlePointerLeave);
       visibilityObserver.disconnect();
