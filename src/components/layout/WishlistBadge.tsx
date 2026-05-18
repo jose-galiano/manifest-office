@@ -65,20 +65,48 @@ export function WishlistBadge(): ReactElement {
         [{displayedCount}]
       </span>
       <style>{`
-        .mo-wish-badge[data-pulse='on'] svg,
+        .mo-wish-badge[data-pulse='on'] svg {
+          animation: mo-wish-pulse-icon 720ms cubic-bezier(0.22, 1, 0.36, 1);
+          color: #D24A1F;
+        }
         .mo-wish-badge[data-pulse='on'] .wish-count {
-          animation: mo-wish-pulse 600ms cubic-bezier(0.22, 1, 0.36, 1);
+          animation: mo-wish-pulse-count 720ms cubic-bezier(0.22, 1, 0.36, 1);
           display: inline-block;
         }
-        @keyframes mo-wish-pulse {
-          0%   { transform: scale(1);    color: var(--color-signal); }
-          30%  { transform: scale(1.35); color: #D24A1F; }
-          60%  { transform: scale(0.95); color: #D24A1F; }
-          100% { transform: scale(1);    color: var(--color-signal); }
+        .mo-wish-badge[data-pulse='on']::after {
+          content: '';
+          position: absolute;
+          inset: 50% auto auto 0;
+          width: 28px; height: 28px;
+          margin: -14px 0 0 -8px;
+          border-radius: 999px;
+          border: 1.5px solid #D24A1F;
+          opacity: 0.7;
+          pointer-events: none;
+          animation: mo-wish-ring 720ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .mo-wish-badge { position: relative; }
+        @keyframes mo-wish-pulse-icon {
+          0%   { transform: scale(1); }
+          25%  { transform: scale(1.6) rotate(-8deg); }
+          55%  { transform: scale(0.9) rotate(4deg); }
+          100% { transform: scale(1) rotate(0); }
+        }
+        @keyframes mo-wish-pulse-count {
+          0%   { transform: scale(1) translateY(0);    color: var(--color-signal); }
+          30%  { transform: scale(1.35) translateY(-2px); color: #D24A1F; }
+          60%  { transform: scale(0.95) translateY(0); color: #D24A1F; }
+          100% { transform: scale(1) translateY(0);    color: var(--color-signal); }
+        }
+        @keyframes mo-wish-ring {
+          0%   { transform: scale(0.4); opacity: 0.9; }
+          70%  { opacity: 0.5; }
+          100% { transform: scale(2.4); opacity: 0; }
         }
         @media (prefers-reduced-motion: reduce) {
           .mo-wish-badge[data-pulse='on'] svg,
-          .mo-wish-badge[data-pulse='on'] .wish-count { animation: none; }
+          .mo-wish-badge[data-pulse='on'] .wish-count,
+          .mo-wish-badge[data-pulse='on']::after { animation: none; }
         }
       `}</style>
     </button>
