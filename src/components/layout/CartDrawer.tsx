@@ -277,6 +277,14 @@ export function CartDrawer(): ReactElement | null {
 
   useEffect(() => {
     if (!isDrawerOpen) return;
+    // Close the wishlist drawer if cart opens — mutually exclusive overlays.
+    import('@/lib/state/wishlist').then(({ useWishlistStore }) => {
+      if (useWishlistStore.getState().isDrawerOpen) useWishlistStore.getState().closeDrawer();
+    });
+  }, [isDrawerOpen]);
+
+  useEffect(() => {
+    if (!isDrawerOpen) return;
     function onKey(event: KeyboardEvent): void {
       if (event.key === 'Escape') closeDrawer();
     }

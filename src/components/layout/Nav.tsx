@@ -19,6 +19,7 @@ import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
 import { CartBadge } from '@/components/layout/CartBadge';
+import { WishlistBadge } from '@/components/layout/WishlistBadge';
 
 import type { ReactElement } from 'react';
 
@@ -139,6 +140,7 @@ export function Nav({ forceSolid }: NavProps = {}): ReactElement {
           <span className="hidden md:inline font-mono text-[11px] tracking-[0.04em] uppercase">
             EN · EUR
           </span>
+          <WishlistBadge />
           <CartBadge />
           {/* Hamburger — visible only below `md`. */}
           <button

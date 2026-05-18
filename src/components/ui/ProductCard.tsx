@@ -9,6 +9,7 @@ import { ENGRAVING_UPCHARGE_EUR, hasEngravingOption } from '@/lib/constants/engr
 import { toStorefrontHandle } from '@/lib/shopify/handle';
 
 import { QuickAddSheet } from './QuickAddSheet';
+import { WishlistHeart } from './WishlistHeart';
 
 import type { ManifestProduct } from '@/lib/types/product';
 import type { CSSProperties, MouseEvent, ReactElement } from 'react';
@@ -213,6 +214,12 @@ export function ProductCard({ product, dossierNumber }: ProductCardProps): React
               className="h-full w-full object-cover transition-transform duration-[1000ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
             />
           ) : null}
+          <WishlistHeart
+            handle={storefrontHandle}
+            title={product.title}
+            priceEur={product.price}
+            imageUrl={displayedImage || heroFallback}
+          />
           <QuickAddPill
             label={quickAddLabel}
             success={showInlineSuccess}

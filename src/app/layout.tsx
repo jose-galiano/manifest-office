@@ -6,6 +6,8 @@ import { CartDrawer } from '@/components/layout/CartDrawer';
 import { ConsoleSignature } from '@/components/layout/ConsoleSignature';
 import { Footer } from '@/components/layout/Footer';
 import { Nav } from '@/components/layout/Nav';
+import { WishlistDrawer } from '@/components/layout/WishlistDrawer';
+import { WishlistShareHydrator } from '@/components/layout/WishlistShareHydrator';
 import { EditionBanner } from '@/components/sections/EditionBanner';
 import { LeadCapturePopup } from '@/components/sections/LeadCapturePopup';
 import { CONSENT_DEFAULT_SCRIPT } from '@/lib/analytics';
@@ -92,6 +94,8 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         <main className="flex-1">{children}</main>
         <Footer />
         <CartDrawer />
+        <WishlistDrawer />
+        <WishlistShareHydrator />
         <LeadCapturePopup />
         <ConsoleSignature />
       </body>

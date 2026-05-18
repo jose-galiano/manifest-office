@@ -69,6 +69,13 @@ export const CUSTOM_EVENTS = {
   emailCaptureSubmit: 'email_capture_submit',
   consentGranted: 'consent_granted',
   consentDenied: 'consent_denied',
+  wishlistAdd: 'add_to_wishlist',
+  wishlistRemove: 'remove_from_wishlist',
+  wishlistDrawerOpen: 'wishlist_drawer_open',
+  wishlistDrawerClose: 'wishlist_drawer_close',
+  wishlistShare: 'wishlist_share',
+  wishlistSharedView: 'wishlist_shared_view',
+  wishlistReserve: 'wishlist_reserve_click',
 } as const;
 
 export type EcommerceEventName = (typeof ECOMMERCE_EVENTS)[keyof typeof ECOMMERCE_EVENTS];
