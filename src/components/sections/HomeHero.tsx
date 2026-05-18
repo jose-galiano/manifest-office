@@ -30,36 +30,40 @@ export function HomeHero(): ReactElement {
   useEffect(() => {
     // Skip on automated browsers (Lighthouse, Playwright, scrapers). Per W3C
     // WebDriver spec they set `navigator.webdriver = true`; real users don't.
-    // Keeps Speed Index measurements pristine without affecting humans.
+    // Keeps Speed Index measurements pristine.
     if (typeof navigator !== 'undefined' && navigator.webdriver) return;
 
     // `prefers-reduced-motion` honours the brand-bible accessibility rule.
-    // Static gradient stays as the hero; no canvas, no animation.
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     // Coarse-pointer devices (phones, primary-touch tablets) skip the canvas
-    // entirely. Without a cursor to drive the bulge the effect is wasted
-    // CPU; the static gradient is the canonical mobile hero.
+    // entirely — no cursor to drive the bulge, static gradient is plenty.
     if (window.matchMedia('(pointer: coarse)').matches) return;
 
+    let cancelled = false;
     let scheduleHandle: number | undefined;
     let revealHandle: number | undefined;
-    let cancelled = false;
 
-    // After `window.load`, give the browser a beat to settle (fonts, late
-    // images, idle GC) and then mount the canvas + fade it in. Real users
-    // see the grid materialise ~1.2 s after the page is fully loaded.
-    const scheduleMount = (): void => {
+    const arm = (): void => {
       if (cancelled) return;
-      scheduleHandle = window.setTimeout(() => {
-        if (cancelled) return;
-        setCanvasMounted(true);
-        revealHandle = window.requestAnimationFrame(() => {
-          if (!cancelled) setCanvasVisible(true);
-        });
-      }, 1200);
+      setCanvasMounted(true);
+      revealHandle = window.requestAnimationFrame(() => {
+        if (!cancelled) setCanvasVisible(true);
+      });
     };
 
+    // Whichever fires first wins:
+    //   - Real user signal (mousedown / scroll / keydown) → immediate arm
+    //   - 800 ms after `load` → automatic arm for non-interacting visitors
+    const opts: AddEventListenerOptions = { once: true, passive: true };
+    window.addEventListener('mousedown', arm, opts);
+    window.addEventListener('scroll', arm, opts);
+    window.addEventListener('keydown', arm, opts);
+
+    const scheduleMount = (): void => {
+      if (cancelled) return;
+      scheduleHandle = window.setTimeout(arm, 800);
+    };
     if (document.readyState === 'complete') {
       scheduleMount();
     } else {
@@ -69,6 +73,9 @@ export function HomeHero(): ReactElement {
     return () => {
       cancelled = true;
       window.removeEventListener('load', scheduleMount);
+      window.removeEventListener('mousedown', arm);
+      window.removeEventListener('scroll', arm);
+      window.removeEventListener('keydown', arm);
       if (scheduleHandle !== undefined) window.clearTimeout(scheduleHandle);
       if (revealHandle !== undefined) window.cancelAnimationFrame(revealHandle);
     };

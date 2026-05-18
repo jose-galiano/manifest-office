@@ -46,7 +46,12 @@ export function WishlistHeart({
         setPulse(false);
         window.requestAnimationFrame(() => setPulse(true));
         window.setTimeout(() => setPulse(false), 560);
-        window.setTimeout(() => openDrawer(), 280);
+
+        const isMobile =
+          typeof window !== 'undefined' && window.matchMedia('(max-width: 749px)').matches;
+        if (!isMobile) {
+          window.setTimeout(() => openDrawer(), 280);
+        }
       }
     },
     [handle, imageUrl, openDrawer, priceEur, title, toggle],
