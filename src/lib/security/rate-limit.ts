@@ -48,3 +48,25 @@ async function incrementWithExpiry(key: string, ttlSeconds: number): Promise<num
   }
   return count;
 }
+
+// Generic per-IP rate-limit for write endpoints. Reserve uses a looser bucket
+// than /api/desk because a single visitor legitimately reserves several
+// dossiers in one session.
+export async function checkReserveRateLimit(ipAddress: string): Promise<RateLimitResult> {
+  if (!hasUpstashCreds()) {
+    return { ok: true, hourCount: null, dayCount: null };
+  }
+  const HOUR_LIMIT = 30;
+  const DAY_LIMIT = 120;
+  const hourKey = `reserve:rl:h:${ipAddress}`;
+  const dayKey = `reserve:rl:d:${ipAddress}`;
+  const hourCount = await incrementWithExpiry(hourKey, RATE_LIMIT_HOUR_SECONDS);
+  const dayCount = await incrementWithExpiry(dayKey, RATE_LIMIT_DAY_SECONDS);
+  if (typeof hourCount === 'number' && hourCount > HOUR_LIMIT) {
+    return { ok: false, reason: 'too_many_per_hour', retryAfter: RATE_LIMIT_HOUR_SECONDS };
+  }
+  if (typeof dayCount === 'number' && dayCount > DAY_LIMIT) {
+    return { ok: false, reason: 'too_many_per_day', retryAfter: RATE_LIMIT_DAY_SECONDS };
+  }
+  return { ok: true, hourCount, dayCount };
+}
