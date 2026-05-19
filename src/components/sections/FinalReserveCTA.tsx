@@ -7,6 +7,8 @@
  * (brand-bible §14 anti-brief: no countdown theatre).
  */
 
+import { getTranslations } from 'next-intl/server';
+
 import { EDITION_01 } from '@/content/manifest-office';
 import { Link } from '@/i18n/navigation';
 import { fetchManifestProducts } from '@/lib/services/fetch-products';
@@ -29,6 +31,7 @@ export async function FinalReserveCTA(): Promise<ReactElement> {
   const total = EDITION_01.totalAllocation;
   const remaining = Math.max(0, total - issued);
   const padded = String(issued).padStart(5, '0');
+  const t = await getTranslations('final_reserve');
 
   return (
     <section
@@ -43,17 +46,15 @@ export async function FinalReserveCTA(): Promise<ReactElement> {
               aria-hidden="true"
               className="mr-2 inline-block h-2 w-2 rounded-full bg-[#D24A1F] align-middle"
             />
-            EDITION 01 · STILL OPEN · ISSUING FROM PORTO
+            {t('eyebrow_open').toUpperCase()}
           </span>
           <h2 className="font-display font-bold leading-[0.92] tracking-[-0.03em] text-[clamp(48px,7vw,112px)]">
-            {remaining.toLocaleString('en-GB')} systems
+            {t('remaining_systems', { remaining: remaining.toLocaleString('en-GB') })}
             <br />
-            still to issue.
+            {t('title_remaining')}
           </h2>
           <p className="mt-8 max-w-[44ch] text-[17px] leading-[1.55] text-[#F2EFE8]/75">
-            Each kit is allocated to a single operator, numbered against the Edition, finished by
-            hand at Atelier Souto, and shipped within five business days of issue. When the 1,200th
-            leaves Porto, Edition 01 closes.
+            {t('subtitle')}
           </p>
         </div>
 
@@ -85,7 +86,7 @@ export async function FinalReserveCTA(): Promise<ReactElement> {
               data-track-remaining={String(remaining)}
               className="group inline-flex items-center justify-center gap-3 border border-[#D24A1F] bg-[#A8350F] px-9 py-4 font-mono text-[12px] uppercase tracking-[0.14em] text-[#F2EFE8] transition-[background-color,letter-spacing] duration-[280ms] ease-out hover:bg-transparent hover:tracking-[0.18em]"
             >
-              <span>Reserve from Edition 01</span>
+              <span>{t('cta')}</span>
               <span
                 aria-hidden="true"
                 className="transition-transform duration-[280ms] ease-out group-hover:translate-x-1"

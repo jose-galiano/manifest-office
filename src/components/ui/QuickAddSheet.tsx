@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
 
 import type { MouseEvent, ReactElement, TouchEvent } from 'react';
@@ -91,15 +92,17 @@ export function QuickAddSheet({
     dragStartY.current = null;
   }
 
+  const t = useTranslations('quick_add');
+
   if (!open) return null;
 
   const activeSwatch = swatches[selectedIndex] ?? swatches[0];
   const heroImage = activeSwatch?.imageUrl ?? swatches[0]?.imageUrl ?? null;
-  const ctaLabel = success ? 'Reserved ✓' : pending ? 'Reserving…' : 'Reserve';
+  const ctaLabel = success ? t('cta_success') : pending ? t('cta_pending') : t('cta_idle');
   const ctaDisabled = pending || success;
 
   return (
-    <div className="mo-qa" role="dialog" aria-modal="true" aria-label={`Quick add: ${title}`}>
+    <div className="mo-qa" role="dialog" aria-modal="true" aria-label={`${t('title')}: ${title}`}>
       <div className="mo-qa__backdrop" onClick={handleBackdropClick} aria-hidden="true" />
 
       <div
@@ -121,12 +124,7 @@ export function QuickAddSheet({
           <span className="mo-qa__handle" />
         </div>
 
-        <button
-          type="button"
-          onClick={onClose}
-          className="mo-qa__close"
-          aria-label="Close quick add"
-        >
+        <button type="button" onClick={onClose} className="mo-qa__close" aria-label={t('close')}>
           ✕
         </button>
 
@@ -145,12 +143,12 @@ export function QuickAddSheet({
           </div>
 
           <div className="mo-qa__copy">
-            <span className="mo-qa__eyebrow">Quick Reserve</span>
+            <span className="mo-qa__eyebrow">{t('title')}</span>
             <h2 className="mo-qa__title">{title}</h2>
             <span className="mo-qa__price">€{Math.round(priceEur)}</span>
 
             {swatches.length > 1 ? (
-              <div className="mo-qa__swatches" role="radiogroup" aria-label="Choose colorway">
+              <div className="mo-qa__swatches" role="radiogroup" aria-label={t('choose_colorway')}>
                 {swatches.map((swatch, index) => {
                   const isActive = index === selectedIndex;
                   return (

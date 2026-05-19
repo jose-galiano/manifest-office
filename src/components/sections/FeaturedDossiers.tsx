@@ -54,6 +54,9 @@ export async function FeaturedDossiers(): Promise<ReactElement | null> {
   const rows = buildRows(liveProducts);
   if (rows.length === 0) return null;
 
+  const { getTranslations } = await import('next-intl/server');
+  const t = await getTranslations('featured_dossiers');
+
   return (
     <section
       aria-label="Featured dossiers"
@@ -63,12 +66,10 @@ export async function FeaturedDossiers(): Promise<ReactElement | null> {
         <header className="mb-14 grid grid-cols-1 items-end gap-8 md:grid-cols-[2fr_1fr] md:gap-20">
           <div>
             <span className="mb-5 block font-mono text-[11px] tracking-[0.12em] uppercase text-signal">
-              — EDITION 01 · FEATURED DOSSIERS —
+              — {t('eyebrow').toUpperCase()} —
             </span>
             <h2 className="font-display font-bold leading-[0.95] tracking-[-0.02em] text-[clamp(40px,5.5vw,80px)]">
-              Four pieces that
-              <br />
-              hold the system together.
+              {t('title')}
             </h2>
           </div>
           <div className="flex items-end justify-start md:justify-end">
@@ -77,7 +78,7 @@ export async function FeaturedDossiers(): Promise<ReactElement | null> {
               data-cursor
               className="group inline-flex items-center gap-2 border-b border-[#0B0F0E] pb-1 font-mono text-[12px] uppercase tracking-[0.12em] text-[#0B0F0E] transition-colors duration-200 hover:text-signal hover:border-[#D24A1F]"
             >
-              <span>View all 10 dossiers</span>
+              <span>{t('view_all')}</span>
               <span
                 aria-hidden="true"
                 className="transition-transform duration-200 group-hover:translate-x-1"

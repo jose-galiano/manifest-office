@@ -1,12 +1,12 @@
 'use client';
 
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 
 import { CartItemRow } from '@/components/sections/CartItemRow';
 import { useCart } from '@/hooks/use-cart';
-import { useRouter } from '@/i18n/navigation';
-import { Link } from '@/i18n/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
 import { CUSTOM_EVENTS, ECOMMERCE_EVENTS, track } from '@/lib/analytics';
 import {
   CUTOFF_HOUR,
@@ -202,6 +202,7 @@ async function postTrack(
 }
 
 export function CartDrawer(): ReactElement | null {
+  const t = useTranslations('cart');
   const router = useRouter();
   const {
     items,
@@ -432,14 +433,14 @@ export function CartDrawer(): ReactElement | null {
       >
         <div className="flex items-baseline justify-between px-9 pb-6 pt-9">
           <h3 className="font-display text-[22px] font-medium leading-none tracking-[-0.01em]">
-            Manifest
+            {t('drawer_title')}
           </h3>
           <button
             type="button"
             onClick={closeDrawer}
             className="bg-transparent p-0 font-mono text-[11px] uppercase tracking-[0.06em] text-[var(--color-lichen)] hover:text-[var(--color-ink)] transition-colors"
           >
-            Close
+            {t('close')}
           </button>
         </div>
 
@@ -466,7 +467,7 @@ export function CartDrawer(): ReactElement | null {
         <div className="flex-1 overflow-y-auto px-9 pb-2 pt-7">
           {cartIsEmpty ? (
             <div className="py-6 font-mono text-[11px] uppercase tracking-[0.06em] text-[var(--color-lichen)]">
-              Empty
+              {t('empty_eyebrow')}
             </div>
           ) : (
             <div className="divide-y divide-[var(--color-rule)]">

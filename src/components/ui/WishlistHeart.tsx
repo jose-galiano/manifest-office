@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useCallback, useState } from 'react';
 
 import { useWishlist } from '@/hooks/use-wishlist';
@@ -20,6 +21,7 @@ export function WishlistHeart({
   priceEur,
   imageUrl,
 }: WishlistHeartProps): ReactElement {
+  const t = useTranslations('product_card');
   const { toggle, has, openDrawer } = useWishlist();
   const wished = has(handle);
   const [pulse, setPulse] = useState<boolean>(false);
@@ -61,7 +63,7 @@ export function WishlistHeart({
     <button
       type="button"
       onClick={onClick}
-      aria-label={wished ? `Remove ${title} from wishlist` : `Save ${title} to wishlist`}
+      aria-label={wished ? t('remove_from_wishlist', { title }) : t('save_to_wishlist', { title })}
       aria-pressed={wished}
       data-pulse={pulse ? 'on' : 'off'}
       className={`mo-wishlist-heart group/heart absolute bottom-3 left-3 z-10 inline-flex items-center justify-center rounded-full border border-[rgba(11,15,14,0.12)] bg-[#F2EFE8] p-2.5 shadow-[0_2px_10px_rgba(11,15,14,0.12)] transition-[transform,background,border-color] duration-200 hover:bg-white active:scale-[0.94] ${

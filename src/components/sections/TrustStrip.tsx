@@ -9,49 +9,32 @@
  * VIEWING NOW" scarcity, no review-aggregate stars. Just facts.
  */
 
+import { getTranslations } from 'next-intl/server';
+
 import type { ReactElement } from 'react';
 
-interface TrustItem {
-  readonly label: string;
-  readonly value: string;
-  readonly detail: string;
-}
+type TrustKey = 'origin' | 'allocation' | 'shipping' | 'returns';
+const TRUST_KEYS: readonly TrustKey[] = ['origin', 'allocation', 'shipping', 'returns'];
 
-const ITEMS: readonly TrustItem[] = [
-  {
-    label: 'ORIGIN',
-    value: 'Finished in Porto',
-    detail: 'Cut, stitched, inspected by hand at Atelier Souto.',
-  },
-  {
-    label: 'ALLOCATION',
-    value: '1,200 systems',
-    detail: 'Edition 01 — Strait of Gibraltar. Issued in series.',
-  },
-  {
-    label: 'SHIPPING',
-    value: 'Free across the EU',
-    detail: 'Above €150. €8 flat below. 1–2 day transit.',
-  },
-  {
-    label: 'RETURNS',
-    value: '30 days',
-    detail: 'Anchor-Latch hardware repaired for the lifetime of the kit.',
-  },
-];
-
-export function TrustStrip(): ReactElement {
+export async function TrustStrip(): Promise<ReactElement> {
+  const t = await getTranslations('trust_strip');
+  const items = TRUST_KEYS.map((key) => ({
+    key,
+    label: t(`${key}_label`).toUpperCase(),
+    value: t(`${key}_value`),
+    detail: t(`${key}_detail`),
+  }));
   return (
     <section
       aria-label="Manifest Office assurances"
       className="border-y border-[rgba(11,15,14,0.12)] bg-[#F2EFE8] text-[#0B0F0E]"
     >
       <div className="mx-auto grid max-w-[1800px] grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-        {ITEMS.map((item, index) => (
+        {items.map((item, index) => (
           <div
-            key={item.label}
+            key={item.key}
             className={`flex flex-col gap-3 px-5 md:px-10 py-12 ${
-              index < ITEMS.length - 1
+              index < items.length - 1
                 ? 'border-b border-[rgba(11,15,14,0.12)] lg:border-b-0 lg:border-r'
                 : ''
             }`}

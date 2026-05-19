@@ -76,10 +76,18 @@
     "view_all": "View every dossier"
   },
   "trust_strip": {
-    "shipping": "Free shipping over €120",
-    "returns": "30-day returns on unused dossiers",
-    "origin": "Designed in Gibraltar · Finished in Porto",
-    "allocation": "1,200 systems issued"
+    "origin_label": "Origin",
+    "origin_value": "Finished in Porto",
+    "origin_detail": "Cut, stitched, inspected by hand at Atelier Souto.",
+    "allocation_label": "Allocation",
+    "allocation_value": "1,200 systems",
+    "allocation_detail": "Edition 01 — Strait of Gibraltar. Issued in series.",
+    "shipping_label": "Shipping",
+    "shipping_value": "Free across the EU",
+    "shipping_detail": "Above €150. €8 flat below. 1–2 day transit.",
+    "returns_label": "Returns",
+    "returns_value": "30 days",
+    "returns_detail": "Anchor-Latch hardware repaired for the lifetime of the kit."
   },
   "manifesto": {
     "eyebrow": "Manifesto",
@@ -105,10 +113,11 @@
     "body": "Cristina, Joana, and Marc finish every dossier in the edition. Each piece carries the maker initial on the inside seam."
   },
   "final_reserve": {
-    "remaining_label": "{remaining} systems remaining in Edition 01",
-    "title_pre": "Reserve from Edition 01",
-    "title_main": "while it is still open.",
-    "cta": "Reserve",
+    "eyebrow_open": "Edition 01 · Still open · Issuing from Porto",
+    "remaining_systems": "{remaining} systems",
+    "title_remaining": "remaining in Edition 01.",
+    "subtitle": "Reserve before the edition closes.",
+    "cta": "Reserve from Edition 01",
     "edition_meta": "Edition 01 · Gibraltar · Finished in Porto"
   },
   "desk_teaser": {
@@ -138,7 +147,9 @@
     "placeholder": "you@example.com",
     "submit": "Join the list",
     "submitting": "Joining…",
-    "success": "On the list — see you when Edition 02 opens."
+    "success": "On the list — see you when Edition 02 opens.",
+    "error_invalid": "That doesn't look like a valid email.",
+    "error_generic": "Something went sideways. Try again."
   },
   "product_card": {
     "dossier_label": "Dossier {number}",
