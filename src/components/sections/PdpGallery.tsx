@@ -25,15 +25,16 @@ export type PdpGalleryProps = {
 };
 
 export function PdpGallery({ title, heroImageUrl, tiles }: PdpGalleryProps): ReactElement {
+  const visibleTiles = tiles.slice(0, 4);
   return (
     <div className="grid grid-cols-2 gap-2">
-      <div className="col-span-2 aspect-[4/3] overflow-hidden border border-[rgba(11,15,14,0.12)] bg-[#eae5dc]">
+      <div className="col-span-2 aspect-[3/4] overflow-hidden border border-[rgba(11,15,14,0.12)] bg-[var(--color-paper)]">
         {heroImageUrl ? (
           <Image
             src={heroImageUrl}
             alt={title}
-            width={1200}
-            height={900}
+            width={896}
+            height={1200}
             priority
             sizes="(max-width: 1024px) 100vw, 60vw"
             className="h-full w-full object-cover transition-transform duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.04]"
@@ -41,11 +42,11 @@ export function PdpGallery({ title, heroImageUrl, tiles }: PdpGalleryProps): Rea
         ) : null}
       </div>
 
-      {tiles.slice(0, 4).map((tile, index) => (
+      {visibleTiles.map((tile, index) => (
         <div
           // Some Shopify CDN URLs collide (variant alt-text duplicates); fall back to index.
           key={`${tile.url}-${index}`}
-          className="aspect-square overflow-hidden border border-[rgba(11,15,14,0.12)] bg-[#eae5dc]"
+          className="aspect-square overflow-hidden border border-[rgba(11,15,14,0.12)] bg-[var(--color-paper)]"
         >
           <Image
             src={tile.url}

@@ -78,9 +78,11 @@ function mapNodeToProduct(node: ShopifyProductNode): ManifestProduct {
     url: edge.node.url,
     alt: edge.node.altText ?? '',
   }));
-  const images = plpOverride
-    ? [{ url: plpOverride, alt: node.title }, ...shopifyImages]
-    : shopifyImages;
+  // When the override is set, the Shopify-side gallery (busy flat-lays, off-
+  // brief macro shots, lifestyle photography of a different bag) breaks the
+  // typology. Drop it so the PDP gallery falls back to the single curated
+  // hero. Restoration path: remove the entry from PLP_CHARCOAL_IMAGE_OVERRIDES.
+  const images = plpOverride ? [{ url: plpOverride, alt: node.title }] : shopifyImages;
 
   return {
     id: node.id,
