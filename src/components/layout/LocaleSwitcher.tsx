@@ -16,7 +16,13 @@ import { usePathname } from 'next/navigation';
 import { useLocale } from 'next-intl';
 import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
 
-import { LOCALE_FULL_NAMES, LOCALE_LABELS, routing, type Locale } from '@/i18n/routing';
+import {
+  LOCALE_FULL_NAMES,
+  LOCALE_LABELS,
+  LOCALE_MARKET,
+  routing,
+  type Locale,
+} from '@/i18n/routing';
 
 import type { MouseEvent, ReactElement } from 'react';
 
@@ -88,6 +94,7 @@ export function LocaleSwitcher({
       <div className="flex flex-col gap-3" aria-label="Choose language">
         {routing.locales.map((locale) => {
           const isActive = locale === active;
+          const market = LOCALE_MARKET[locale];
           return (
             <button
               key={locale}
@@ -100,7 +107,7 @@ export function LocaleSwitcher({
             >
               <span>{LOCALE_FULL_NAMES[locale]}</span>
               <span className="font-mono text-[11px] uppercase tracking-[0.1em] text-[#9CAA98]">
-                {LOCALE_LABELS[locale]}
+                {LOCALE_LABELS[locale]} · {market.currency}
               </span>
             </button>
           );
@@ -117,9 +124,13 @@ export function LocaleSwitcher({
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label={`Language — ${LOCALE_FULL_NAMES[active]}`}
-        className="inline-flex items-center gap-1 px-1.5 py-1 font-mono text-[11px] tracking-[0.06em] uppercase transition-colors hover:text-signal"
+        className="inline-flex items-center gap-1.5 px-1.5 py-1 font-mono text-[11px] tracking-[0.06em] uppercase transition-colors hover:text-signal"
       >
         <span>{LOCALE_LABELS[active]}</span>
+        <span aria-hidden="true" className="opacity-50">
+          ·
+        </span>
+        <span className="text-[var(--color-signal)]">{LOCALE_MARKET[active].currency}</span>
         <svg
           aria-hidden="true"
           viewBox="0 0 12 12"
@@ -148,6 +159,7 @@ export function LocaleSwitcher({
         <ul className="py-2">
           {routing.locales.map((locale) => {
             const isActive = locale === active;
+            const market = LOCALE_MARKET[locale];
             return (
               <li key={locale}>
                 <button
@@ -169,7 +181,7 @@ export function LocaleSwitcher({
                       isActive ? 'text-[var(--color-signal)]' : 'text-[var(--color-lichen)]'
                     }`}
                   >
-                    {LOCALE_LABELS[locale]}
+                    {LOCALE_LABELS[locale]} · {market.currency}
                   </span>
                 </button>
               </li>
