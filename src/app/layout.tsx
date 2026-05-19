@@ -54,6 +54,38 @@ export const metadata: Metadata = {
   applicationName: 'Manifest Office',
   authors: [{ name: 'Maelify', url: 'https://maelify.com' }],
   robots: { index: true, follow: true },
+  alternates: {
+    canonical: '/',
+  },
+  keywords: [
+    'travel kit',
+    'edition 01',
+    'gibraltar',
+    'porto',
+    'tech pouch',
+    'packing cubes',
+    'field tote',
+    'anchor latch',
+    'headless shopify',
+    'maelify',
+  ],
+  openGraph: {
+    type: 'website',
+    siteName: 'Manifest Office',
+    locale: 'en_GB',
+    url: 'https://demo.maelify.com',
+    title: 'Manifest Office · Edition 01 · Gibraltar',
+    description:
+      'A modular travel-kit system finished in Porto. Edition 01 — 1,200 systems issued.',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Manifest Office · Edition 01 · Gibraltar',
+    description:
+      'A modular travel-kit system finished in Porto. Edition 01 — 1,200 systems issued.',
+    creator: '@maelify',
+  },
+  category: 'shopping',
 };
 
 export const viewport: Viewport = {
