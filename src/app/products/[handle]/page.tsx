@@ -23,6 +23,7 @@ import { ExplodedLatchViewer } from '@/components/sections/ExplodedLatchViewer';
 import { PdpDossierBody } from '@/components/sections/PdpDossierBody';
 import { PdpHero } from '@/components/sections/PdpHero';
 import { PdpSpecs, type PdpSpec } from '@/components/sections/PdpSpecs';
+import { ScrollLatchReveal } from '@/components/sections/ScrollLatchReveal';
 import {
   EDITION_01,
   EDITION_01_PRODUCTS,
@@ -275,6 +276,8 @@ export default async function ProductDetailPage({
       <PdpSpecs specs={specs} />
 
       <PdpDossierBody title={catalogEntry.title} />
+
+      {catalogEntry.handle === 'anchor-latch' ? <ScrollLatchReveal /> : null}
 
       <ExplodedLatchViewer />
 
