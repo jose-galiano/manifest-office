@@ -9,6 +9,7 @@ import {
   EDITION_01_NUMBER,
   EDITION_01_TOTAL,
 } from '@/lib/constants/allocation';
+import { resolvePlpImage } from '@/lib/services/plp-image-overrides';
 import {
   fetchProductsByHandle,
   type ShopifyProductNode,
@@ -72,17 +73,23 @@ function mapNodeToProduct(node: ShopifyProductNode): ManifestProduct {
 
   const firstVariant = variants[0];
 
+  const plpOverride = resolvePlpImage(node.handle);
+  const shopifyImages = node.images.edges.map((edge) => ({
+    url: edge.node.url,
+    alt: edge.node.altText ?? '',
+  }));
+  const images = plpOverride
+    ? [{ url: plpOverride, alt: node.title }, ...shopifyImages]
+    : shopifyImages;
+
   return {
     id: node.id,
     handle: node.handle,
     title: node.title,
     price: Number.parseFloat(node.priceRangeV2.minVariantPrice.amount),
     currency: node.priceRangeV2.minVariantPrice.currencyCode,
-    image: node.featuredImage?.url ?? null,
-    images: node.images.edges.map((edge) => ({
-      url: edge.node.url,
-      alt: edge.node.altText ?? '',
-    })),
+    image: plpOverride ?? node.featuredImage?.url ?? null,
+    images,
     colorways: colorOption ? colorOption.optionValues.map((value) => value.name) : [],
     variants,
     volume: node.volume?.value ?? '',
