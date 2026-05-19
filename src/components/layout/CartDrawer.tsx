@@ -91,6 +91,7 @@ type ManifestFooterProps = {
 };
 
 function ManifestFooter(props: ManifestFooterProps): ReactElement {
+  const t = useTranslations('cart');
   const {
     manifestFiled,
     cartIsEmpty,
@@ -109,14 +110,14 @@ function ManifestFooter(props: ManifestFooterProps): ReactElement {
           role="status"
           className="border border-[var(--color-rule-strong)] px-5 py-[18px] font-mono text-[11px] uppercase tracking-[0.1em] text-[var(--color-ink)]"
         >
-          ✓ Manifest filed · we&apos;ll be in touch.
+          {t('manifest_filed_confirmation')}
         </div>
         <Link
           href="/cart"
           onClick={onClose}
           className="text-center font-mono text-[10px] uppercase tracking-[0.08em] text-[var(--color-lichen)] hover:text-signal transition-colors"
         >
-          View full manifest
+          {t('view_full_manifest')}
         </Link>
       </div>
     );
@@ -131,7 +132,7 @@ function ManifestFooter(props: ManifestFooterProps): ReactElement {
     >
       <div className="flex items-stretch border border-[var(--color-rule-strong)] focus-within:border-[var(--color-ink)]">
         <label htmlFor={emailInputId} className="sr-only">
-          Email · optional pre-fill for checkout
+          {t('email_label')}
         </label>
         <input
           id={emailInputId}
@@ -141,7 +142,7 @@ function ManifestFooter(props: ManifestFooterProps): ReactElement {
           value={email}
           onChange={(event) => onEmailChange(event.target.value)}
           aria-invalid={emailError !== null}
-          placeholder="email · optional (saved for checkout)"
+          placeholder={t('email_placeholder')}
           disabled={cartIsEmpty}
           className="flex-1 border-0 bg-transparent px-4 py-[14px] font-mono text-[12px] tracking-[0.02em] text-[var(--color-ink)] outline-none placeholder:text-[var(--color-lichen)] focus:bg-[rgba(11,15,14,0.02)] disabled:opacity-50"
         />
@@ -160,14 +161,14 @@ function ManifestFooter(props: ManifestFooterProps): ReactElement {
         disabled={cartIsEmpty}
         className="w-full bg-[var(--color-ink)] px-4 py-[18px] font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--color-paper)] transition-[background-color,letter-spacing] duration-[360ms] ease-out hover:bg-[var(--color-signal)] hover:tracking-[0.18em] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-[var(--color-ink)] disabled:hover:tracking-[0.14em]"
       >
-        Checkout →
+        {t('checkout_cta')} →
       </button>
       <Link
         href="/cart"
         onClick={onClose}
         className="text-center font-mono text-[10px] uppercase tracking-[0.08em] text-[var(--color-lichen)] hover:text-signal transition-colors"
       >
-        View full manifest
+        {t('view_full_manifest')}
       </Link>
     </form>
   );

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
 
 import { Eyebrow } from '@/components/ui/Eyebrow';
@@ -13,13 +14,13 @@ import type { ReactElement } from 'react';
 // at the top of the page-2 fold and must NOT animate until the user actually
 // arrives at it.
 
-const LINES: readonly { text: string; accent?: string; tail?: string }[] = [
-  { text: 'We do not make luggage.' },
-  { text: 'We make the ', accent: 'system', tail: ' inside it.' },
-  { text: 'Issued from Porto. 1,200 only.' },
-];
-
 export function Manifesto(): ReactElement {
+  const t = useTranslations('manifesto');
+  const lines: readonly { text: string; accent?: string; tail?: string }[] = [
+    { text: t('line_1') },
+    { text: t('line_2_prefix'), accent: t('line_2_accent'), tail: t('line_2_tail') },
+    { text: t('line_3') },
+  ];
   const ref = useRef<HTMLDivElement | null>(null);
   const [inView, setInView] = useState<boolean>(false);
 
@@ -49,9 +50,9 @@ export function Manifesto(): ReactElement {
       className="border-t border-[rgba(11,15,14,0.12)] bg-[#F2EFE8] px-5 md:px-10 py-20 md:py-[160px]"
     >
       <div className="mx-auto max-w-[1100px]">
-        <Eyebrow className="mb-8 block">EDITION 01 · BRIEF</Eyebrow>
+        <Eyebrow className="mb-8 block">{t('eyebrow').toUpperCase()}</Eyebrow>
         <h2 className="font-display font-bold leading-[1] tracking-[-0.02em] text-[#0B0F0E] text-[clamp(48px,6vw,88px)]">
-          {LINES.map((line, lineIndex) => (
+          {lines.map((line, lineIndex) => (
             <span key={line.text} className="block overflow-hidden">
               <span
                 className={`inline-block transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${

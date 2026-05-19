@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { getTranslations } from 'next-intl/server';
 
 import { Eyebrow } from '@/components/ui/Eyebrow';
 
@@ -9,41 +10,12 @@ import type { ReactElement } from 'react';
 // TODO Agent-B: copy + portrait map should pull from
 // src/content/manifest-office.ts (PRACTITIONERS) once that file lands.
 
-interface Practitioner {
-  readonly name: string;
-  readonly role: string;
-  readonly portrait: string;
-  readonly portraitAlt: string;
-  readonly bio: string;
-  readonly quote: string;
-}
+type PractitionerKey = 'cristina' | 'marc' | 'joana';
 
-const PRACTITIONERS: readonly Practitioner[] = [
-  {
-    name: 'Cristina Mendes',
-    role: '— SAMPLE-ROOM LEAD',
-    portrait: '/images/mood-board/v2/maker-cristina.webp',
-    portraitAlt: 'Cristina Mendes at the Juki industrial machine in the Porto sample room',
-    bio: 'Fourteen years in soft-goods construction. Built the first Manifest Office prototype on a hotel-room ironing board in March 2024. Runs the QC bench. Signs every dossier.',
-    quote: '"A bag should be repaired, not replaced. We design for the third decade."',
-  },
-  {
-    name: 'Marc Aubert',
-    role: '— TECHNICAL · TRIMS & HARDWARE',
-    portrait: '/images/mood-board/v2/maker-marc.webp',
-    portraitAlt:
-      'Marc Aubert inspecting an Anchor Latch with a jewelers loupe at the trims supplier',
-    bio: 'A decade as a technical sales rep at a European trims supplier. Documents failure points on outdoor and commuter gear. Sourced every zip, every magnet, every paracord whip on the Edition 01 kit.',
-    quote: '"The zip is where most carry fails. Spend there. Save elsewhere."',
-  },
-  {
-    name: 'Joana Reis',
-    role: '— FIELD TESTER · OPERATOR 00001',
-    portrait: '/images/mood-board/v2/maker-joana.webp',
-    portraitAlt: 'Joana Reis documenting a field test on a hotel desk in Mexico City',
-    bio: 'Strategy consultant. Lisbon and Mexico City. Carried sample 7 through forty-three trips before we shipped Edition 01. Found the seam failure that triggered iteration 43.',
-    quote: '"The first version of anything is wrong. The forty-third is honest."',
-  },
+const PRACTITIONER_KEYS: readonly { key: PractitionerKey; portrait: string }[] = [
+  { key: 'cristina', portrait: '/images/mood-board/v2/maker-cristina.webp' },
+  { key: 'marc', portrait: '/images/mood-board/v2/maker-marc.webp' },
+  { key: 'joana', portrait: '/images/mood-board/v2/maker-joana.webp' },
 ];
 
 interface PractitionersProps {
@@ -51,24 +23,36 @@ interface PractitionersProps {
   eyebrow?: string;
 }
 
-export function Practitioners({
-  heading = 'Three named\npractitioners.',
-  eyebrow = '— THE OPERATORS BEHIND THE OFFICE —',
-}: PractitionersProps): ReactElement {
+export async function Practitioners({
+  heading,
+  eyebrow,
+}: PractitionersProps = {}): Promise<ReactElement> {
+  const t = await getTranslations('practitioners');
+  const resolvedHeading = heading ?? t('heading');
+  const resolvedEyebrow = (eyebrow ?? `— ${t('eyebrow').toUpperCase()} —`).toUpperCase();
+  const practitioners = PRACTITIONER_KEYS.map(({ key, portrait }) => ({
+    key,
+    name: t(`${key}_name`),
+    role: `— ${t(`${key}_role`).toUpperCase()}`,
+    portrait,
+    portraitAlt: t(`${key}_alt`),
+    bio: t(`${key}_bio`),
+    quote: t(`${key}_quote`),
+  }));
   return (
     <section
       data-surface="ink"
       className="border-t border-[rgba(242,239,232,0.18)] bg-[#0B0F0E] py-16 md:py-[120px] text-[#F2EFE8]"
     >
       <header className="mx-auto mb-12 max-w-[1400px] px-5 md:px-10 md:mb-16">
-        <Eyebrow className="mb-6 block">{eyebrow}</Eyebrow>
+        <Eyebrow className="mb-6 block">{resolvedEyebrow}</Eyebrow>
         <h2 className="whitespace-pre-line font-display font-bold leading-[0.95] tracking-[-0.02em] text-[clamp(40px,5vw,72px)]">
-          {heading}
+          {resolvedHeading}
         </h2>
       </header>
 
       <div className="mx-auto flex max-w-[1400px] flex-col gap-14 px-5 md:hidden">
-        {PRACTITIONERS.map((person) => (
+        {practitioners.map((person) => (
           <article key={person.name} className="flex flex-col gap-6">
             <div className="aspect-[3/4] overflow-hidden bg-[#1a1a1a]">
               <Image
@@ -97,7 +81,7 @@ export function Practitioners({
       </div>
 
       <div className="mx-auto hidden md:grid max-w-[1400px] md:grid-cols-3 md:gap-[60px] px-10">
-        {PRACTITIONERS.map((person) => (
+        {practitioners.map((person) => (
           <article key={person.name} className="group flex flex-col gap-6">
             <div className="aspect-[3/4] overflow-hidden bg-[#1a1a1a]">
               <Image

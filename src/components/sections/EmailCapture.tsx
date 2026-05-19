@@ -12,6 +12,7 @@
 
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useCallback, useState } from 'react';
 
 import { CUSTOM_EVENTS, ECOMMERCE_EVENTS, track } from '@/lib/analytics';
@@ -22,6 +23,7 @@ import type { FormEvent, ReactElement } from 'react';
 type SubmitState = 'idle' | 'submitting' | 'success' | 'error';
 
 export function EmailCapture(): ReactElement {
+  const t = useTranslations('email_capture');
   const [email, setEmail] = useState<string>('');
   const [state, setState] = useState<SubmitState>('idle');
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -89,13 +91,13 @@ export function EmailCapture(): ReactElement {
       <div className="mx-auto grid max-w-[1100px] grid-cols-1 items-center gap-12 md:grid-cols-[1fr_1.1fr] md:gap-20">
         <div>
           <span className="mb-4 block font-mono text-[11px] tracking-[0.12em] uppercase text-signal">
-            — EDITION 02 · UNNAMED ANCHOR —
+            — {t('eyebrow').toUpperCase()} —
           </span>
           <h3 className="font-display font-bold leading-[1] tracking-[-0.02em] text-[clamp(28px,3.5vw,44px)]">
-            Be on the desk when the next Edition opens.
+            {t('title')}
           </h3>
           <p className="mt-4 max-w-[44ch] text-[15px] leading-[1.55] text-[#0B0F0E]/65">
-            One mail. No newsletter. Quiet until the next 1,200 are about to issue.
+            {t('lede')}
           </p>
         </div>
 
@@ -104,13 +106,13 @@ export function EmailCapture(): ReactElement {
             role="status"
             className="font-mono text-[12px] tracking-[0.08em] uppercase text-[#0B0F0E]"
           >
-            ✓ Filed. We&apos;ll be in touch when Edition 02 opens.
+            ✓ {t('success')}
           </p>
         ) : (
           <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-3">
             <div className="flex items-stretch border border-[rgba(11,15,14,0.35)] bg-[#F2EFE8] focus-within:border-[#0B0F0E]">
               <label htmlFor="footer-email" className="sr-only">
-                Email address
+                {t('label')}
               </label>
               <input
                 id="footer-email"
@@ -120,7 +122,7 @@ export function EmailCapture(): ReactElement {
                 spellCheck={false}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="operator@example.com"
+                placeholder={t('placeholder')}
                 disabled={isSubmitting}
                 aria-invalid={state === 'error'}
                 aria-describedby={state === 'error' ? 'footer-email-error' : undefined}
@@ -132,7 +134,7 @@ export function EmailCapture(): ReactElement {
                 data-cursor
                 className="border-l border-[rgba(11,15,14,0.35)] bg-[#0B0F0E] px-6 py-3 font-mono text-[11px] uppercase tracking-[0.12em] text-[#F2EFE8] transition-[background-color,letter-spacing] duration-[240ms] hover:bg-[#D24A1F] hover:tracking-[0.16em] disabled:opacity-60"
               >
-                {isSubmitting ? 'FILING…' : 'NOTIFY ME →'}
+                {isSubmitting ? t('submitting').toUpperCase() : `${t('submit').toUpperCase()} →`}
               </button>
             </div>
             {state === 'error' ? (
@@ -141,11 +143,11 @@ export function EmailCapture(): ReactElement {
                 role="alert"
                 className="font-mono text-[10px] tracking-[0.06em] uppercase text-signal"
               >
-                {errorMessage || 'Could not submit.'}
+                {errorMessage || t('error_generic')}
               </p>
             ) : (
               <p className="font-mono text-[10px] tracking-[0.06em] uppercase text-[#5C6B5A]">
-                We hold the address. We do not sell it.
+                {t('caption')}
               </p>
             )}
           </form>

@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
 
 import { reserveProductAction } from '@/app/[locale]/products/[handle]/actions';
@@ -16,6 +17,7 @@ import type { ReactElement } from 'react';
 type AllocationMap = Readonly<Record<string, { issued: number; total: number }>>;
 
 export function WishlistDrawer(): ReactElement {
+  const t = useTranslations('wishlist');
   const {
     items,
     isDrawerOpen,
@@ -194,11 +196,12 @@ export function WishlistDrawer(): ReactElement {
         <div className="flex items-baseline justify-between px-9 pb-6 pt-9">
           <div className="flex flex-col gap-1">
             <h3 className="font-display text-[22px] font-medium leading-none tracking-[-0.01em]">
-              {isShared ? 'Shared with you' : 'Wishlist'}
+              {isShared ? t('drawer_title_shared') : t('drawer_title_owned')}
             </h3>
             <span className="font-mono text-[10px] uppercase tracking-[0.08em] text-[var(--color-lichen)]">
-              {visibleItems.length} {visibleItems.length === 1 ? 'item' : 'items'}
-              {isShared ? ' · preview' : ''}
+              {isShared
+                ? t('drawer_subtitle_shared', { count: visibleItems.length })
+                : t('drawer_subtitle_owned', { count: visibleItems.length })}
             </span>
           </div>
           <button
@@ -206,7 +209,7 @@ export function WishlistDrawer(): ReactElement {
             onClick={closeDrawer}
             className="border-0 bg-transparent p-0 font-mono text-[11px] uppercase tracking-[0.06em] text-[var(--color-lichen)] transition-colors hover:text-[var(--color-ink)]"
           >
-            Close
+            {t('close')}
           </button>
         </div>
 
@@ -283,6 +286,7 @@ function WishlistRow({
   onReserve,
   onRemove,
 }: WishlistRowProps): ReactElement {
+  const t = useTranslations('wishlist');
   const lowStock = remaining !== null && remaining < 80;
   const soldOut = remaining === 0;
   return (
@@ -320,7 +324,7 @@ function WishlistRow({
               lowStock ? 'text-[var(--color-signal)]' : 'text-[var(--color-lichen)]'
             }`}
           >
-            {soldOut ? 'sold out' : `${remaining} remaining`}
+            {soldOut ? t('sold_out') : t('remaining_normal', { count: remaining })}
           </span>
         ) : null}
         {!isShared ? (
@@ -331,14 +335,14 @@ function WishlistRow({
               disabled={isPending || soldOut}
               className="rounded-full bg-[#A8350F] px-4 py-1.5 font-mono text-[10px] uppercase tracking-[0.1em] text-[var(--color-paper)] transition-colors hover:bg-[#B83C16] disabled:cursor-default disabled:opacity-60"
             >
-              {isPending ? 'Reserving…' : soldOut ? 'Sold out' : 'Reserve'}
+              {isPending ? t('reserving') : soldOut ? t('sold_out') : t('reserve')}
             </button>
             <button
               type="button"
               onClick={onRemove}
               className="border-0 bg-transparent p-0 font-mono text-[10px] uppercase tracking-[0.06em] text-[var(--color-lichen)] transition-colors hover:text-[var(--color-ink)]"
             >
-              Remove
+              {t('remove')}
             </button>
           </div>
         ) : null}
@@ -362,12 +366,13 @@ function DrawerFooter({
   readonly onClear: () => void;
   readonly onSaveShared: () => void;
 }): ReactElement {
+  const t = useTranslations('wishlist');
   const shareLabel =
     shareState === 'copied'
-      ? 'Link copied ✓'
+      ? t('share_copied')
       : shareState === 'error'
-        ? 'Copy failed'
-        : 'Share my wishlist';
+        ? t('share_error')
+        : t('share_button');
   return (
     <div className="border-t border-[var(--color-rule)] px-9 py-6">
       {isShared ? (
@@ -376,7 +381,7 @@ function DrawerFooter({
           onClick={onSaveShared}
           className="w-full rounded-md bg-[var(--color-ink)] px-5 py-3 font-mono text-[11px] uppercase tracking-[0.1em] text-[var(--color-paper)] transition-colors hover:bg-[#1a1f1e]"
         >
-          Save all to my wishlist
+          {t('save_shared_cta')}
         </button>
       ) : (
         <div className="flex items-center gap-3">
@@ -392,7 +397,7 @@ function DrawerFooter({
             onClick={onClear}
             className="border-0 bg-transparent p-0 font-mono text-[10px] uppercase tracking-[0.06em] text-[var(--color-lichen)] transition-colors hover:text-[var(--color-ink)]"
           >
-            Clear
+            {t('clear')}
           </button>
         </div>
       )}
@@ -401,20 +406,21 @@ function DrawerFooter({
 }
 
 function EmptyState({ onBrowse }: { readonly onBrowse: () => void }): ReactElement {
+  const t = useTranslations('wishlist');
   return (
     <div className="flex h-full flex-col items-start justify-center gap-3 py-12">
       <span className="font-mono text-[10px] uppercase tracking-[0.08em] text-[var(--color-lichen)]">
-        Nothing saved yet
+        {t('empty_eyebrow')}
       </span>
       <p className="font-display text-[18px] leading-snug text-[var(--color-ink)]">
-        Tap the heart on any dossier to save it for later.
+        {t('empty_title')}
       </p>
       <Link
         href="/collections/edition-01"
         onClick={onBrowse}
         className="mt-2 font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--color-signal)] hover:text-[var(--color-ink)]"
       >
-        Browse Edition 01 →
+        {t('empty_cta')} →
       </Link>
     </div>
   );
