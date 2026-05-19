@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 
@@ -69,6 +70,9 @@ function createLabel(part: THREE.Object3D, uiHost: HTMLDivElement): LabelHandle 
 }
 
 export function ExplodedLatchViewer(): ReactElement {
+  const t = useTranslations('exploded_kit');
+  const tExplode = t('explode');
+  const tExploded = t('assemble');
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const uiRef = useRef<HTMLDivElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
@@ -321,7 +325,7 @@ export function ExplodedLatchViewer(): ReactElement {
     };
   }, [geometries]);
 
-  const buttonLabel = exploded ? '↘ ASSEMBLE' : '↗ EXPLODE';
+  const buttonLabel = exploded ? `↘ ${tExploded.toUpperCase()}` : `↗ ${tExplode.toUpperCase()}`;
 
   return (
     <section
@@ -330,16 +334,15 @@ export function ExplodedLatchViewer(): ReactElement {
       className="scroll-mt-[110px] bg-[#0B0F0E] text-[#F2EFE8] px-5 md:px-10 py-24 border-t border-[rgba(242,239,232,0.18)]"
     >
       <span className="font-mono text-[11px] tracking-[0.08em] uppercase text-signal block mb-3">
-        REFERENCE GEOMETRY · INTERACTIVE
+        {t('eyebrow')}
       </span>
       <h2 className="font-display font-bold text-[clamp(48px,7vw,72px)] leading-[0.95] tracking-[-0.02em] max-w-[16ch] mb-4">
-        Drag. Rotate.
+        {t('title_line_1')}
         <br />
-        Pull it apart.
+        {t('title_line_2')}
       </h2>
       <div className="font-mono text-[12px] tracking-[0.06em] uppercase text-[#9CAA98] mb-14">
-        Open-hardware lockable latch · four parts · loaded from STL into Three.js, exploded on an
-        eased tween. Click and drag to rotate. Toggle to pull it apart.
+        {t('lede')}
       </div>
 
       <div

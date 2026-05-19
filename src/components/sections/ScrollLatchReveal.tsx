@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { Eyebrow } from '@/components/ui/Eyebrow';
@@ -12,50 +13,20 @@ const FRAME_COUNT = 193;
 const FRAME_BASE = '/scroll-video/anchor-latch';
 const FRAME_PAD = 4;
 
+type BeatId = 1 | 2 | 3 | 4 | 5;
+
 type Beat = {
+  readonly id: BeatId;
   readonly from: number;
   readonly to: number;
-  readonly eyebrow: string;
-  readonly title: string;
-  readonly body: string;
 };
 
-const BEATS: readonly Beat[] = [
-  {
-    from: 1,
-    to: 25,
-    eyebrow: 'MO-A1 · ANCHOR LATCH',
-    title: 'One part.',
-    body: 'Brass, cold-forged in Porto. Hand-finished, lacquer-free.',
-  },
-  {
-    from: 26,
-    to: 60,
-    eyebrow: 'GEOMETRY',
-    title: 'One motion.',
-    body: 'A quarter-turn closes the case. No springs, no plastic.',
-  },
-  {
-    from: 61,
-    to: 105,
-    eyebrow: 'MECHANISM',
-    title: 'Cam on a damped pivot.',
-    body: 'O-ring tension keeps the slot screw seated through 2,400-mile rotations.',
-  },
-  {
-    from: 106,
-    to: 144,
-    eyebrow: 'TOLERANCE',
-    title: 'Slot screw. No hex key.',
-    body: 'Field-serviceable with the blade of a coin.',
-  },
-  {
-    from: 145,
-    to: FRAME_COUNT,
-    eyebrow: 'PROVENANCE',
-    title: 'Twelve parts. Each named.',
-    body: 'Every component carries a serial. Every component is replaceable.',
-  },
+const BEAT_RANGES: readonly Beat[] = [
+  { id: 1, from: 1, to: 25 },
+  { id: 2, from: 26, to: 60 },
+  { id: 3, from: 61, to: 105 },
+  { id: 4, from: 106, to: 144 },
+  { id: 5, from: 145, to: FRAME_COUNT },
 ];
 
 function framePath(index: number): string {
@@ -69,6 +40,7 @@ function clamp01(value: number): number {
 }
 
 export function ScrollLatchReveal(): ReactElement {
+  const t = useTranslations('scroll_latch');
   const containerRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const framesRef = useRef<HTMLImageElement[]>([]);
@@ -149,7 +121,7 @@ export function ScrollLatchReveal(): ReactElement {
       );
       if (target !== lastDrawnRef.current) {
         drawFrame(target);
-        const beatIndex = BEATS.findIndex((beat) => target >= beat.from && target <= beat.to);
+        const beatIndex = BEAT_RANGES.findIndex((beat) => target >= beat.from && target <= beat.to);
         if (beatIndex >= 0) setActiveBeatIndex(beatIndex);
         if (target >= FRAME_COUNT - 1 && !completeFiredRef.current) {
           completeFiredRef.current = true;
@@ -197,10 +169,13 @@ export function ScrollLatchReveal(): ReactElement {
   useEffect(() => {
     if (!reducedMotion) return;
     drawFrame(FRAME_COUNT);
-    setActiveBeatIndex(BEATS.length - 1);
+    setActiveBeatIndex(BEAT_RANGES.length - 1);
   }, [drawFrame, reducedMotion]);
 
-  const activeBeat = useMemo(() => BEATS[activeBeatIndex] ?? BEATS[0], [activeBeatIndex]) as Beat;
+  const activeBeat = useMemo(
+    () => BEAT_RANGES[activeBeatIndex] ?? BEAT_RANGES[0],
+    [activeBeatIndex],
+  ) as Beat;
 
   return (
     <section
@@ -216,7 +191,7 @@ export function ScrollLatchReveal(): ReactElement {
       >
         <canvas
           ref={canvasRef}
-          aria-label="Anchor Latch — exploded mechanism reveal"
+          aria-label={t('aria_label')}
           role="img"
           className="absolute inset-0 h-full w-full object-cover opacity-95"
           style={{
@@ -235,28 +210,30 @@ export function ScrollLatchReveal(): ReactElement {
 
         <div className="relative z-10 mx-auto grid w-full max-w-[1400px] grid-cols-1 items-end gap-10 px-5 pb-16 md:grid-cols-12 md:px-10 md:pb-24">
           <div className="md:col-span-5">
-            <Eyebrow className="mb-5 block text-signal">{activeBeat.eyebrow}</Eyebrow>
+            <Eyebrow className="mb-5 block text-signal">
+              {t(`beat_${activeBeat.id}_eyebrow`)}
+            </Eyebrow>
             <h2
               key={`title-${activeBeatIndex}`}
               className="font-display text-[clamp(40px,5.5vw,76px)] font-bold leading-[1] tracking-[-0.02em]"
               style={{ animation: 'mo-beat-in 600ms cubic-bezier(0.22,1,0.36,1) both' }}
             >
-              {activeBeat.title}
+              {t(`beat_${activeBeat.id}_title`)}
             </h2>
             <p
               key={`body-${activeBeatIndex}`}
               className="mt-5 max-w-[44ch] text-[15px] leading-[1.55] text-[#F2EFE8]/80"
               style={{ animation: 'mo-beat-in 700ms 80ms cubic-bezier(0.22,1,0.36,1) both' }}
             >
-              {activeBeat.body}
+              {t(`beat_${activeBeat.id}_body`)}
             </p>
           </div>
 
           <div className="hidden md:col-span-7 md:flex md:justify-end">
             <ol className="flex gap-2">
-              {BEATS.map((beat, index) => (
+              {BEAT_RANGES.map((beat, index) => (
                 <li
-                  key={beat.eyebrow}
+                  key={beat.id}
                   aria-current={index === activeBeatIndex ? 'true' : undefined}
                   className="h-[2px] w-[44px] transition-colors duration-300"
                   style={{

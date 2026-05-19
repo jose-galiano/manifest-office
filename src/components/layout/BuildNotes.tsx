@@ -14,6 +14,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
 
 import type { ReactElement } from 'react';
@@ -21,61 +22,33 @@ import type { ReactElement } from 'react';
 type PanelId = '01' | '02' | '03' | '04' | '05';
 
 const PANEL_ORDER: readonly PanelId[] = ['01', '02', '03', '04', '05'];
-const PANEL_TITLES: Readonly<Record<PanelId, string>> = {
-  '01': 'Stack',
-  '02': 'Features',
-  '03': 'Performance',
-  '04': 'Commerce',
-  '05': 'Source',
-};
+
+type FeatureKey =
+  | 'webgl'
+  | 'scrolly'
+  | 'exploded'
+  | 'desk'
+  | 'wishlist'
+  | 'quickadd'
+  | 'carousel'
+  | 'allocation'
+  | 'i18n';
 
 type FeatureLink = {
-  readonly label: string;
-  readonly description: string;
+  readonly key: FeatureKey;
   readonly href: string;
 };
 
 const FEATURES: readonly FeatureLink[] = [
-  {
-    label: 'WebGL topographic hero',
-    description: 'Three.js plane, pointer Gaussian bulge, signal-orange ink fog',
-    href: '/#hero',
-  },
-  {
-    label: 'Anchor Latch scrollytelling',
-    description: '193-frame AVIF sequence, sticky canvas, scroll-driven frame index',
-    href: '/products/anchor-latch#anchor-story',
-  },
-  {
-    label: '3D exploded kit viewer',
-    description: 'Drag-orbit, EXPLODE / ASSEMBLE toggle, seven labelled parts',
-    href: '/products/anchor-latch#exploded-kit',
-  },
-  {
-    label: 'Brief the Desk',
-    description: 'Gemini 2.5 Flash trip-brief endpoint, 7-layer defence',
-    href: '/products/tech-pouch-m#desk',
-  },
-  {
-    label: 'Wishlist + share URL',
-    description: 'LocalStorage, cross-tab sync, ?w= share link, drawer carousel',
-    href: '/collections/edition-01#dossiers',
-  },
-  {
-    label: 'Quick-add bottom sheet',
-    description: 'Card-anchored on desktop, slide-up on mobile, haptic on add',
-    href: '/collections/edition-01#dossiers',
-  },
-  {
-    label: 'PDP thumbnail carousel',
-    description: 'Hero + alt-angle thumbs, click to swap, all paper-backdrop typology',
-    href: '/products/field-tote#gallery',
-  },
-  {
-    label: 'Live allocation counter',
-    description: 'Shopify metafield write, real-time across visitors, JSON-LD availability',
-    href: '/products/cube-m#allocation',
-  },
+  { key: 'webgl', href: '/#hero' },
+  { key: 'scrolly', href: '/products/anchor-latch#anchor-story' },
+  { key: 'exploded', href: '/products/anchor-latch#exploded-kit' },
+  { key: 'desk', href: '/products/tech-pouch-m#desk' },
+  { key: 'wishlist', href: '/collections/edition-01#dossiers' },
+  { key: 'quickadd', href: '/collections/edition-01#dossiers' },
+  { key: 'carousel', href: '/products/field-tote#gallery' },
+  { key: 'allocation', href: '/products/cube-m#allocation' },
+  { key: 'i18n', href: '/#hero' },
 ];
 
 const STACK_ROWS: readonly { readonly label: string; readonly value: string }[] = [
@@ -110,9 +83,18 @@ const COMMERCE_ROWS: readonly { readonly label: string; readonly value: string }
 ];
 
 export function BuildNotes(): ReactElement {
+  const t = useTranslations('build_notes');
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [activePanel, setActivePanel] = useState<PanelId>('01');
   const [hasNudged, setHasNudged] = useState<boolean>(false);
+
+  const panelTitles: Record<PanelId, string> = {
+    '01': t('panel_01'),
+    '02': t('panel_02'),
+    '03': t('panel_03'),
+    '04': t('panel_04'),
+    '05': t('panel_05'),
+  };
 
   const handleOpen = useCallback(() => {
     setIsOpen(true);
@@ -155,16 +137,16 @@ export function BuildNotes(): ReactElement {
       <button
         type="button"
         onClick={handleOpen}
-        aria-label="Open build notes — guided tour of what was built"
+        aria-label={t('trigger_aria')}
         className="mo-build-chip fixed bottom-5 left-5 z-[750] inline-flex items-center gap-2 rounded-full border border-[var(--color-rule-strong)] bg-[var(--color-paper)] px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.1em] text-[var(--color-ink)] shadow-[0_4px_20px_rgba(11,15,14,0.18)] transition-[transform,background] duration-200 hover:bg-white active:scale-[0.97]"
         data-nudge={hasNudged ? 'off' : 'on'}
       >
         <span aria-hidden="true" className="text-[var(--color-signal)]">
           ▸
         </span>
-        <span>Build Notes</span>
+        <span>{t('trigger')}</span>
         <kbd className="ml-1 rounded border border-[var(--color-rule)] px-1 py-px font-mono text-[9px] tracking-[0.05em] text-[var(--color-lichen)]">
-          D
+          {t('footer_hint_key')}
         </kbd>
         <style>{`
           .mo-build-chip[data-nudge='on'] {
@@ -194,7 +176,7 @@ export function BuildNotes(): ReactElement {
       />
 
       <aside
-        aria-label="Build notes"
+        aria-label={t('header_title')}
         inert={!isOpen}
         className={[
           'fixed right-0 top-0 z-[900] flex h-dvh w-[min(520px,100vw)] flex-col',
@@ -207,10 +189,10 @@ export function BuildNotes(): ReactElement {
         <header className="flex items-baseline justify-between px-8 pb-5 pt-8">
           <div className="flex flex-col gap-1">
             <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-[var(--color-lichen)]">
-              Maelify · Build Notes
+              {t('header_eyebrow')}
             </span>
             <h2 className="font-display text-[22px] font-medium leading-none tracking-[-0.01em]">
-              What was built
+              {t('header_title')}
             </h2>
           </div>
           <button
@@ -218,13 +200,13 @@ export function BuildNotes(): ReactElement {
             onClick={handleClose}
             className="border-0 bg-transparent p-0 font-mono text-[11px] uppercase tracking-[0.06em] text-[var(--color-lichen)] transition-colors hover:text-[var(--color-ink)]"
           >
-            Close
+            {t('close')}
           </button>
         </header>
 
         <nav
           role="tablist"
-          aria-label="Build-notes sections"
+          aria-label={t('header_title')}
           className="flex gap-1 border-b border-[var(--color-rule)] px-8"
         >
           {PANEL_ORDER.map((id) => {
@@ -243,7 +225,7 @@ export function BuildNotes(): ReactElement {
                 }`}
               >
                 <span className="text-[11px] font-medium">{id}</span>
-                <span>{PANEL_TITLES[id]}</span>
+                <span>{panelTitles[id]}</span>
               </button>
             );
           })}
@@ -251,15 +233,28 @@ export function BuildNotes(): ReactElement {
 
         <div className="min-h-0 flex-1 overflow-y-auto px-8 py-6">
           {activePanel === '01' ? <KeyValueList rows={STACK_ROWS} /> : null}
-          {activePanel === '02' ? <FeatureList items={FEATURES} onSelect={handleClose} /> : null}
+          {activePanel === '02' ? (
+            <FeatureList
+              items={FEATURES.map((entry) => ({
+                key: entry.key,
+                label: t(`feature_${entry.key}_label`),
+                description: t(`feature_${entry.key}_desc`),
+                href: entry.href,
+              }))}
+              onSelect={handleClose}
+            />
+          ) : null}
           {activePanel === '03' ? <KeyValueList rows={PERF_ROWS} /> : null}
           {activePanel === '04' ? <KeyValueList rows={COMMERCE_ROWS} /> : null}
           {activePanel === '05' ? <SourcePanel /> : null}
         </div>
 
         <footer className="border-t border-[var(--color-rule)] px-8 py-4 font-mono text-[10px] uppercase tracking-[0.06em] text-[var(--color-lichen)]">
-          Press <kbd className="rounded border border-[var(--color-rule)] px-1 text-[9px]">D</kbd>{' '}
-          anywhere · ESC to close
+          {t('footer_hint_prefix')}{' '}
+          <kbd className="rounded border border-[var(--color-rule)] px-1 text-[9px]">
+            {t('footer_hint_key')}
+          </kbd>{' '}
+          {t('footer_hint_suffix')}
         </footer>
       </aside>
     </>
@@ -285,17 +280,24 @@ function KeyValueList({
   );
 }
 
+type FeatureEntry = {
+  readonly key: FeatureKey;
+  readonly label: string;
+  readonly description: string;
+  readonly href: string;
+};
+
 function FeatureList({
   items,
   onSelect,
 }: {
-  readonly items: readonly FeatureLink[];
+  readonly items: readonly FeatureEntry[];
   readonly onSelect: () => void;
 }): ReactElement {
   return (
     <ul className="flex flex-col gap-4">
       {items.map((item) => (
-        <li key={item.label}>
+        <li key={item.key}>
           <Link
             href={item.href}
             onClick={onSelect}
@@ -318,6 +320,7 @@ function FeatureList({
 }
 
 function SourcePanel(): ReactElement {
+  const t = useTranslations('build_notes');
   return (
     <div className="flex flex-col gap-5">
       <a
@@ -331,7 +334,7 @@ function SourcePanel(): ReactElement {
           <span className="font-mono text-[var(--color-signal)]">↗</span>
         </span>
         <span className="font-mono text-[11px] leading-relaxed text-[var(--color-lichen)]">
-          MIT · public · CI on every push (typecheck · lint · format · build)
+          {t('source_repo_meta')}
         </span>
       </a>
       <a
@@ -344,7 +347,7 @@ function SourcePanel(): ReactElement {
           maelify.com <span className="font-mono text-[var(--color-signal)]">↗</span>
         </span>
         <span className="font-mono text-[11px] leading-relaxed text-[var(--color-lichen)]">
-          Jose Galiano — Shopify Plus architect · headless commerce · AI-native UX
+          {t('source_maelify_meta')}
         </span>
       </a>
       <a
@@ -355,13 +358,11 @@ function SourcePanel(): ReactElement {
           hello@maelify.com <span className="font-mono text-[var(--color-signal)]">→</span>
         </span>
         <span className="font-mono text-[11px] leading-relaxed text-[var(--color-lichen)]">
-          Open to long-term engagements · €15-20k/mo · EU-based
+          {t('source_email_meta')}
         </span>
       </a>
       <p className="font-mono text-[11px] leading-relaxed text-[var(--color-lichen)]">
-        This site is a portfolio piece. The brand &ldquo;Manifest Office&rdquo; is fictional. The
-        commerce wiring, the imagery, the analytics fanout, the WebGL, the AI endpoints and the
-        build infrastructure are real and shipping.
+        {t('source_disclaimer')}
       </p>
     </div>
   );
