@@ -78,7 +78,12 @@ export function PdpHero(props: PdpHeroProps): ReactElement {
 
   return (
     <section className="grid gap-12 px-5 md:px-10 pb-16 pt-8 lg:grid-cols-[1.4fr_1fr]">
-      <PdpGallery title={title} heroImageUrl={activeImage} tiles={filteredTiles} />
+      <PdpGallery
+        title={title}
+        heroImageUrl={activeImage}
+        tiles={filteredTiles}
+        onSelect={setActiveImage}
+      />
       <PdpBuybox
         storefrontHandle={storefrontHandle}
         shopifyHandle={shopifyHandle}

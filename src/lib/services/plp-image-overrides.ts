@@ -30,6 +30,57 @@ export function resolvePlpImage(shopifyHandle: string): string | null {
   return PLP_CHARCOAL_IMAGE_OVERRIDES[shopifyHandle] ?? null;
 }
 
+// Alt-angle PDP gallery shots — generated img-to-img off the Charcoal hero
+// so the silhouette and signal-orange accent stay consistent across the
+// three tiles. Order is [detail, angle]. Returned as gallery tail when
+// the override hero is set.
+export const PDP_ALT_SHOTS_CHARCOAL: Readonly<Record<string, readonly string[]>> = {
+  'manifest-field-tote': [
+    '/images/products/charcoal-alt/field-tote-detail.webp',
+    '/images/products/charcoal-alt/field-tote-angle.webp',
+  ],
+  'manifest-tech-pouch-s': [
+    '/images/products/charcoal-alt/tech-pouch-s-detail.webp',
+    '/images/products/charcoal-alt/tech-pouch-s-angle.webp',
+  ],
+  'manifest-tech-pouch-m': [
+    '/images/products/charcoal-alt/tech-pouch-m-detail.webp',
+    '/images/products/charcoal-alt/tech-pouch-m-angle.webp',
+  ],
+  'manifest-tech-pouch-l': [
+    '/images/products/charcoal-alt/tech-pouch-l-detail.webp',
+    '/images/products/charcoal-alt/tech-pouch-l-angle.webp',
+  ],
+  'manifest-cube-s': [
+    '/images/products/charcoal-alt/cube-s-detail.webp',
+    '/images/products/charcoal-alt/cube-s-angle.webp',
+  ],
+  'manifest-cube-m': [
+    '/images/products/charcoal-alt/cube-m-detail.webp',
+    '/images/products/charcoal-alt/cube-m-angle.webp',
+  ],
+  'manifest-cube-l': [
+    '/images/products/charcoal-alt/cube-l-detail.webp',
+    '/images/products/charcoal-alt/cube-l-angle.webp',
+  ],
+  'manifest-toiletry-kit': [
+    '/images/products/charcoal-alt/toiletry-kit-detail.webp',
+    '/images/products/charcoal-alt/toiletry-kit-angle.webp',
+  ],
+  'manifest-luggage-tag': [
+    '/images/products/charcoal-alt/luggage-tag-detail.webp',
+    '/images/products/charcoal-alt/luggage-tag-angle.webp',
+  ],
+  'manifest-anchor-latch': [
+    '/images/products/charcoal-alt/anchor-latch-detail.webp',
+    '/images/products/charcoal-alt/anchor-latch-angle.webp',
+  ],
+};
+
+export function resolvePdpAltShots(shopifyHandle: string): readonly string[] {
+  return PDP_ALT_SHOTS_CHARCOAL[shopifyHandle] ?? [];
+}
+
 // Synthetic colorway extensions for hardware SKUs. The Shopify-side
 // products don't carry a colorway option (the soft goods do), so this map
 // injects the alt finish at the data layer + provides the image URL the

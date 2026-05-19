@@ -9,7 +9,11 @@ import {
   EDITION_01_NUMBER,
   EDITION_01_TOTAL,
 } from '@/lib/constants/allocation';
-import { resolvePlpImage, resolveSyntheticColorways } from '@/lib/services/plp-image-overrides';
+import {
+  resolvePdpAltShots,
+  resolvePlpImage,
+  resolveSyntheticColorways,
+} from '@/lib/services/plp-image-overrides';
 import {
   fetchProductsByHandle,
   type ShopifyProductNode,
@@ -79,9 +83,13 @@ function mapNodeToProduct(node: ShopifyProductNode): ManifestProduct {
   }));
   // When the override is set, the Shopify-side gallery (busy flat-lays, off-
   // brief macro shots, lifestyle photography of a different bag) breaks the
-  // typology. Drop it so the PDP gallery falls back to the single curated
-  // hero. Restoration path: remove the entry from PLP_CHARCOAL_IMAGE_OVERRIDES.
-  const images = plpOverride ? [{ url: plpOverride, alt: node.title }] : shopifyImages;
+  // typology. Replace it with the curated hero + alt-angle shots so the PDP
+  // carousel has consistent typology. Restoration path: remove the entry
+  // from PLP_CHARCOAL_IMAGE_OVERRIDES.
+  const altShots = resolvePdpAltShots(node.handle);
+  const images = plpOverride
+    ? [{ url: plpOverride, alt: node.title }, ...altShots.map((url) => ({ url, alt: node.title }))]
+    : shopifyImages;
 
   // Hardware SKUs (Luggage Tag, Anchor Latch) ship without a Shopify-side
   // colorway option but we offer alt finishes at the storefront — Tobacco
