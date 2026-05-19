@@ -20,13 +20,21 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
 
 import { reserveProductAction } from '@/app/[locale]/products/[handle]/actions';
 import { useCart } from '@/hooks/use-cart';
+import { type Locale } from '@/i18n/routing';
 import { CUSTOM_EVENTS, ECOMMERCE_EVENTS, track } from '@/lib/analytics';
 import { ENGRAVING_ALLOWED_REGEX, ENGRAVING_FEE, ENGRAVING_MAX } from '@/lib/constants/commerce';
 import { hasEngravingOption } from '@/lib/constants/engraving';
+import {
+  convertFromEur,
+  formatCurrencyCaption,
+  formatPriceForLocale,
+  resolveCurrency,
+} from '@/lib/i18n/currency';
 
 import type { ReactElement } from 'react';
 
@@ -95,10 +103,6 @@ function sanitiseEngraving(raw: string): string {
   return raw.toUpperCase().replace(ENGRAVING_ALLOWED_REGEX, '').slice(0, ENGRAVING_MAX);
 }
 
-function formatPrice(amount: number): string {
-  return `€${Math.round(amount)}`;
-}
-
 function buildSoldOutToast(title: string, colorway: string | undefined): ReserveToast {
   return {
     issueLabel: 'SOLD OUT',
@@ -143,6 +147,7 @@ type SizeSelectorProps = {
 // same tree; the only visible change is the price + gallery + variant copy.
 // No scroll jump, no full-tree unmount, no flash.
 function SizeSelector({ options, currentHandle }: SizeSelectorProps): ReactElement | null {
+  const t = useTranslations('pdp');
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -154,7 +159,7 @@ function SizeSelector({ options, currentHandle }: SizeSelectorProps): ReactEleme
       aria-busy={isPending}
     >
       <span className="mb-2 block font-mono text-[11px] uppercase tracking-[0.06em] text-[#5C6B5A]">
-        SIZE
+        {t('size_label').toUpperCase()}
       </span>
       <div className="flex flex-wrap gap-2">
         {options.map((option) => {
@@ -190,12 +195,13 @@ type ColorwayPickerProps = {
 };
 
 function ColorwayPicker({ colorways, active, onSelect }: ColorwayPickerProps): ReactElement | null {
+  const t = useTranslations('pdp');
   if (colorways.length === 0) return null;
   const activeName = (active?.name ?? colorways[0]?.name ?? '').toUpperCase();
   return (
     <div className="mt-7">
       <span className="mb-2 block font-mono text-[11px] uppercase tracking-[0.06em] text-[#5C6B5A]">
-        COLORWAY · {activeName}
+        {t('colorway_active', { name: activeName })}
       </span>
       <div className="flex gap-2.5">
         {colorways.map((colorway) => {
@@ -228,10 +234,20 @@ type EngravingFieldProps = {
 };
 
 function EngravingField({ on, text, onToggle, onTextChange }: EngravingFieldProps): ReactElement {
+  const t = useTranslations('pdp');
+  const locale = useLocale() as Locale;
+  const currency = resolveCurrency(locale);
+  const feeAmount = Math.round(convertFromEur(ENGRAVING_FEE, currency));
+  const feeLabel = new Intl.NumberFormat(locale === 'zh' ? 'zh-CN' : locale, {
+    style: 'currency',
+    currency,
+    maximumFractionDigits: 0,
+    minimumFractionDigits: 0,
+  }).format(feeAmount);
   return (
     <div className="mt-7">
       <span className="mb-2 block font-mono text-[11px] uppercase tracking-[0.06em] text-[#5C6B5A]">
-        ENGRAVING (OPTIONAL · +€{ENGRAVING_FEE})
+        {t('engraving_optional', { fee: `+${feeLabel}` })}
       </span>
       <div className="mb-3 flex gap-2">
         <button
@@ -240,7 +256,7 @@ function EngravingField({ on, text, onToggle, onTextChange }: EngravingFieldProp
           data-cursor
           className={optionClass(!on)}
         >
-          NONE
+          {t('engraving_none').toUpperCase()}
         </button>
         <button
           type="button"
@@ -248,7 +264,7 @@ function EngravingField({ on, text, onToggle, onTextChange }: EngravingFieldProp
           data-cursor
           className={optionClass(on)}
         >
-          ADD ENGRAVING
+          {t('engraving_add').toUpperCase()}
         </button>
       </div>
       {on ? (
@@ -294,6 +310,8 @@ export function PdpBuybox({
   total,
   onColorwayChange,
 }: PdpBuyboxProps): ReactElement {
+  const t = useTranslations('pdp');
+  const locale = useLocale() as Locale;
   const { add: addCartItem, openDrawer } = useCart();
   const [isPending, startTransition] = useTransition();
 
@@ -445,19 +463,29 @@ export function PdpBuybox({
   return (
     <aside className="self-start pt-2 lg:sticky lg:top-[130px]">
       <span className="block font-mono text-[11px] uppercase tracking-[0.06em] text-[#5C6B5A]">
-        EDITION {editionNumber} / DOSSIER {String(dossierNumber).padStart(2, '0')}
+        {t('buy_eyebrow', {
+          edition: editionNumber,
+          dossier: String(dossierNumber).padStart(2, '0'),
+        }).toUpperCase()}
       </span>
 
       <div className="mt-5 font-display text-[38px] font-bold leading-none tracking-[-0.02em] text-[#0B0F0E]">
-        {formatPrice(priceEur)}
+        {formatPriceForLocale(priceEur, locale)}
       </div>
       {supportsEngraving && engravingOn ? (
         <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.1em] text-signal">
-          + €{ENGRAVING_FEE} ENGRAVING
+          {`+ ${new Intl.NumberFormat(locale === 'zh' ? 'zh-CN' : locale, {
+            style: 'currency',
+            currency: resolveCurrency(locale),
+            maximumFractionDigits: 0,
+            minimumFractionDigits: 0,
+          }).format(
+            Math.round(convertFromEur(ENGRAVING_FEE, resolveCurrency(locale))),
+          )} ${(t('engraving_optional', { fee: '' }).split('(')[0] ?? '').trim().toUpperCase()}`}
         </div>
       ) : null}
       <div className="mt-1 font-mono text-[11px] uppercase tracking-[0.04em] text-[#5C6B5A]">
-        EUR · INCL. VAT
+        {formatCurrencyCaption(locale).toUpperCase()}
       </div>
 
       <p className="mt-6 max-w-[42ch] text-[16px] leading-[1.55] text-[#0B0F0E]">{summary}</p>
@@ -488,7 +516,7 @@ export function PdpBuybox({
           data-cursor
           className="flex-1 cursor-pointer border-0 bg-[#0B0F0E] px-6 py-[18px] font-mono text-[12px] uppercase tracking-[0.1em] font-medium text-[#F2EFE8] transition-[background,letter-spacing] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-[#D24A1F] hover:tracking-[0.14em] disabled:cursor-not-allowed disabled:opacity-70"
         >
-          {isPending ? 'Reserving…' : 'Reserve from Edition 01'}
+          {isPending ? t('reserve_pending') : t('reserve_idle')}
         </button>
         <button
           type="button"

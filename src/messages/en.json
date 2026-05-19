@@ -166,7 +166,7 @@
     "engraving_label": "Engraving (optional)",
     "engraving_upcharge": "+€{amount}",
     "engraving_none": "None",
-    "engraving_add": "Add Engraving",
+    "engraving_add": "Add engraving",
     "engraving_input_placeholder": "Up to 12 characters",
     "engraving_helper": "Letters, numbers, dots and dashes only.",
     "reserve_cta": "Reserve from Edition 01",
@@ -183,7 +183,18 @@
     "spec_mass": "Mass",
     "spec_origin": "Origin",
     "dossier_eyebrow": "Dossier · Long-form",
-    "dossier_body": "The {title} dossier — provenance, field notes, and operator credentials — expands in Wave 4. The skeleton is shipped now so the URL is stable for SEO and agentic-commerce crawlers."
+    "dossier_body": "The {title} dossier — provenance, field notes, and operator credentials — expands in Wave 4. The skeleton is shipped now so the URL is stable for SEO and agentic-commerce crawlers.",
+    "size_label": "Size",
+    "colorway_active": "Colorway · {name}",
+    "engraving_optional": "Engraving (optional · {fee})",
+    "engraving_helper_pattern": "Letters, numbers, dots and dashes only.",
+    "engraving_charcounter": "{used} / {max}",
+    "reserve_idle": "Reserve from Edition 01",
+    "reserve_pending": "Reserving…",
+    "sold_out_short": "Sold out",
+    "operator_prefix": "Operator",
+    "engraving_chip": "Engraving {text}",
+    "external_link": "View on Shopify"
   },
   "exploded_kit": {
     "eyebrow": "Reference geometry · Interactive",
