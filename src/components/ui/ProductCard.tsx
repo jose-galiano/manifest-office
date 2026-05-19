@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useCallback, useMemo, useState } from 'react';
 
 import { useQuickAdd } from '@/hooks/use-quick-add';
+import { resolveColorwayHex } from '@/lib/constants/colorways';
 import { ENGRAVING_UPCHARGE_EUR, hasEngravingOption } from '@/lib/constants/engraving';
 import { toStorefrontHandle } from '@/lib/shopify/handle';
 
@@ -17,17 +18,6 @@ import type { CSSProperties, MouseEvent, ReactElement } from 'react';
 type ProductCardProps = {
   readonly product: ManifestProduct;
   readonly dossierNumber: number;
-};
-
-// Brand-bible §07: Edition 01 photography palette — Charcoal is the default
-// SKU body, Lichen + Tobacco are the alt colorways. Keep names ↔ hex mapping
-// in one place so the swatches on PLP, PDP, and any future filter UI stay in
-// lockstep.
-const COLORWAY_HEX: Readonly<Record<string, string>> = {
-  Charcoal: '#1A1A1A',
-  Lichen: '#5C6B5A',
-  Tobacco: '#6E5947',
-  Bronze: '#8A5A2B',
 };
 
 type Swatch = {
@@ -102,7 +92,7 @@ function buildSwatches(product: ManifestProduct): readonly Swatch[] {
     const variantImage = variant?.image ?? null;
     return {
       name,
-      hex: COLORWAY_HEX[name] ?? '#1A1A1A',
+      hex: resolveColorwayHex(name),
       imageUrl: variantImage ?? (index === 0 ? heroImage : heroImage),
     };
   });

@@ -30,6 +30,7 @@ import {
   findProductByHandle,
   type Product,
 } from '@/content/manifest-office';
+import { resolveColorwayHex } from '@/lib/constants/colorways';
 import { JsonLd, buildBreadcrumbList, buildProductSchema } from '@/lib/seo';
 import { fetchManifestProducts } from '@/lib/services/fetch-products';
 import { toShopifyHandle } from '@/lib/shopify/handle';
@@ -145,17 +146,6 @@ function deriveSizeOptions(currentHandle: string): SizeOption[] {
   });
 }
 
-// ---------------------------------------------------------------------------
-// Colorway swatches. Each Edition 01 SKU ships in up to three colorways
-// (Charcoal / Lichen / Tobacco). Hex codes are hardcoded — they are part of
-// the Edition 01 brand bible and don't live in Shopify.
-// ---------------------------------------------------------------------------
-const COLORWAY_HEX: Record<string, string> = {
-  Charcoal: '#1A1A1A',
-  Lichen: '#5C6B5A',
-  Tobacco: '#6E5947',
-};
-
 function deriveColorways(shopifyProduct: ManifestProduct | null): ColorwaySwatch[] {
   if (!shopifyProduct) return [];
   const names = shopifyProduct.colorways.length > 0 ? shopifyProduct.colorways : ['Charcoal'];
@@ -167,7 +157,7 @@ function deriveColorways(shopifyProduct: ManifestProduct | null): ColorwaySwatch
     );
     return {
       name,
-      hex: COLORWAY_HEX[name] ?? '#1A1A1A',
+      hex: resolveColorwayHex(name),
       imageUrl: variant?.image ?? null,
     };
   });
