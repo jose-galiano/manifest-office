@@ -13,6 +13,8 @@
     "system_sub": "The Complete Kit",
     "provenance": "Provenance",
     "provenance_sub": "Our Story",
+    "faq": "FAQ",
+    "faq_sub": "Answers, in plain words",
     "open_cart": "Open manifest, {count} {count, plural, one {item} other {items}}",
     "open_wishlist": "Open wishlist, {count} {count, plural, one {item} other {items}}",
     "open_menu": "Open menu",
@@ -310,6 +312,187 @@
     "email_label": "Email · optional pre-fill for checkout",
     "email_placeholder": "email · optional (saved for checkout)"
   },
+  "cart_page": {
+    "loading": "Loading manifest…",
+    "eyebrow": "Manifest · your order",
+    "title": "Manifest",
+    "reserved_count": "{count, plural, one {# dossier reserved · Edition 01} other {# dossiers reserved · Edition 01}}",
+    "reserved_dossiers": "Reserved dossiers",
+    "continue_browsing": "Continue browsing",
+    "summary": "Summary",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "shipping_included": "Included",
+    "total": "Total",
+    "manifest_complete": "Complete the manifest",
+    "quantity_caption": "Quantities reflect dossier availability. Adjust on the line above.",
+    "empty_eyebrow": "Manifest · empty",
+    "empty_title": "Manifest is empty",
+    "empty_lede": "Brief the desk to compose a system tailored to a place, a duration, and a working register.",
+    "empty_brief_desk": "Brief the desk",
+    "empty_browse_dossiers": "Browse dossiers"
+  },
+  "static_pages": {
+    "system": {
+      "title": "The Anchor Latch System",
+      "description": "One closure across every component. The Tech Pouch locks to the Cube; the Cube locks to the Field Tote. Patent pending EU 2026-04."
+    },
+    "provenance": {
+      "title": "Provenance & Practitioners",
+      "description": "Made at Atelier Souto in Vila Nova de Famalicão, forty kilometres north of Porto. Three named practitioners. Repair, not replace."
+    },
+    "editions": {
+      "title": "The Editions",
+      "description": "A finite allocation of a single thought. When an Edition closes, it stays closed. The archive, by issue."
+    }
+  },
+  "checkout": {
+    "loading": "Preparing checkout…",
+    "secure_checkout": "Secure checkout",
+    "portfolio_eyebrow": "Portfolio checkout",
+    "portfolio_body": "This is the funnel for a fictional brand. The form is a lead capture. The Pay button books a call. If this is the kind of checkout you want for your own storefront, that's exactly what we'll talk about.",
+    "express": "Express",
+    "book_call": "Book a 30-min call",
+    "email_direct": "Email Jose directly",
+    "or_leave_note": "Or leave a note",
+    "contact": "Contact",
+    "email_label": "Email",
+    "help_legend": "How can I help?",
+    "first_name": "First name",
+    "last_name": "Last name",
+    "company_label": "Company or brand (optional)",
+    "role_label": "Your role",
+    "plan_label": "Your store today",
+    "context_caption": "Real checkout collects an address. This one collects context. Same conversion goal, different stack.",
+    "would_pay": "If this were my store and I trusted the brand, I would have hit <strong>Pay Now</strong>.",
+    "submit_busy": "Booking…",
+    "submit_confirm": "Confirm · {date} · {time} CET →",
+    "submit_pick_slot": "Pick a slot to confirm",
+    "consent": "By submitting, you agree to be contacted about the demo. No drip. No spam.",
+    "order_summary": "Order summary",
+    "your_manifest": "Your manifest",
+    "engraved_with": "Engraved · {text}",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "shipping_included": "Included",
+    "total_currency": "Total · {currency}",
+    "demo_caption": "Manifest Office is a demo. The cart total is for illustration. No charge will be placed. Booking the call is the actual conversion.",
+    "error": {
+      "email_invalid": "Please enter a valid email.",
+      "email_typo": "Looks like a typo in the domain — double-check the TLD.",
+      "role_required": "Tell me what you do — pick a role.",
+      "plan_required": "Pick where your store sits today.",
+      "slot_required": "Pick a call slot to confirm."
+    },
+    "role_options": {
+      "placeholder": "Pick one…",
+      "founder": "Founder / Owner",
+      "cto": "CTO or eng lead",
+      "growth": "Head of Growth / Performance",
+      "product": "Product / Ops",
+      "designer": "Designer",
+      "student": "Student / Just learning",
+      "other": "Other"
+    },
+    "plan_options": {
+      "placeholder": "Pick one…",
+      "plus": "Shopify Plus",
+      "advanced": "Advanced Shopify",
+      "basic": "Basic / Standard Shopify",
+      "considering": "Considering Shopify",
+      "other_platform": "On another platform",
+      "na": "Not running a store"
+    }
+  },
+  "thank_you": {
+    "order_confirmation": "Order confirmation",
+    "call_booked": "Call booked",
+    "confirmed_heading": "Confirmed, {name}. Let's talk architecture.",
+    "slot_held": "Slot held",
+    "invite_lede": "Calendar invite mails to <email></email> within the next minute. Reply to it with anything you want me to read before the call.",
+    "your_email_fallback": "your email",
+    "friend_fallback": "friend",
+    "your_brand_fallback": "your brand",
+    "cover_label": "What we'll cover",
+    "cover_eyebrow": "What we'll cover (30 min)",
+    "cover_1": "Your current stack and the ceiling it's hitting.",
+    "cover_2": "Whether headless / agentic commerce changes the math for {company}.",
+    "cover_3": "A concrete next step — pod engagement, audit, or fit-check.",
+    "cover_caption": "Bring one real bottleneck. The call is a working session, not a pitch.",
+    "pick_slot_label": "Pick a slot",
+    "pick_your_slot": "Pick your slot",
+    "cal_iframe_title": "Book a 30-minute call with Jose",
+    "book_now_cta": "Book a 30-min call now →",
+    "keep_exploring": "Keep exploring",
+    "order_summary": "Order summary",
+    "engraved_with": "Engraved · {text}",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "shipping_included": "Included",
+    "total_currency": "Total · {currency}",
+    "no_items": "No items in the manifest. The booking still went through.",
+    "portfolio_signoff": "The whole storefront you just walked through is a portfolio piece by <strong>Jose Galiano</strong>, a Shopify Plus & agentic-commerce architect based in Valencia. Public repo, MIT licensed: <link>github.com/jose-galiano/manifest-office</link>."
+  },
+  "blog": {
+    "eyebrow": "The blog",
+    "blogs_breadcrumb": "Blogs",
+    "return_cta": "Return to the office",
+    "operator-notes": {
+      "title": "Operator Notes",
+      "description": "Field notes from operators carrying the Edition 01 kit. No entries yet — the first dispatch lands when Edition 01 ships.",
+      "caption": "Operator notes · no entries"
+    }
+  },
+  "faq": {
+    "meta_title": "Frequently Asked Questions · Manifest Office",
+    "meta_description": "Straight answers on shipping, returns, engraving, the Anchor Latch system, repair, and the Edition itself.",
+    "eyebrow": "Help desk",
+    "title": "Frequently asked, plainly answered.",
+    "lede": "If something isn't covered here, the desk replies inside one working day. Lisbon hours. Written by a person, signed off by Jose.",
+    "contact_eyebrow": "Still unsure?",
+    "contact_title": "Write to the desk.",
+    "contact_body": "Skip the form. We reply to every email — usually within a working day. Stock questions, sizing doubts, custom engravings, repair logistics, press: all the same address.",
+    "contact_email_cta": "Email the desk →",
+    "contact_browse_cta": "Browse Edition 01",
+    "items": {
+      "shipping": {
+        "q": "Where do you ship, and how long does it take?",
+        "a": "Edition 01 ships worldwide from Porto. UK and EU orders arrive in 3–5 working days; North America in 5–8; the rest of the world in 7–12. A tracked carrier (DHL or UPS, never standard post) is included on every order. Once a dossier leaves the atelier, you'll get the tracking number by email within the hour."
+      },
+      "returns": {
+        "q": "What is the return policy?",
+        "a": "30 days from delivery, no questions asked, as long as the dossier is unused and the original packaging is intact. We pay the return label for any defect. We don't accept returns on engraved pieces — engraving is final, by design."
+      },
+      "engraving": {
+        "q": "Can I engrave my dossier?",
+        "a": "Yes. The leather pull on the Tech Pouch, Cube, and Field Tote takes a single line up to 18 characters — initials, a date, a coordinate. Engraving is laser-etched in Porto before the piece is closed. Adds €18 to the line item and roughly two working days to dispatch. Once engraved, it stays engraved: see the returns note above."
+      },
+      "edition": {
+        "q": "What does \"Edition 01\" actually mean?",
+        "a": "Edition 01 is a finite allocation: 500 of each dossier, no restocks. Every piece carries its serial number (e.g. #142 / 500) etched on the inside lining. When 500 is reached, the dossier closes for good and Edition 02 — a different colourway, a different brief — takes its place. The archive stays public. Old dossiers are repaired, not reissued."
+      },
+      "repair": {
+        "q": "What happens if it breaks?",
+        "a": "Send it back. Atelier Souto repairs every Manifest Office piece for life — zippers, lining, hardware, stitching. The Anchor Latch is field-serviceable with a coin: we ship replacement latch units at cost (€12) so you can keep going on the road. Anything more involved goes back to Porto. We cover repair labour; you cover one-way shipping."
+      },
+      "sizing": {
+        "q": "How do I pick the right size?",
+        "a": "The Tech Pouch and Cube both ship in S, M, and L. The size selector on each dossier page lists capacity (in litres) and the working examples we tested against — a 13\" laptop and charger fits the Tech Pouch M; a week of laundry fits the Cube L. The Anchor Latch and Luggage Tag are one size. If you're between two, pick down: every Cube and Tech Pouch stacks inside the next size up."
+      },
+      "duties": {
+        "q": "Do I pay duties on international orders?",
+        "a": "EU orders ship duty-paid (DDP), including the UK post-Brexit threshold. North America, the UK above £135, and rest-of-world orders are sent DDU — duties and import VAT are collected by the carrier on delivery. We surface the estimate at checkout so there are no surprises at the door."
+      },
+      "materials": {
+        "q": "What are dossiers made of?",
+        "a": "420D Cordura body (Italian-milled), full-grain vegetable-tanned leather pulls, YKK AquaGuard zippers, 6061-T6 aluminium hardware machined by a four-person shop outside Vila Nova de Famalicão. Lining is undyed recycled polyester from PET bottles. Every component is named, sourced from the EU, and replaceable. Material origin certificates are filed under Provenance."
+      },
+      "support": {
+        "q": "How do I reach a real person?",
+        "a": "Email desk@manifest.office. One inbox, monitored by the same three people who make the dossiers. We answer in English, Spanish, Portuguese, and Mandarin — the languages this site ships in. No bots, no automated tiered support. Pre-purchase, post-purchase, repair, press: same address."
+      }
+    }
+  },
   "wishlist": {
     "drawer_title_owned": "Wishlist",
     "drawer_title_shared": "Shared with you",
@@ -380,18 +563,7 @@
     "title_default": "All Dossiers",
     "lede_default": "Every piece of the Edition 01 system, finished in Porto. Reserve any dossier directly from the card.",
     "empty": "No dossiers in this collection yet.",
-    "count": "{count} {count, plural, one {dossier} other {dossiers}}"
-  },
-  "checkout": {
-    "secure_header": "Secure checkout",
-    "express_label": "Express",
-    "contact_title": "Contact",
-    "help_title": "How can I help you?",
-    "payment_title": "Payment",
-    "pay_cta": "Book the call",
-    "thank_you_title": "Thank you. Manifest filed.",
-    "order_number": "Order MO-{number}",
-    "thank_you_pitch": "Edition 01 reservations are routed to Maelify directly. Expect a calendar invite within the hour."
+    "count": "{count, plural, one {# dossier} other {# dossiers}}"
   },
   "common": {
     "loading": "Loading",
@@ -427,5 +599,19 @@
     "volume": "Volume",
     "mass": "Mass",
     "origin": "Origin"
+  },
+  "error": {
+    "eyebrow": "System · Unexpected error",
+    "title": "The desk hit an unexpected snag.",
+    "body": "Refresh the segment, or return to Edition 01 to keep browsing. If this keeps happening, quote the reference below to support.",
+    "retry": "Retry segment",
+    "go_home": "Return to Edition 01"
+  },
+  "collections_index": {
+    "title_meta": "Collections",
+    "description_meta": "Every collection in the Manifest Office system. Browse editions, components, and hardware.",
+    "eyebrow": "Catalogue / Collections",
+    "title": "The collections.",
+    "lede": "Editions are time-bound drops. Components are the parts they ship as. Hardware is the connective tissue across every Edition."
   }
 }

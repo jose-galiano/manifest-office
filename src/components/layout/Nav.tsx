@@ -27,8 +27,8 @@ import type { ReactElement } from 'react';
 
 type NavLink = {
   readonly href: string;
-  readonly labelKey: 'editions' | 'dossiers' | 'system' | 'provenance';
-  readonly subKey: 'editions_sub' | 'dossiers_sub' | 'system_sub' | 'provenance_sub';
+  readonly labelKey: 'editions' | 'dossiers' | 'system' | 'provenance' | 'faq';
+  readonly subKey: 'editions_sub' | 'dossiers_sub' | 'system_sub' | 'provenance_sub' | 'faq_sub';
 };
 
 const NAV_LINKS: readonly NavLink[] = [
@@ -36,6 +36,7 @@ const NAV_LINKS: readonly NavLink[] = [
   { href: '/collections/edition-01', labelKey: 'dossiers', subKey: 'dossiers_sub' },
   { href: '/pages/system', labelKey: 'system', subKey: 'system_sub' },
   { href: '/pages/provenance', labelKey: 'provenance', subKey: 'provenance_sub' },
+  { href: '/faq', labelKey: 'faq', subKey: 'faq_sub' },
 ];
 
 const SCROLL_THRESHOLD_PX = 600;

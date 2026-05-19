@@ -72,6 +72,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   for (const blog of BLOG_HANDLES) {
     specs.push({ path: `/blogs/${blog}`, priority: 0.4, changeFrequency: 'weekly' });
   }
+  specs.push({ path: '/faq', priority: 0.6, changeFrequency: 'monthly' });
 
   return specs.flatMap((spec) => expandRoute(spec, lastModified));
 }

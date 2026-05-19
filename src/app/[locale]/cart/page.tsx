@@ -12,6 +12,7 @@
 
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { CartItemRow } from '@/components/sections/CartItemRow';
@@ -81,6 +82,7 @@ async function postTrack(
 }
 
 export default function CartPage(): ReactElement {
+  const t = useTranslations('cart_page');
   const { items, subtotalEur, removeLine, setImageForHandle } = useCart();
   const [isMounted, setIsMounted] = useState(false);
   const anonymousIdRef = useRef<string>('');
@@ -137,7 +139,7 @@ export default function CartPage(): ReactElement {
     return (
       <div className="mx-auto max-w-[1280px] px-5 md:px-10 pb-24 pt-[110px] md:pt-[140px]">
         <div className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--color-lichen)]">
-          Loading manifest…
+          {t('loading')}
         </div>
       </div>
     );
@@ -147,27 +149,26 @@ export default function CartPage(): ReactElement {
     return (
       <div className="mx-auto max-w-[760px] px-5 md:px-10 pb-24 pt-[110px] md:pt-[140px] text-center">
         <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-signal">
-          MANIFEST · EMPTY
+          {t('empty_eyebrow').toUpperCase()}
         </span>
         <h1 className="mt-4 font-display text-[56px] font-medium leading-[1.05] tracking-[-0.015em] text-[var(--color-ink)]">
-          Manifest is empty
+          {t('empty_title')}
         </h1>
         <p className="mx-auto mt-6 max-w-[44ch] text-[16px] leading-[1.6] text-[var(--color-lichen)]">
-          Brief the desk to compose a system tailored to a place, a duration, and a working
-          register.
+          {t('empty_lede')}
         </p>
         <div className="mt-10 flex justify-center gap-4">
           <Link
             href="/products/tech-pouch-m#desk"
             className="bg-[var(--color-ink)] px-6 py-[14px] font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-paper)] transition-[background-color,letter-spacing] hover:bg-[var(--color-signal)] hover:tracking-[0.18em]"
           >
-            Brief the desk
+            {t('empty_brief_desk')}
           </Link>
           <Link
             href="/collections/edition-01"
             className="border border-[var(--color-rule-strong)] px-6 py-[14px] font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-ink)] transition-colors hover:border-[var(--color-ink)]"
           >
-            Browse dossiers
+            {t('empty_browse_dossiers')}
           </Link>
         </div>
       </div>
@@ -178,19 +179,19 @@ export default function CartPage(): ReactElement {
     <div className="mx-auto max-w-[1280px] px-5 md:px-10 pb-24 pt-[110px] md:pt-[140px]">
       <header className="mb-12 flex flex-col gap-3">
         <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-signal">
-          MANIFEST · YOUR ORDER
+          {t('eyebrow').toUpperCase()}
         </span>
         <h1 className="font-display text-[56px] font-medium leading-none tracking-[-0.015em] text-[var(--color-ink)]">
-          Manifest
+          {t('title')}
         </h1>
         <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--color-lichen)]">
-          {items.length} {items.length === 1 ? 'dossier' : 'dossiers'} reserved · Edition 01
+          {t('reserved_count', { count: items.length }).toUpperCase()}
         </p>
       </header>
 
       <div className="grid grid-cols-1 gap-12 lg:grid-cols-[3fr_2fr]">
         {/* Items column */}
-        <section aria-label="Reserved dossiers">
+        <section aria-label={t('reserved_dossiers')}>
           <div className="border-t border-[var(--color-rule)]">
             {items.map((item) => (
               <CartItemRow
@@ -205,23 +206,23 @@ export default function CartPage(): ReactElement {
             href="/collections/edition-01"
             className="mt-8 inline-block font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--color-lichen)] hover:text-signal transition-colors"
           >
-            ← Continue browsing
+            ← {t('continue_browsing')}
           </Link>
         </section>
 
         {/* Summary column */}
         <aside
-          aria-label="Order summary"
+          aria-label={t('summary')}
           className="self-start border border-[var(--color-rule)] bg-[var(--color-paper)] p-9"
         >
           <h2 className="font-display text-[22px] font-medium leading-none tracking-[-0.01em] text-[var(--color-ink)]">
-            Summary
+            {t('summary')}
           </h2>
 
           <dl className="mt-7 flex flex-col gap-4 border-t border-[var(--color-rule)] pt-6">
             <div className="flex items-baseline justify-between">
               <dt className="font-mono text-[11px] uppercase tracking-[0.06em] text-[var(--color-lichen)]">
-                Subtotal
+                {t('subtotal')}
               </dt>
               <dd className="font-mono text-[14px] text-[var(--color-ink)]">
                 €{Math.round(subtotalEur)}
@@ -229,17 +230,17 @@ export default function CartPage(): ReactElement {
             </div>
             <div className="flex items-baseline justify-between">
               <dt className="font-mono text-[11px] uppercase tracking-[0.06em] text-[var(--color-lichen)]">
-                Shipping
+                {t('shipping')}
               </dt>
               <dd className="font-mono text-[14px] text-[var(--color-ink)]">
-                {freeShip ? 'Included' : `€${FLAT_SHIPPING_EUR}`}
+                {freeShip ? t('shipping_included') : `€${FLAT_SHIPPING_EUR}`}
               </dd>
             </div>
           </dl>
 
           <div className="mt-6 flex items-baseline justify-between border-t border-[var(--color-rule)] pt-6">
             <span className="font-mono text-[11px] uppercase tracking-[0.06em] text-[var(--color-lichen)]">
-              Total
+              {t('total')}
             </span>
             <span className="font-display text-[32px] font-medium leading-none tracking-[-0.015em] text-[var(--color-ink)]">
               €{Math.round(total)}
@@ -251,11 +252,11 @@ export default function CartPage(): ReactElement {
             onClick={handleManifestComplete}
             className="mt-8 w-full bg-[var(--color-ink)] px-4 py-[18px] font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--color-paper)] transition-[background-color,letter-spacing] duration-[360ms] ease-out hover:bg-[var(--color-signal)] hover:tracking-[0.18em]"
           >
-            Manifest complete
+            {t('manifest_complete')}
           </button>
 
           <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.06em] text-[var(--color-lichen)]">
-            Each dossier is uniquely issued. Quantity is fixed at one per reservation.
+            {t('quantity_caption')}
           </p>
         </aside>
       </div>

@@ -5,13 +5,14 @@
  * no client-side stores. If we get this far, the platform is in a bad state
  * and we want to render *something* without depending on anything else.
  *
- * In practice this path is rare. The route-level `error.tsx` catches the
- * vast majority of crashes inside the rendered tree.
+ * No next-intl: this boundary sits outside the [locale] segment, so the
+ * message provider is unavailable. We sniff the locale from the path or the
+ * NEXT_LOCALE cookie and pick a hardcoded copy table.
  */
 
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import type { ReactElement } from 'react';
 
@@ -20,13 +21,71 @@ export type GlobalErrorProps = {
   readonly reset: () => void;
 };
 
+type Lang = 'en' | 'es' | 'pt' | 'zh';
+
+type Copy = {
+  readonly htmlLang: string;
+  readonly eyebrow: string;
+  readonly title: string;
+  readonly body: string;
+  readonly retry: string;
+};
+
+const COPY: Record<Lang, Copy> = {
+  en: {
+    htmlLang: 'en',
+    eyebrow: 'SYSTEM · OFFLINE',
+    title: 'Manifest Office is briefly offline.',
+    body: 'The page failed to render. Refresh in a moment, or try again later. If you reached this page through a saved link, the link is still valid — the system itself is the issue.',
+    retry: 'Try again →',
+  },
+  es: {
+    htmlLang: 'es',
+    eyebrow: 'SISTEMA · FUERA DE LÍNEA',
+    title: 'Manifest Office está brevemente fuera de línea.',
+    body: 'La página no pudo renderizarse. Recarga en unos instantes o inténtalo más tarde. Si llegaste por un enlace guardado, el enlace sigue siendo válido: el problema está en el sistema.',
+    retry: 'Reintentar →',
+  },
+  pt: {
+    htmlLang: 'pt',
+    eyebrow: 'SISTEMA · OFFLINE',
+    title: 'O Manifest Office está brevemente offline.',
+    body: 'A página falhou ao renderizar. Atualiza dentro de momentos ou tenta mais tarde. Se chegaste através de um link guardado, o link continua válido: o problema é do sistema.',
+    retry: 'Tentar novamente →',
+  },
+  zh: {
+    htmlLang: 'zh',
+    eyebrow: '系统 · 离线',
+    title: 'Manifest Office 暂时离线。',
+    body: '页面渲染失败。请稍后刷新或再试一次。若您通过已保存的链接进入,该链接仍然有效——问题出在系统本身。',
+    retry: '重试 →',
+  },
+};
+
+function detectLang(): Lang {
+  if (typeof window === 'undefined') return 'en';
+  const path = window.location.pathname;
+  const seg = path.split('/')[1];
+  if (seg === 'es' || seg === 'pt' || seg === 'zh' || seg === 'en') return seg;
+  const cookieLocale = document.cookie
+    .split('; ')
+    .find((c) => c.startsWith('NEXT_LOCALE='))
+    ?.split('=')[1];
+  if (cookieLocale === 'es' || cookieLocale === 'pt' || cookieLocale === 'zh') return cookieLocale;
+  return 'en';
+}
+
 export default function GlobalError({ error, reset }: GlobalErrorProps): ReactElement {
+  const [lang, setLang] = useState<Lang>('en');
   useEffect(() => {
+    setLang(detectLang());
     console.error('[global-error]', { digest: error.digest, message: error.message });
   }, [error]);
 
+  const t = COPY[lang];
+
   return (
-    <html lang="en">
+    <html lang={t.htmlLang}>
       <body
         style={{
           margin: 0,
@@ -53,7 +112,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps): ReactEl
             color: '#D24A1F',
           }}
         >
-          SYSTEM · OFFLINE
+          {t.eyebrow}
         </span>
         <h1
           style={{
@@ -65,7 +124,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps): ReactEl
             letterSpacing: '-0.02em',
           }}
         >
-          Manifest Office is briefly offline.
+          {t.title}
         </h1>
         <p
           style={{
@@ -76,8 +135,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps): ReactEl
             opacity: 0.85,
           }}
         >
-          The page failed to render. Refresh in a moment, or try again later. If you reached this
-          page through a saved link, the link is still valid — the system itself is the issue.
+          {t.body}
         </p>
         {error.digest ? (
           <code
@@ -110,7 +168,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps): ReactEl
             textTransform: 'uppercase',
           }}
         >
-          Try again →
+          {t.retry}
         </button>
       </body>
     </html>

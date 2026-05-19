@@ -86,7 +86,7 @@ export function LocaleSwitcher({
 
   if (variant === 'stack') {
     return (
-      <div className="flex flex-col gap-3" aria-label="Choose language">
+      <div className="grid grid-cols-[1fr_auto] gap-x-6 gap-y-0" aria-label="Choose language">
         {routing.locales.map((locale) => {
           const isActive = locale === active;
           const market = LOCALE_MARKET[locale];
@@ -96,12 +96,14 @@ export function LocaleSwitcher({
               type="button"
               onClick={(event) => switchTo(event, locale)}
               aria-pressed={isActive}
-              className={`flex items-baseline justify-between border-b border-[rgba(242,239,232,0.18)] py-3 text-left font-display text-[22px] tracking-[-0.01em] transition-colors ${
+              className={`col-span-2 grid grid-cols-subgrid items-baseline border-b border-[rgba(242,239,232,0.18)] py-3 text-left transition-colors ${
                 isActive ? 'text-signal' : 'text-[#F2EFE8] hover:text-signal'
               }`}
             >
-              <span>{LOCALE_FULL_NAMES[locale]}</span>
-              <span className="font-mono text-[11px] uppercase tracking-[0.1em] text-[#9CAA98]">
+              <span className="whitespace-nowrap font-display text-[22px] leading-tight tracking-[-0.01em]">
+                {LOCALE_FULL_NAMES[locale]}
+              </span>
+              <span className="whitespace-nowrap text-right font-mono text-[11px] uppercase leading-tight tracking-[0.1em] tabular-nums text-[#9CAA98]">
                 {LOCALE_LABELS[locale]} · {market.currency}
               </span>
             </button>
@@ -147,32 +149,32 @@ export function LocaleSwitcher({
       <div
         role="listbox"
         aria-label="Choose language"
-        className={`absolute right-0 top-full z-[700] mt-2 min-w-[180px] origin-top-right rounded-md border border-[var(--color-rule)] bg-[var(--color-paper)] shadow-[0_8px_28px_rgba(11,15,14,0.18)] transition-[opacity,transform] duration-200 ${
+        className={`absolute right-0 top-full z-[700] mt-2 w-[300px] origin-top-right rounded-md border border-[var(--color-rule)] bg-[var(--color-paper)] shadow-[0_8px_28px_rgba(11,15,14,0.18)] transition-[opacity,transform] duration-200 ${
           open ? 'visible scale-100 opacity-100' : 'invisible scale-[0.96] opacity-0'
         }`}
       >
-        <ul className="py-2">
+        <ul className="grid grid-cols-[1fr_auto] gap-y-0 py-2">
           {routing.locales.map((locale) => {
             const isActive = locale === active;
             const market = LOCALE_MARKET[locale];
             return (
-              <li key={locale}>
+              <li key={locale} className="col-span-2 grid grid-cols-subgrid">
                 <button
                   type="button"
                   role="option"
                   aria-selected={isActive}
                   onClick={(event) => switchTo(event, locale)}
-                  className={`flex w-full items-center justify-between gap-6 px-4 py-2.5 text-left transition-colors ${
+                  className={`col-span-2 grid grid-cols-subgrid items-center gap-x-8 px-4 py-2.5 text-left transition-colors ${
                     isActive
                       ? 'bg-[rgba(11,15,14,0.04)] text-[var(--color-ink)]'
                       : 'text-[var(--color-ink)] hover:bg-[rgba(11,15,14,0.04)]'
                   }`}
                 >
-                  <span className="font-display text-[14px] font-medium tracking-[-0.01em]">
+                  <span className="whitespace-nowrap font-display text-[14px] font-medium leading-[1.1] tracking-[-0.01em]">
                     {LOCALE_FULL_NAMES[locale]}
                   </span>
                   <span
-                    className={`font-mono text-[10px] uppercase tracking-[0.08em] ${
+                    className={`whitespace-nowrap text-right font-mono text-[10px] uppercase leading-[1.1] tracking-[0.08em] tabular-nums ${
                       isActive ? 'text-[var(--color-signal)]' : 'text-[var(--color-lichen)]'
                     }`}
                   >

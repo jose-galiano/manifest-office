@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useId, useMemo, useState } from 'react';
 
 import {
@@ -9,9 +9,11 @@ import {
   type BookingSlot,
 } from '@/components/sections/CheckoutBookingPicker';
 import { useCart, useCartImageForHandle } from '@/hooks/use-cart';
-import { Link } from '@/i18n/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
+import { type Locale } from '@/i18n/routing';
 import { CUSTOM_EVENTS, ECOMMERCE_EVENTS, track } from '@/lib/analytics';
 import { FLAT_SHIPPING_EUR, FREE_SHIP_THRESHOLD } from '@/lib/constants/commerce';
+import { formatPriceForLocale, resolveCurrency } from '@/lib/i18n/currency';
 import { toStorefrontHandle } from '@/lib/shopify/handle';
 import { validateEmail } from '@/lib/utils/email';
 
@@ -24,25 +26,24 @@ const ORDER_NUMBER_KEY = 'mo_order_number';
 const BOOKING_PAYLOAD_KEY = 'mo_booking_payload';
 const BOOK_CALL_HREF = 'https://www.maelify.com/pages/book';
 
-const ROLE_OPTIONS = [
-  { value: '', label: 'Pick one…' },
-  { value: 'founder', label: 'Founder / Owner' },
-  { value: 'cto', label: 'CTO or eng lead' },
-  { value: 'growth', label: 'Head of Growth / Performance' },
-  { value: 'product', label: 'Product / Ops' },
-  { value: 'designer', label: 'Designer' },
-  { value: 'student', label: 'Student / Just learning' },
-  { value: 'other', label: 'Other' },
+const ROLE_VALUES = [
+  '',
+  'founder',
+  'cto',
+  'growth',
+  'product',
+  'designer',
+  'student',
+  'other',
 ] as const;
-
-const PLAN_OPTIONS = [
-  { value: '', label: 'Pick one…' },
-  { value: 'plus', label: 'Shopify Plus' },
-  { value: 'advanced', label: 'Advanced Shopify' },
-  { value: 'basic', label: 'Basic / Standard Shopify' },
-  { value: 'considering', label: 'Considering Shopify' },
-  { value: 'other_platform', label: 'On another platform' },
-  { value: 'na', label: 'Not running a store' },
+const PLAN_VALUES = [
+  '',
+  'plus',
+  'advanced',
+  'basic',
+  'considering',
+  'other_platform',
+  'na',
 ] as const;
 
 const ICP_ROLES: ReadonlySet<string> = new Set(['founder', 'cto', 'growth', 'product']);
@@ -75,12 +76,15 @@ function mintOrderNumber(): string {
   return `MO-${base}`;
 }
 
-function formatEur(amount: number): string {
-  return `€${Math.round(amount).toLocaleString('en-IE')}`;
-}
-
-function SummaryRow({ item }: { readonly item: CartItem }): ReactElement {
+function SummaryRow({
+  item,
+  locale,
+}: {
+  readonly item: CartItem;
+  readonly locale: Locale;
+}): ReactElement {
   const liveImage = useCartImageForHandle(item.handle);
+  const t = useTranslations('checkout');
   const displayImage = item.imageUrl || liveImage;
   const total = item.price + (item.engraving?.fee ?? 0);
   return (
@@ -99,12 +103,12 @@ function SummaryRow({ item }: { readonly item: CartItem }): ReactElement {
         </div>
         {item.engraving?.text ? (
           <div className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.06em] text-[var(--color-lichen)]">
-            Engraved · {item.engraving.text}
+            {t('engraved_with', { text: item.engraving.text })}
           </div>
         ) : null}
       </div>
       <div className="font-mono text-[13px] tabular-nums text-[var(--color-ink)]">
-        {formatEur(total)}
+        {formatPriceForLocale(total, locale)}
       </div>
     </li>
   );
@@ -112,6 +116,18 @@ function SummaryRow({ item }: { readonly item: CartItem }): ReactElement {
 
 export default function CheckoutPage(): ReactElement {
   const router = useRouter();
+  const locale = useLocale() as Locale;
+  const t = useTranslations('checkout');
+  const roleOptions = useMemo(
+    () =>
+      ROLE_VALUES.map((value) => ({ value, label: t(`role_options.${value || 'placeholder'}`) })),
+    [t],
+  );
+  const planOptions = useMemo(
+    () =>
+      PLAN_VALUES.map((value) => ({ value, label: t(`plan_options.${value || 'placeholder'}`) })),
+    [t],
+  );
   const { items, subtotalEur, setImageForHandle } = useCart();
   const [isMounted, setIsMounted] = useState(false);
   const [email, setEmail] = useState('');
@@ -207,23 +223,19 @@ export default function CheckoutPage(): ReactElement {
       event.preventDefault();
       const validation = validateEmail(email);
       if (!validation.ok) {
-        setError(
-          validation.reason === 'typo'
-            ? 'Looks like a typo in the domain — double-check the TLD.'
-            : 'Please enter a valid email.',
-        );
+        setError(validation.reason === 'typo' ? t('error.email_typo') : t('error.email_invalid'));
         return;
       }
       if (!role) {
-        setError('Tell me what you do — pick a role.');
+        setError(t('error.role_required'));
         return;
       }
       if (!plan) {
-        setError('Pick where your store sits today.');
+        setError(t('error.plan_required'));
         return;
       }
       if (!selectedSlot) {
-        setError('Pick a call slot to confirm.');
+        setError(t('error.slot_required'));
         return;
       }
       setError(null);
@@ -320,6 +332,7 @@ export default function CheckoutPage(): ReactElement {
       router,
       selectedSlot,
       subtotalEur,
+      t,
       total,
       wouldHavePaid,
     ],
@@ -328,7 +341,7 @@ export default function CheckoutPage(): ReactElement {
   if (!isMounted) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--color-lichen)]">
-        Preparing checkout…
+        {t('loading')}
       </div>
     );
   }
@@ -351,7 +364,7 @@ export default function CheckoutPage(): ReactElement {
                 fill="currentColor"
               />
             </svg>
-            Secure checkout
+            {t('secure_checkout')}
           </span>
         </div>
       </header>
@@ -360,19 +373,15 @@ export default function CheckoutPage(): ReactElement {
         <section className="px-5 py-8 sm:px-8 lg:pr-12 lg:py-12">
           <div className="mb-9 border border-[var(--color-rule-strong)] bg-[rgba(210,74,31,0.06)] px-5 py-4 text-[13px] leading-[1.5] text-[var(--color-ink)]">
             <span className="block font-mono text-[10px] uppercase tracking-[0.14em] text-signal">
-              PORTFOLIO CHECKOUT
+              {t('portfolio_eyebrow').toUpperCase()}
             </span>
-            <p className="mt-1.5">
-              This is the funnel for a fictional brand. The form is a lead capture. The Pay button
-              books a call. If this is the kind of checkout you want for your own storefront,
-              that&apos;s exactly what we&apos;ll talk about.
-            </p>
+            <p className="mt-1.5">{t('portfolio_body')}</p>
           </div>
 
           <form onSubmit={handleSubmit} noValidate>
             <div className="mb-8">
               <span className="block text-center font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--color-lichen)]">
-                Express
+                {t('express')}
               </span>
               <div className="mt-3 grid grid-cols-2 gap-3">
                 <Link
@@ -382,20 +391,20 @@ export default function CheckoutPage(): ReactElement {
                   onClick={() => handleExpressClick('book_now')}
                   className="flex h-[44px] items-center justify-center rounded-[4px] bg-[var(--color-ink)] font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-paper)] transition-[background-color] hover:bg-[var(--color-signal)]"
                 >
-                  Book a 30-min call
+                  {t('book_call')}
                 </Link>
                 <a
                   href="mailto:hello@maelify.com?subject=Manifest%20Office%20demo"
                   onClick={() => handleExpressClick('email_direct')}
                   className="flex h-[44px] items-center justify-center rounded-[4px] border border-[var(--color-rule-strong)] font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-ink)] transition-colors hover:border-[var(--color-ink)] hover:text-signal"
                 >
-                  Email Jose directly
+                  {t('email_direct')}
                 </a>
               </div>
               <div className="mt-4 flex items-center gap-3">
                 <span className="h-px flex-1 bg-[rgba(11,15,14,0.10)]" />
                 <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--color-lichen)]">
-                  OR LEAVE A NOTE
+                  {t('or_leave_note').toUpperCase()}
                 </span>
                 <span className="h-px flex-1 bg-[rgba(11,15,14,0.10)]" />
               </div>
@@ -403,14 +412,14 @@ export default function CheckoutPage(): ReactElement {
 
             <fieldset className="border-0 p-0">
               <legend className="mb-4 font-display text-[18px] font-medium tracking-[-0.005em]">
-                Contact
+                {t('contact')}
               </legend>
               <div className="relative">
                 <label
                   htmlFor={emailId}
                   className="absolute left-3 top-2 font-mono text-[10px] uppercase tracking-[0.06em] text-[var(--color-lichen)]"
                 >
-                  Email
+                  {t('email_label')}
                 </label>
                 <input
                   id={emailId}
@@ -439,7 +448,7 @@ export default function CheckoutPage(): ReactElement {
 
             <fieldset className="mt-9 border-0 p-0">
               <legend className="mb-4 font-display text-[18px] font-medium tracking-[-0.005em]">
-                How can I help?
+                {t('help_legend')}
               </legend>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div className="relative">
@@ -447,7 +456,7 @@ export default function CheckoutPage(): ReactElement {
                     htmlFor={firstNameId}
                     className="absolute left-3 top-2 font-mono text-[10px] uppercase tracking-[0.06em] text-[var(--color-lichen)]"
                   >
-                    First name
+                    {t('first_name')}
                   </label>
                   <input
                     id={firstNameId}
@@ -463,7 +472,7 @@ export default function CheckoutPage(): ReactElement {
                     htmlFor={lastNameId}
                     className="absolute left-3 top-2 font-mono text-[10px] uppercase tracking-[0.06em] text-[var(--color-lichen)]"
                   >
-                    Last name
+                    {t('last_name')}
                   </label>
                   <input
                     id={lastNameId}
@@ -479,7 +488,7 @@ export default function CheckoutPage(): ReactElement {
                     htmlFor={companyId}
                     className="absolute left-3 top-2 font-mono text-[10px] uppercase tracking-[0.06em] text-[var(--color-lichen)]"
                   >
-                    Company or brand (optional)
+                    {t('company_label')}
                   </label>
                   <input
                     id={companyId}
@@ -495,7 +504,7 @@ export default function CheckoutPage(): ReactElement {
                     htmlFor={roleId}
                     className="absolute left-3 top-2 font-mono text-[10px] uppercase tracking-[0.06em] text-[var(--color-lichen)]"
                   >
-                    Your role
+                    {t('role_label')}
                   </label>
                   <select
                     id={roleId}
@@ -508,7 +517,7 @@ export default function CheckoutPage(): ReactElement {
                     aria-invalid={error?.includes('role') ? true : undefined}
                     className="h-[58px] w-full appearance-none rounded-[4px] border border-[rgba(11,15,14,0.18)] bg-[var(--color-paper)] px-3 pt-5 pb-1.5 text-[15px] text-[var(--color-ink)] outline-none transition-[border-color,box-shadow] focus:border-[var(--color-ink)] focus:shadow-[0_0_0_3px_rgba(11,15,14,0.12)]"
                   >
-                    {ROLE_OPTIONS.map((option) => (
+                    {roleOptions.map((option) => (
                       <option
                         key={option.value}
                         value={option.value}
@@ -530,7 +539,7 @@ export default function CheckoutPage(): ReactElement {
                     htmlFor={planId}
                     className="absolute left-3 top-2 font-mono text-[10px] uppercase tracking-[0.06em] text-[var(--color-lichen)]"
                   >
-                    Your store today
+                    {t('plan_label')}
                   </label>
                   <select
                     id={planId}
@@ -543,7 +552,7 @@ export default function CheckoutPage(): ReactElement {
                     aria-invalid={error?.includes('store') ? true : undefined}
                     className="h-[58px] w-full appearance-none rounded-[4px] border border-[rgba(11,15,14,0.18)] bg-[var(--color-paper)] px-3 pt-5 pb-1.5 text-[15px] text-[var(--color-ink)] outline-none transition-[border-color,box-shadow] focus:border-[var(--color-ink)] focus:shadow-[0_0_0_3px_rgba(11,15,14,0.12)]"
                   >
-                    {PLAN_OPTIONS.map((option) => (
+                    {planOptions.map((option) => (
                       <option
                         key={option.value}
                         value={option.value}
@@ -562,8 +571,7 @@ export default function CheckoutPage(): ReactElement {
                 </div>
               </div>
               <p className="mt-3 font-mono text-[10px] leading-[1.6] uppercase tracking-[0.04em] text-[var(--color-lichen)]">
-                Real checkout collects an address. This one collects context. Same conversion goal,
-                different stack.
+                {t('context_caption')}
               </p>
             </fieldset>
 
@@ -583,8 +591,9 @@ export default function CheckoutPage(): ReactElement {
                 className="mt-0.5 h-4 w-4 cursor-pointer accent-[var(--color-signal)]"
               />
               <span>
-                If this were my store and I trusted the brand, I would have hit{' '}
-                <span className="font-medium">Pay Now</span>.
+                {t.rich('would_pay', {
+                  strong: (chunks) => <span className="font-medium">{chunks}</span>,
+                })}
               </span>
             </label>
 
@@ -594,59 +603,66 @@ export default function CheckoutPage(): ReactElement {
               className="mt-7 flex h-[58px] w-full items-center justify-center rounded-[4px] bg-[var(--color-ink)] font-mono text-[13px] font-medium uppercase tracking-[0.14em] text-[var(--color-paper)] transition-[background-color,letter-spacing] duration-[280ms] ease-out hover:bg-[var(--color-signal)] hover:tracking-[0.18em] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isSubmitting
-                ? 'Booking…'
+                ? t('submit_busy')
                 : selectedSlot
-                  ? `Confirm · ${selectedSlot.dateLabel} · ${selectedSlot.timeLabel} CET →`
-                  : 'Pick a slot to confirm'}
+                  ? t('submit_confirm', {
+                      date: selectedSlot.dateLabel,
+                      time: selectedSlot.timeLabel,
+                    })
+                  : t('submit_pick_slot')}
             </button>
 
             <p className="mt-4 text-center font-mono text-[10px] uppercase tracking-[0.06em] text-[var(--color-lichen)]">
-              By submitting, you agree to be contacted about the demo. No drip. No spam.
+              {t('consent')}
             </p>
           </form>
         </section>
 
         <aside
-          aria-label="Order summary"
+          aria-label={t('order_summary')}
           className="border-t border-[rgba(11,15,14,0.10)] bg-[rgba(11,15,14,0.04)] px-5 py-8 sm:px-8 lg:border-t-0 lg:border-l lg:py-12"
         >
           <h2 className="font-display text-[18px] font-medium tracking-[-0.005em]">
-            Your manifest
+            {t('your_manifest')}
           </h2>
           <ul className="mt-4 divide-y divide-[rgba(11,15,14,0.10)] border-t border-b border-[rgba(11,15,14,0.10)]">
             {items.map((item) => (
               <SummaryRow
                 key={`${item.handle}::${item.engraving?.text ?? ''}::${item.issuedAs ?? 'x'}`}
                 item={item}
+                locale={locale}
               />
             ))}
           </ul>
 
           <dl className="mt-5 flex flex-col gap-2 text-[14px]">
             <div className="flex items-baseline justify-between">
-              <dt className="text-[var(--color-ink)]/85">Subtotal</dt>
-              <dd className="font-mono tabular-nums">{formatEur(subtotalEur)}</dd>
+              <dt className="text-[var(--color-ink)]/85">{t('subtotal')}</dt>
+              <dd className="font-mono tabular-nums">
+                {formatPriceForLocale(subtotalEur, locale)}
+              </dd>
             </div>
             <div className="flex items-baseline justify-between">
-              <dt className="text-[var(--color-ink)]/85">Shipping</dt>
+              <dt className="text-[var(--color-ink)]/85">{t('shipping')}</dt>
               <dd className="font-mono tabular-nums">
-                {freeShip ? 'Included' : formatEur(FLAT_SHIPPING_EUR)}
+                {freeShip
+                  ? t('shipping_included')
+                  : formatPriceForLocale(FLAT_SHIPPING_EUR, locale)}
               </dd>
             </div>
           </dl>
 
           <div className="mt-5 flex items-baseline justify-between border-t border-[rgba(11,15,14,0.10)] pt-5">
             <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-[var(--color-lichen)]">
-              Total · EUR
+              {t('total_currency', { currency: resolveCurrency(locale) })}
             </span>
             <span className="font-display text-[24px] font-medium tabular-nums tracking-[-0.01em]">
-              {formatEur(total)}
+              {formatPriceForLocale(total, locale)}
             </span>
           </div>
 
           <p className="mt-6 font-mono text-[10px] uppercase leading-[1.7] tracking-[0.06em] text-[var(--color-lichen)]">
-            Manifest Office is a demo. The cart total is for illustration. No charge will be placed.
-            Booking the call is the actual conversion.
+            {t('demo_caption')}
           </p>
         </aside>
       </div>
