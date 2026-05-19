@@ -503,13 +503,42 @@ export function PdpBuybox({
       <div
         id="allocation"
         aria-live="polite"
-        className="mt-2 flex scroll-mt-[110px] items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.04em] text-[#5C6B5A]"
+        className="mo-allocation mt-2 flex scroll-mt-[110px] items-center gap-1.5 rounded-md px-2 py-1 font-mono text-[11px] uppercase tracking-[0.04em] text-[#5C6B5A] -mx-2"
       >
         <span
           aria-hidden="true"
           className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-[#D24A1F]"
         />
         <span>{allocationLabel}</span>
+        <style>{`
+          .mo-allocation { position: relative; }
+          .mo-allocation:target {
+            animation: mo-allocation-echo 1600ms cubic-bezier(0.22, 1, 0.36, 1);
+          }
+          .mo-allocation:target::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 8px;
+            border: 1.5px solid rgba(210, 74, 31, 0.7);
+            pointer-events: none;
+            animation: mo-allocation-ring 1600ms cubic-bezier(0.22, 1, 0.36, 1);
+          }
+          @keyframes mo-allocation-echo {
+            0%   { background-color: rgba(210, 74, 31, 0.18); }
+            70%  { background-color: rgba(210, 74, 31, 0.08); }
+            100% { background-color: transparent; }
+          }
+          @keyframes mo-allocation-ring {
+            0%   { transform: scale(1); opacity: 0; }
+            10%  { opacity: 1; }
+            100% { transform: scale(1.25); opacity: 0; }
+          }
+          @media (prefers-reduced-motion: reduce) {
+            .mo-allocation:target { animation: none; }
+            .mo-allocation:target::before { animation: none; opacity: 0; }
+          }
+        `}</style>
       </div>
 
       {toast ? (

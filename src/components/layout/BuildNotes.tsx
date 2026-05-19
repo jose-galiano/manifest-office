@@ -54,7 +54,7 @@ const FEATURES: readonly FeatureLink[] = [
   {
     label: 'Brief the Desk',
     description: 'Gemini 2.5 Flash trip-brief endpoint, 7-layer defence',
-    href: '/#desk',
+    href: '/products/tech-pouch-m#desk',
   },
   {
     label: 'Wishlist + share URL',
