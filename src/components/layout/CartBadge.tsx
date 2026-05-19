@@ -12,6 +12,7 @@
 
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 import { useCart } from '@/hooks/use-cart';
@@ -19,6 +20,7 @@ import { useCart } from '@/hooks/use-cart';
 import type { ReactElement } from 'react';
 
 export function CartBadge(): ReactElement {
+  const t = useTranslations('nav');
   const { count, openDrawer } = useCart();
 
   // Avoid a hydration mismatch when the server renders 0 but the client has a
@@ -48,9 +50,9 @@ export function CartBadge(): ReactElement {
       data-cursor
       data-pulse={pulse ? 'on' : 'off'}
       className="mo-cart-badge flex items-center gap-[6px] text-[12px] hover:text-signal transition-colors bg-transparent border-0 p-0 cursor-pointer"
-      aria-label={`Open manifest, ${displayedCount} ${displayedCount === 1 ? 'item' : 'items'}`}
+      aria-label={t('open_cart', { count: displayedCount })}
     >
-      <span className="font-mono tracking-[0.04em] uppercase">CART</span>
+      <span className="font-mono tracking-[0.04em] uppercase">{t('cart_label')}</span>
       <span
         id="cart-count"
         className="cart-count font-mono tracking-[0.04em]"

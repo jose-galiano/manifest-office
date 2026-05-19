@@ -30,8 +30,30 @@ export const LOCALE_LABELS: Readonly<Record<Locale, string>> = {
 };
 
 export const LOCALE_FULL_NAMES: Readonly<Record<Locale, string>> = {
-  en: 'English',
-  es: 'Español',
-  pt: 'Português',
-  zh: '中文',
+  en: 'English (United Kingdom)',
+  es: 'Español (México)',
+  pt: 'Português (Portugal)',
+  zh: '中文（中国）',
+};
+
+// Each locale is anchored to a market: language + region + currency. EUR is
+// the catalogue base; the helper in `lib/i18n/currency.ts` converts at
+// display time. Rates are review-once frozen for the demo — production at
+// Plus scale would pull market-specific price lists from Shopify Markets,
+// not just an FX conversion.
+export const LOCALE_MARKET: Readonly<
+  Record<
+    Locale,
+    {
+      readonly region: string;
+      readonly currency: string;
+      readonly ogLocale: string;
+      readonly intlLocale: string;
+    }
+  >
+> = {
+  en: { region: 'GB', currency: 'GBP', ogLocale: 'en_GB', intlLocale: 'en-GB' },
+  es: { region: 'MX', currency: 'MXN', ogLocale: 'es_MX', intlLocale: 'es-MX' },
+  pt: { region: 'PT', currency: 'EUR', ogLocale: 'pt_PT', intlLocale: 'pt-PT' },
+  zh: { region: 'CN', currency: 'CNY', ogLocale: 'zh_CN', intlLocale: 'zh-CN' },
 };

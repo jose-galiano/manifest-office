@@ -16,6 +16,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
 
 import { CartBadge } from '@/components/layout/CartBadge';
@@ -26,16 +27,15 @@ import type { ReactElement } from 'react';
 
 type NavLink = {
   readonly href: string;
-  readonly label: string;
-  /** Plain-English subtitle for first-time visitors who don't yet read the brand voice. */
-  readonly sublabel: string;
+  readonly labelKey: 'editions' | 'dossiers' | 'system' | 'provenance';
+  readonly subKey: 'editions_sub' | 'dossiers_sub' | 'system_sub' | 'provenance_sub';
 };
 
 const NAV_LINKS: readonly NavLink[] = [
-  { href: '/pages/editions', label: 'Editions', sublabel: 'Limited Releases' },
-  { href: '/collections/edition-01', label: 'Dossiers', sublabel: 'All Products' },
-  { href: '/pages/system', label: 'System', sublabel: 'The Complete Kit' },
-  { href: '/pages/provenance', label: 'Provenance', sublabel: 'Our Story' },
+  { href: '/pages/editions', labelKey: 'editions', subKey: 'editions_sub' },
+  { href: '/collections/edition-01', labelKey: 'dossiers', subKey: 'dossiers_sub' },
+  { href: '/pages/system', labelKey: 'system', subKey: 'system_sub' },
+  { href: '/pages/provenance', labelKey: 'provenance', subKey: 'provenance_sub' },
 ];
 
 const SCROLL_THRESHOLD_PX = 600;
@@ -51,6 +51,7 @@ export type NavProps = {
 };
 
 export function Nav({ forceSolid }: NavProps = {}): ReactElement {
+  const t = useTranslations('nav');
   const pathname = usePathname();
   const resolvedForceSolid = forceSolid ?? !hasDarkHero(pathname);
   const [scrolled, setScrolled] = useState<boolean>(false);
@@ -127,13 +128,13 @@ export function Nav({ forceSolid }: NavProps = {}): ReactElement {
                 href={link.href}
                 data-cursor
                 data-track="nav_link"
-                data-track-label={link.label.toLowerCase()}
+                data-track-label={link.labelKey}
                 data-track-surface="desktop"
                 className="group/nav flex flex-col items-center leading-none transition-colors hover:text-signal"
               >
-                <span className="text-[13px] tracking-[0.02em]">{link.label}</span>
+                <span className="text-[13px] tracking-[0.02em]">{t(link.labelKey)}</span>
                 <span className="mt-[3px] font-mono text-[9px] uppercase tracking-[0.08em] text-[#9CAA98] transition-colors group-hover/nav:text-signal">
-                  {link.sublabel}
+                  {t(link.subKey)}
                 </span>
               </Link>
             </li>
@@ -149,7 +150,7 @@ export function Nav({ forceSolid }: NavProps = {}): ReactElement {
           {/* Hamburger — visible only below `md`. */}
           <button
             type="button"
-            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            aria-label={menuOpen ? t('close_menu') : t('open_menu')}
             aria-expanded={menuOpen}
             aria-controls="mobile-menu"
             onClick={handleMenuToggle}
@@ -194,15 +195,15 @@ export function Nav({ forceSolid }: NavProps = {}): ReactElement {
                 href={link.href}
                 onClick={() => setMenuOpen(false)}
                 data-track="nav_link"
-                data-track-label={link.label.toLowerCase()}
+                data-track-label={link.labelKey}
                 data-track-surface="mobile"
                 className="flex flex-col gap-1 py-5 transition-colors hover:text-signal"
               >
                 <span className="font-display text-[28px] font-bold leading-none tracking-[-0.01em]">
-                  {link.label}
+                  {t(link.labelKey)}
                 </span>
                 <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#9CAA98]">
-                  {link.sublabel}
+                  {t(link.subKey)}
                 </span>
               </Link>
             </li>
@@ -210,7 +211,7 @@ export function Nav({ forceSolid }: NavProps = {}): ReactElement {
         </ul>
         <div className="border-t border-[rgba(242,239,232,0.12)] px-5 pt-8">
           <span className="block pb-3 font-mono text-[10px] uppercase tracking-[0.1em] text-[#5C6B5A]">
-            Language
+            {t('locale_picker')}
           </span>
           <LocaleSwitcher variant="stack" onSelect={() => setMenuOpen(false)} />
         </div>

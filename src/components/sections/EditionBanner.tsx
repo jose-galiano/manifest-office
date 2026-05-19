@@ -1,10 +1,12 @@
+import { getTranslations } from 'next-intl/server';
+
 import { AtelierToggle } from '@/components/layout/AtelierToggle';
 
 import type { ReactElement } from 'react';
 
 // Global top announcement bar — fixed at the very top of the viewport on every
-// route (mounted once in `app/layout.tsx`). Sits ABOVE the sticky `<Nav>`.
-// Height is exactly 36px.
+// route (mounted once in `app/[locale]/layout.tsx`). Sits ABOVE the sticky
+// `<Nav>`. Height is exactly 36px.
 //
 // Three slots:
 //   left   — Edition label with status dot
@@ -14,17 +16,19 @@ import type { ReactElement } from 'react';
 // The atelier control is mounted here instead of as a floating bottom-right
 // pill so the chrome stays consolidated in one strip (Muji discipline: one
 // place for ambient/system signals, never floating chips on the canvas).
+
 interface EditionBannerProps {
-  /** Edition label, e.g. "EDITION 01 — GIBRALTAR" */
-  edition?: string;
-  /** Allocation counter, e.g. "ALLOCATION 00855 / 1200" */
+  /** Live allocation counter, e.g. "ALLOCATION 00855 / 1200" — falls back to the translated string when omitted. */
   allocation?: string;
 }
 
-export function EditionBanner({
-  edition = 'EDITION 01 — GIBRALTAR',
-  allocation = 'ALLOCATION 00855 / 1200',
-}: EditionBannerProps): ReactElement {
+export async function EditionBanner({
+  allocation,
+}: EditionBannerProps = {}): Promise<ReactElement> {
+  const t = await getTranslations('edition_banner');
+  const edition = t('label');
+  const allocationLabel = allocation ?? t('allocation', { issued: '00855', total: '1200' });
+
   return (
     <div
       data-surface="ink"
@@ -35,8 +39,6 @@ export function EditionBanner({
           aria-hidden="true"
           className="mr-2 inline-block h-2 w-2 rounded-full bg-[#D24A1F] align-middle"
         />
-        {/* Compact label on mobile (just the edition number) to leave room for
-            the centred audio control. */}
         <span className="md:hidden">ED. 01</span>
         <span className="hidden md:inline">{edition}</span>
       </span>
@@ -44,9 +46,8 @@ export function EditionBanner({
         <AtelierToggle />
       </div>
       <span className="justify-self-end font-mono text-[10px] md:text-[11px] tracking-[0.04em] uppercase text-signal">
-        {/* Just the issued/total numbers on mobile to keep the strip readable. */}
-        <span className="md:hidden tabular-nums">{allocation.replace(/^ALLOCATION\s*/i, '')}</span>
-        <span className="hidden md:inline">{allocation}</span>
+        <span className="md:hidden tabular-nums">{allocationLabel.replace(/^[A-Z]+\s*/i, '')}</span>
+        <span className="hidden md:inline">{allocationLabel}</span>
       </span>
     </div>
   );

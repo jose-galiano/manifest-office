@@ -2,11 +2,19 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useMemo, useState } from 'react';
 
 import { useQuickAdd } from '@/hooks/use-quick-add';
+import { type Locale } from '@/i18n/routing';
 import { resolveColorwayHex } from '@/lib/constants/colorways';
 import { ENGRAVING_UPCHARGE_EUR, hasEngravingOption } from '@/lib/constants/engraving';
+import {
+  convertFromEur,
+  formatCurrencyCaption,
+  formatPriceForLocale,
+  resolveCurrency,
+} from '@/lib/i18n/currency';
 import { toStorefrontHandle } from '@/lib/shopify/handle';
 
 import { QuickAddSheet } from './QuickAddSheet';
@@ -25,10 +33,6 @@ type Swatch = {
   readonly hex: string;
   readonly imageUrl: string | null;
 };
-
-function formatPrice(amount: number): string {
-  return `€${Math.round(amount)}`;
-}
 
 function formatAllocation(issued: number, total: number): string {
   const safeTotal = total > 0 ? total : 1200;
@@ -75,10 +79,22 @@ function QuickAddPill({
   );
 }
 
-function resolveQuickAddLabel(isMulti: boolean, pending: boolean, success: boolean): string {
-  if (success) return 'Added ✓';
-  if (pending) return 'Reserving…';
-  return isMulti ? 'Quick add' : 'Add';
+type QuickAddLabels = {
+  readonly added: string;
+  readonly reserving: string;
+  readonly quickAdd: string;
+  readonly add: string;
+};
+
+function resolveQuickAddLabel(
+  labels: QuickAddLabels,
+  isMulti: boolean,
+  pending: boolean,
+  success: boolean,
+): string {
+  if (success) return labels.added;
+  if (pending) return labels.reserving;
+  return isMulti ? labels.quickAdd : labels.add;
 }
 
 function buildSwatches(product: ManifestProduct): readonly Swatch[] {
@@ -103,11 +119,26 @@ function buildSwatches(product: ManifestProduct): readonly Swatch[] {
 // link to the PDP — swatches stop the click so a colour preview never costs a
 // navigation.
 export function ProductCard({ product, dossierNumber }: ProductCardProps): ReactElement {
+  const locale = useLocale() as Locale;
+  const t = useTranslations('product_card');
   const storefrontHandle = toStorefrontHandle(product.handle);
-  const dossierLabel = `DOSSIER ${String(dossierNumber).padStart(2, '0')}`;
+  const dossierLabel = t('dossier_label', {
+    number: String(dossierNumber).padStart(2, '0'),
+  }).toUpperCase();
   const allocationLabel = formatAllocation(product.editionIssued, product.editionTotal);
   const presentationLabel = product.volume ? `${product.volume}` : '';
   const showsEngraving = hasEngravingOption(product.handle);
+  const priceLabel = formatPriceForLocale(product.price, locale);
+  const currencyCaption = formatCurrencyCaption(locale).toUpperCase();
+  const engravingFee = Math.round(convertFromEur(ENGRAVING_UPCHARGE_EUR, resolveCurrency(locale)));
+  const engravingCaption = showsEngraving
+    ? `+${new Intl.NumberFormat(locale === 'zh' ? 'zh-CN' : locale, {
+        style: 'currency',
+        currency: resolveCurrency(locale),
+        maximumFractionDigits: 0,
+        minimumFractionDigits: 0,
+      }).format(engravingFee)} ENGRAVING`
+    : '';
 
   const swatches = useMemo<readonly Swatch[]>(() => buildSwatches(product), [product]);
   const [activeIndex, setActiveIndex] = useState<number>(0);
@@ -177,7 +208,17 @@ export function ProductCard({ product, dossierNumber }: ProductCardProps): React
   const isMultiColorway = swatches.length > 1;
   const showInlinePending = !isMultiColorway && pending;
   const showInlineSuccess = !isMultiColorway && success;
-  const quickAddLabel = resolveQuickAddLabel(isMultiColorway, showInlinePending, showInlineSuccess);
+  const quickAddLabel = resolveQuickAddLabel(
+    {
+      added: t('added'),
+      reserving: t('reserving'),
+      quickAdd: t('quick_add'),
+      add: t('add'),
+    },
+    isMultiColorway,
+    showInlinePending,
+    showInlineSuccess,
+  );
 
   return (
     <div className="relative">
@@ -234,20 +275,20 @@ export function ProductCard({ product, dossierNumber }: ProductCardProps): React
             {presentationLabel || '—'}
           </span>
           <span className="col-start-2 row-start-1 self-end text-right font-mono text-[10px] uppercase tracking-[0.06em] text-[#5C6B5A]">
-            EUR · INCL VAT
+            {currencyCaption}
           </span>
 
           <h3 className="col-start-1 row-start-2 self-start overflow-hidden font-display text-[22px] font-bold leading-[1.1] tracking-tight text-[#0B0F0E]">
             {product.title}
           </h3>
           <div className="col-start-2 row-start-2 self-start text-right font-mono text-[14px] font-medium leading-[1.1] text-[#0B0F0E]">
-            {formatPrice(product.price)}
+            {priceLabel}
           </div>
 
           <div
             className="col-start-1 row-start-3 flex items-center gap-2 self-center"
             role="group"
-            aria-label={`Colorways for ${product.title}`}
+            aria-label={t('colorway_label', { title: product.title })}
             onMouseLeave={onSwatchLeave}
           >
             {swatches.map((swatch, index) => {
@@ -269,7 +310,7 @@ export function ProductCard({ product, dossierNumber }: ProductCardProps): React
                   onMouseEnter={() => onSwatchHover(index)}
                   onFocus={() => onSwatchHover(index)}
                   onBlur={onSwatchLeave}
-                  aria-label={`Preview ${swatch.name} colorway`}
+                  aria-label={t('preview_colorway', { name: swatch.name })}
                   aria-pressed={isActive}
                   className="grid h-6 w-6 cursor-pointer place-items-center bg-transparent p-0"
                 >
@@ -289,7 +330,7 @@ export function ProductCard({ product, dossierNumber }: ProductCardProps): React
           </div>
 
           <span className="col-start-1 row-start-4 self-end font-mono text-[10px] uppercase tracking-[0.08em] text-[#5C6B5A]">
-            {showsEngraving ? `+€${ENGRAVING_UPCHARGE_EUR} ENGRAVING` : ''}
+            {engravingCaption}
           </span>
           <span className="col-start-2 row-start-4 self-end" />
         </div>

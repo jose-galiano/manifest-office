@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 import { useWishlist } from '@/hooks/use-wishlist';
@@ -8,6 +9,7 @@ import { CUSTOM_EVENTS, track } from '@/lib/analytics';
 import type { ReactElement } from 'react';
 
 export function WishlistBadge(): ReactElement {
+  const t = useTranslations('nav');
   const { count, openDrawer } = useWishlist();
 
   const [isMounted, setIsMounted] = useState<boolean>(false);
@@ -43,7 +45,7 @@ export function WishlistBadge(): ReactElement {
       data-cursor
       data-pulse={pulse ? 'on' : 'off'}
       className="mo-wish-badge flex items-center gap-[6px] text-[12px] hover:text-signal transition-colors bg-transparent border-0 p-0 cursor-pointer"
-      aria-label={`Open wishlist, ${displayedCount} ${displayedCount === 1 ? 'item' : 'items'}`}
+      aria-label={t('open_wishlist', { count: displayedCount })}
     >
       <svg
         viewBox="0 0 24 24"

@@ -10,20 +10,16 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { getLocale, getTranslations } from 'next-intl/server';
 
+import { type Locale } from '@/i18n/routing';
+import { formatCurrencyCaption, formatPriceForLocale } from '@/lib/i18n/currency';
 import { fetchManifestProducts } from '@/lib/services/fetch-products';
 import { toShopifyHandle } from '@/lib/shopify/handle';
 
 import type { ReactElement } from 'react';
 
 const FEATURED_HANDLE = 'field-tote';
-
-const FEATURED_COPY = {
-  eyebrow: 'Featured · The Hub',
-  title: 'Field Tote',
-  lede: 'Top carry. The piece every other dossier locks into. Anchor-Latch compatible with every component of the system, finished in Porto.',
-  callout: '14L · 420D Cordura · YKK AquaGuard',
-} as const;
 
 export async function FeaturedProduct(): Promise<ReactElement | null> {
   const result = await fetchManifestProducts();
@@ -32,8 +28,17 @@ export async function FeaturedProduct(): Promise<ReactElement | null> {
   const product = result.data.products.find((entry) => entry.handle === shopifyHandle);
   if (!product) return null;
 
+  const locale = (await getLocale()) as Locale;
+  const t = await getTranslations('featured_product');
+  const tProductCard = await getTranslations('product_card');
   const remaining = Math.max(0, product.editionTotal - product.editionIssued);
-  const issuedLabel = `${String(product.editionIssued).padStart(5, '0')} / ${product.editionTotal} issued · ${remaining} remaining`;
+  const issuedLabel = t('allocation', {
+    issued: String(product.editionIssued).padStart(5, '0'),
+    total: product.editionTotal,
+    remaining,
+  });
+  const priceLabel = formatPriceForLocale(product.price, locale);
+  const currencyCaption = formatCurrencyCaption(locale);
 
   return (
     <section
@@ -61,7 +66,7 @@ export async function FeaturedProduct(): Promise<ReactElement | null> {
             />
           ) : null}
           <span className="pointer-events-none absolute left-6 top-6 font-mono text-[11px] uppercase tracking-[0.08em] text-[#5C6B5A]">
-            Dossier 01
+            {tProductCard('dossier_label', { number: '01' })}
           </span>
           <span className="pointer-events-none absolute right-6 top-6 font-mono text-[10px] uppercase tracking-[0.06em] text-signal">
             {String(product.editionIssued).padStart(3, '0')} / {product.editionTotal}
@@ -70,24 +75,24 @@ export async function FeaturedProduct(): Promise<ReactElement | null> {
 
         <div className="flex flex-col gap-6 md:max-w-[480px]">
           <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-signal">
-            {FEATURED_COPY.eyebrow}
+            {t('eyebrow')}
           </span>
           <h2 className="font-display text-[clamp(40px,6vw,72px)] font-bold leading-[0.95] tracking-[-0.02em] text-[var(--color-ink)]">
-            {FEATURED_COPY.title}
+            {t('title')}
           </h2>
           <p className="font-body text-[16px] leading-[1.55] text-[var(--color-ink)] md:text-[17px]">
-            {FEATURED_COPY.lede}
+            {t('lede')}
           </p>
           <div className="font-mono text-[11px] uppercase tracking-[0.06em] text-[var(--color-lichen)]">
-            {FEATURED_COPY.callout}
+            {t('callout')}
           </div>
 
           <div className="mt-2 flex items-baseline gap-3 border-y border-[var(--color-rule)] py-5">
             <span className="font-display text-[28px] font-bold leading-none text-[var(--color-ink)]">
-              €{Math.round(product.price)}
+              {priceLabel}
             </span>
             <span className="font-mono text-[10px] uppercase tracking-[0.08em] text-[var(--color-lichen)]">
-              EUR · Incl VAT
+              {currencyCaption}
             </span>
           </div>
 
@@ -98,13 +103,13 @@ export async function FeaturedProduct(): Promise<ReactElement | null> {
               data-track-label={FEATURED_HANDLE}
               className="inline-flex items-center justify-center rounded-md bg-[var(--color-ink)] px-7 py-4 font-mono text-[12px] uppercase tracking-[0.1em] text-[var(--color-paper)] transition-colors hover:bg-[#1a1f1e]"
             >
-              Reserve from Edition 01
+              {t('primary_cta')}
             </Link>
             <Link
               href={`/products/${FEATURED_HANDLE}#gallery`}
               className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--color-lichen)] transition-colors hover:text-[var(--color-ink)]"
             >
-              View dossier →
+              {t('secondary_cta')} →
             </Link>
           </div>
 

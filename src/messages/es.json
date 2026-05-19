@@ -18,7 +18,9 @@
     "open_menu": "Open menu",
     "close_menu": "Close menu",
     "currency": "EUR",
-    "locale_picker": "Choose language"
+    "locale_picker": "Choose language",
+    "cart_label": "Cart",
+    "wishlist_label": "Wishlist"
   },
   "edition_banner": {
     "label": "Edition 01 — Gibraltar",
@@ -27,21 +29,35 @@
     "allocation": "Allocation {issued} / {total}"
   },
   "footer": {
-    "rights": "Manifest Office — Edition 01 issued from Porto.",
+    "brand": "Manifest Office",
+    "lede": "The system inside the suitcase. Issued from Porto in finite Editions. The kit, not the suitcase.",
+    "section_system": "System",
+    "section_provenance": "Provenance",
+    "section_office": "Office",
+    "link_editions": "Editions",
+    "link_dossiers": "Dossiers",
+    "link_all_dossiers": "All dossiers",
+    "link_anchor_latch": "The Anchor Latch",
+    "link_atelier_porto": "Atelier Souto, Porto",
+    "link_materials": "Materials list",
+    "link_qc": "QC standard",
+    "link_returns": "Returns & repair",
+    "link_issue_lookup": "Issue lookup",
+    "link_contact": "Contact",
+    "link_press": "Press",
+    "copyright": "© 2026 Manifest Office Goods · Issued in Porto",
+    "edition_meta": "Edition {number} / {anchor} / {shipsBy}",
     "designed_in": "Designed in Gibraltar · Finished in Porto",
-    "made_with": "Powered by Maelify.com",
-    "follow_us": "Follow",
-    "newsletter_title": "Edition 02 list",
-    "newsletter_lede": "Earliest access when the next edition opens."
+    "made_with": "Powered by Maelify.com"
   },
   "hero": {
-    "eyebrow": "Edition 01 · Gibraltar",
-    "title_line_1": "A travel kit,",
-    "title_line_2": "locked together.",
-    "lede": "One field tote. Three tech pouches. Three packing cubes. A machined anchor latch that ties them all together.",
+    "eyebrow": "— ISSUED TO OPERATORS —",
+    "title_line_1": "The system",
+    "title_line_2": "inside the",
+    "title_line_3": "suitcase.",
+    "meta": "07 dossiers · From €38 · Ships from Porto in 5 days",
     "primary_cta": "Reserve from Edition 01",
-    "secondary_cta": "Browse the dossiers",
-    "scroll_caption": "Scroll to begin"
+    "scroll_caption": "Scroll"
   },
   "featured_product": {
     "eyebrow": "Featured · The Hub",

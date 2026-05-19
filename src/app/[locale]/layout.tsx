@@ -14,7 +14,7 @@ import { WishlistDrawer } from '@/components/layout/WishlistDrawer';
 import { WishlistShareHydrator } from '@/components/layout/WishlistShareHydrator';
 import { EditionBanner } from '@/components/sections/EditionBanner';
 import { LeadCapturePopup } from '@/components/sections/LeadCapturePopup';
-import { routing, type Locale } from '@/i18n/routing';
+import { LOCALE_MARKET, routing, type Locale } from '@/i18n/routing';
 import { CONSENT_DEFAULT_SCRIPT } from '@/lib/analytics';
 import { JsonLd, buildOrganizationSchema, buildWebsiteSchema } from '@/lib/seo';
 
@@ -43,12 +43,9 @@ const monoFont = JetBrains_Mono({
   display: 'swap',
 });
 
-const OG_LOCALE: Readonly<Record<Locale, string>> = {
-  en: 'en_GB',
-  es: 'es_ES',
-  pt: 'pt_PT',
-  zh: 'zh_CN',
-};
+function ogLocaleFor(locale: Locale): string {
+  return LOCALE_MARKET[locale].ogLocale;
+}
 
 export function generateStaticParams(): Array<{ locale: Locale }> {
   return routing.locales.map((locale) => ({ locale }));
@@ -102,10 +99,10 @@ export async function generateMetadata({
     openGraph: {
       type: 'website',
       siteName: 'Manifest Office',
-      locale: OG_LOCALE[locale as Locale] ?? 'en_GB',
+      locale: ogLocaleFor(locale as Locale),
       alternateLocale: routing.locales
         .filter((entry) => entry !== locale)
-        .map((entry) => OG_LOCALE[entry]),
+        .map((entry) => ogLocaleFor(entry)),
       url: `https://demo.maelify.com/${locale}`,
       title,
       description,

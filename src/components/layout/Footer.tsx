@@ -1,61 +1,80 @@
 /**
- * Bottom footer — rendered on every route.
- *
- * Four columns, ink (#0B0F0E) background, paper type. Copy mirrors the
- * legacy variant-A footer in `deploy/index.html`, retargeted to the
- * canonical Shopify routes defined in `docs/routing.md`.
+ * Bottom footer — rendered on every route. Server component, fully
+ * translatable. Brand wordmark stays in English. Section titles, lede,
+ * link labels and copyright pull from `messages/[locale].json#footer`.
  */
 
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 
 import { EDITION_01 } from '@/content/manifest-office';
 
 import type { ReactElement } from 'react';
 
+type FooterLinkKey =
+  | 'link_editions'
+  | 'link_dossiers'
+  | 'link_all_dossiers'
+  | 'link_anchor_latch'
+  | 'link_atelier_porto'
+  | 'link_materials'
+  | 'link_qc'
+  | 'link_returns'
+  | 'link_issue_lookup'
+  | 'link_contact'
+  | 'link_press';
+
 type FooterLink = {
   readonly href: string;
-  readonly label: string;
+  readonly key: FooterLinkKey;
   readonly external?: boolean;
 };
 
 const SYSTEM_LINKS: readonly FooterLink[] = [
-  { href: '/pages/editions', label: 'Editions' },
-  { href: '/collections/edition-01', label: 'Dossiers' },
-  { href: '/collections/all', label: 'All dossiers' },
-  { href: '/pages/system', label: 'The Anchor Latch' },
+  { href: '/pages/editions', key: 'link_editions' },
+  { href: '/collections/edition-01', key: 'link_dossiers' },
+  { href: '/collections/all', key: 'link_all_dossiers' },
+  { href: '/pages/system', key: 'link_anchor_latch' },
 ];
 
 const PROVENANCE_LINKS: readonly FooterLink[] = [
-  { href: '/pages/provenance', label: 'Atelier Souto, Porto' },
-  { href: '/pages/provenance#materials', label: 'Materials list' },
-  { href: '/pages/provenance#qc', label: 'QC standard' },
+  { href: '/pages/provenance', key: 'link_atelier_porto' },
+  { href: '/pages/provenance#materials', key: 'link_materials' },
+  { href: '/pages/provenance#qc', key: 'link_qc' },
 ];
 
 const OFFICE_LINKS: readonly FooterLink[] = [
-  { href: 'mailto:hello@maelify.com', label: 'Returns & repair', external: true },
-  { href: 'mailto:hello@maelify.com', label: 'Issue lookup', external: true },
-  { href: 'mailto:hello@maelify.com', label: 'Contact', external: true },
-  { href: 'mailto:press@maelify.com', label: 'Press', external: true },
+  { href: 'mailto:hello@maelify.com', key: 'link_returns', external: true },
+  { href: 'mailto:hello@maelify.com', key: 'link_issue_lookup', external: true },
+  { href: 'mailto:hello@maelify.com', key: 'link_contact', external: true },
+  { href: 'mailto:press@maelify.com', key: 'link_press', external: true },
 ];
 
-function renderLink(link: FooterLink): ReactElement {
+function FooterLinkRow({
+  link,
+  label,
+}: {
+  readonly link: FooterLink;
+  readonly label: string;
+}): ReactElement {
   const className =
     'block py-1 text-[14px] text-[var(--color-paper)]/85 hover:text-signal transition-colors';
   if (link.external) {
     return (
-      <a key={link.label} href={link.href} className={className}>
-        {link.label}
+      <a key={link.key} href={link.href} className={className}>
+        {label}
       </a>
     );
   }
   return (
-    <Link key={link.label} href={link.href} className={className}>
-      {link.label}
+    <Link key={link.key} href={link.href} className={className}>
+      {label}
     </Link>
   );
 }
 
-export function Footer(): ReactElement {
+export async function Footer(): Promise<ReactElement> {
+  const t = await getTranslations('footer');
   return (
     <footer
       data-surface="ink"
@@ -65,40 +84,50 @@ export function Footer(): ReactElement {
       <div className="mx-auto max-w-[1400px] px-10 pt-16 pb-12">
         <div className="grid grid-cols-1 gap-12 md:grid-cols-[2fr_1fr_1fr_1fr] pb-12 border-b border-[var(--color-rule-dark)]">
           <div>
-            <p className="font-display text-[22px] font-bold tracking-[0.04em]">MANIFEST OFFICE</p>
+            <p className="font-display text-[22px] font-bold tracking-[0.04em]">
+              {t('brand').toUpperCase()}
+            </p>
             <p className="mt-4 max-w-[32ch] text-[14px] leading-[1.55] text-[var(--color-paper)]/65">
-              The system inside the suitcase. Issued from Porto in finite Editions. The kit, not the
-              suitcase.
+              {t('lede')}
             </p>
           </div>
 
           <div>
             <h4 className="font-mono text-[11px] tracking-[0.08em] uppercase text-[var(--color-lichen)] mb-[18px]">
-              System
+              {t('section_system')}
             </h4>
-            {SYSTEM_LINKS.map(renderLink)}
+            {SYSTEM_LINKS.map((link) => (
+              <FooterLinkRow key={link.key} link={link} label={t(link.key)} />
+            ))}
           </div>
 
           <div>
             <h4 className="font-mono text-[11px] tracking-[0.08em] uppercase text-[var(--color-lichen)] mb-[18px]">
-              Provenance
+              {t('section_provenance')}
             </h4>
-            {PROVENANCE_LINKS.map(renderLink)}
+            {PROVENANCE_LINKS.map((link) => (
+              <FooterLinkRow key={link.key} link={link} label={t(link.key)} />
+            ))}
           </div>
 
           <div>
             <h4 className="font-mono text-[11px] tracking-[0.08em] uppercase text-[var(--color-lichen)] mb-[18px]">
-              Office
+              {t('section_office')}
             </h4>
-            {OFFICE_LINKS.map(renderLink)}
+            {OFFICE_LINKS.map((link) => (
+              <FooterLinkRow key={link.key} link={link} label={t(link.key)} />
+            ))}
           </div>
         </div>
 
         <div className="pt-8 flex flex-col gap-2 md:flex-row md:justify-between font-mono text-[11px] tracking-[0.06em] uppercase text-[var(--color-lichen)]">
-          <span>© 2026 Manifest Office Goods · Issued in Porto</span>
+          <span>{t('copyright')}</span>
           <span>
-            Edition {EDITION_01.number} / {EDITION_01.anchor.replace('Strait of ', '')} /{' '}
-            {EDITION_01.shipsBy}
+            {t('edition_meta', {
+              number: EDITION_01.number,
+              anchor: EDITION_01.anchor.replace('Strait of ', ''),
+              shipsBy: EDITION_01.shipsBy,
+            })}
           </span>
         </div>
       </div>
