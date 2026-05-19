@@ -1,6 +1,5 @@
-import Link from 'next/link';
-
 import { Eyebrow } from '@/components/ui/Eyebrow';
+import { Link } from '@/i18n/navigation';
 
 import type { ReactElement } from 'react';
 

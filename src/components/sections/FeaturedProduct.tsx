@@ -9,9 +9,9 @@
  */
 
 import Image from 'next/image';
-import Link from 'next/link';
 import { getLocale, getTranslations } from 'next-intl/server';
 
+import { Link } from '@/i18n/navigation';
 import { type Locale } from '@/i18n/routing';
 import { formatCurrencyCaption, formatPriceForLocale } from '@/lib/i18n/currency';
 import { fetchManifestProducts } from '@/lib/services/fetch-products';

@@ -4,10 +4,10 @@
  * link labels and copyright pull from `messages/[locale].json#footer`.
  */
 
-import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 
 import { EDITION_01 } from '@/content/manifest-office';
+import { Link } from '@/i18n/navigation';
 
 import type { ReactElement } from 'react';
 

@@ -19,12 +19,12 @@
 
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
 
 import { reserveProductAction } from '@/app/[locale]/products/[handle]/actions';
 import { useCart } from '@/hooks/use-cart';
+import { useRouter } from '@/i18n/navigation';
 import { type Locale } from '@/i18n/routing';
 import { CUSTOM_EVENTS, ECOMMERCE_EVENTS, track } from '@/lib/analytics';
 import { ENGRAVING_ALLOWED_REGEX, ENGRAVING_FEE, ENGRAVING_MAX } from '@/lib/constants/commerce';

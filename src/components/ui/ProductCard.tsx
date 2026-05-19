@@ -1,11 +1,11 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useMemo, useState } from 'react';
 
 import { useQuickAdd } from '@/hooks/use-quick-add';
+import { Link } from '@/i18n/navigation';
 import { type Locale } from '@/i18n/routing';
 import { resolveColorwayHex } from '@/lib/constants/colorways';
 import { ENGRAVING_UPCHARGE_EUR, hasEngravingOption } from '@/lib/constants/engraving';

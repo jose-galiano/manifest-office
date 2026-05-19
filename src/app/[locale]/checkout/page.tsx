@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useId, useMemo, useState } from 'react';
 
@@ -10,6 +9,7 @@ import {
   type BookingSlot,
 } from '@/components/sections/CheckoutBookingPicker';
 import { useCart, useCartImageForHandle } from '@/hooks/use-cart';
+import { Link } from '@/i18n/navigation';
 import { CUSTOM_EVENTS, ECOMMERCE_EVENTS, track } from '@/lib/analytics';
 import { FLAT_SHIPPING_EUR, FREE_SHIP_THRESHOLD } from '@/lib/constants/commerce';
 import { toStorefrontHandle } from '@/lib/shopify/handle';

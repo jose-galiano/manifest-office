@@ -1,12 +1,12 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
 
 import { reserveProductAction } from '@/app/[locale]/products/[handle]/actions';
 import { useCart } from '@/hooks/use-cart';
 import { useWishlist } from '@/hooks/use-wishlist';
+import { Link } from '@/i18n/navigation';
 import { CUSTOM_EVENTS, ECOMMERCE_EVENTS, track } from '@/lib/analytics';
 import { toStorefrontHandle } from '@/lib/shopify/handle';
 

@@ -1,8 +1,8 @@
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { Eyebrow } from '@/components/ui/Eyebrow';
 import { MonoCaption } from '@/components/ui/MonoCaption';
+import { Link } from '@/i18n/navigation';
 import { JsonLd, SITE_ORIGIN, buildBreadcrumbList } from '@/lib/seo';
 
 import type { SchemaOrgGraph } from '@/lib/seo';

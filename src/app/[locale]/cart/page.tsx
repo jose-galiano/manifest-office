@@ -12,11 +12,11 @@
 
 'use client';
 
-import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { CartItemRow } from '@/components/sections/CartItemRow';
 import { useCart } from '@/hooks/use-cart';
+import { Link } from '@/i18n/navigation';
 import { FLAT_SHIPPING_EUR, FREE_SHIP_THRESHOLD } from '@/lib/constants/commerce';
 import { toStorefrontHandle } from '@/lib/shopify/handle';
 

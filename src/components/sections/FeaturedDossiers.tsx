@@ -11,10 +11,9 @@
  * live in the `<ProductCard>` UI primitive; we just orchestrate.
  */
 
-import Link from 'next/link';
-
 import { ProductCard } from '@/components/ui/ProductCard';
 import { EDITION_01_PRODUCTS, type Product, findProductByHandle } from '@/content/manifest-office';
+import { Link } from '@/i18n/navigation';
 import { fetchManifestProducts } from '@/lib/services/fetch-products';
 import { toShopifyHandle } from '@/lib/shopify/handle';
 

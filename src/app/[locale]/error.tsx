@@ -15,8 +15,9 @@
 
 'use client';
 
-import Link from 'next/link';
 import { useEffect } from 'react';
+
+import { Link } from '@/i18n/navigation';
 
 import type { ReactElement } from 'react';
 

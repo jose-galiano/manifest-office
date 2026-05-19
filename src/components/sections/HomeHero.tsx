@@ -1,11 +1,11 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
 
 import { MonoCaption } from '@/components/ui/MonoCaption';
+import { Link } from '@/i18n/navigation';
 
 import type { ReactElement } from 'react';
 

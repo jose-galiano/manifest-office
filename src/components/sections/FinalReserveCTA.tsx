@@ -7,9 +7,8 @@
  * (brand-bible §14 anti-brief: no countdown theatre).
  */
 
-import Link from 'next/link';
-
 import { EDITION_01 } from '@/content/manifest-office';
+import { Link } from '@/i18n/navigation';
 import { fetchManifestProducts } from '@/lib/services/fetch-products';
 
 import type { ReactElement } from 'react';

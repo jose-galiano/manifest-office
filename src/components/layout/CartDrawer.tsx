@@ -1,12 +1,12 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 
 import { CartItemRow } from '@/components/sections/CartItemRow';
 import { useCart } from '@/hooks/use-cart';
+import { useRouter } from '@/i18n/navigation';
+import { Link } from '@/i18n/navigation';
 import { CUSTOM_EVENTS, ECOMMERCE_EVENTS, track } from '@/lib/analytics';
 import {
   CUTOFF_HOUR,

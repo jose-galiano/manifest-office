@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { CollectionHeader } from '@/components/sections/CollectionHeader';
@@ -10,6 +9,7 @@ import {
   findProductByShopifyHandle,
   type Collection,
 } from '@/content/manifest-office';
+import { Link } from '@/i18n/navigation';
 import { JsonLd, buildBreadcrumbList, buildOfferCatalog } from '@/lib/seo';
 import { fetchManifestProducts } from '@/lib/services/fetch-products';
 

@@ -14,14 +14,14 @@
 
 'use client';
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
 
 import { CartBadge } from '@/components/layout/CartBadge';
 import { LocaleSwitcher } from '@/components/layout/LocaleSwitcher';
 import { WishlistBadge } from '@/components/layout/WishlistBadge';
+import { usePathname } from '@/i18n/navigation';
+import { Link } from '@/i18n/navigation';
 
 import type { ReactElement } from 'react';
 

@@ -1,6 +1,5 @@
-import Link from 'next/link';
-
 import { COLLECTIONS } from '@/content/manifest-office';
+import { Link } from '@/i18n/navigation';
 
 import type { Metadata } from 'next';
 import type { ReactElement } from 'react';

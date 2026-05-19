@@ -11,11 +11,11 @@
 
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { usePathname } from 'next/navigation';
 import { useLocale } from 'next-intl';
 import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
 
+import { useRouter } from '@/i18n/navigation';
+import { usePathname } from '@/i18n/navigation';
 import {
   LOCALE_FULL_NAMES,
   LOCALE_LABELS,
@@ -33,13 +33,6 @@ type LocaleSwitcherProps = {
 };
 
 const LOCALE_COOKIE_MAX_AGE = 31536000;
-
-function withLocale(pathname: string, locale: Locale): string {
-  const segments = pathname.split('/').filter(Boolean);
-  if (segments.length === 0) return `/${locale}`;
-  segments[0] = locale;
-  return `/${segments.join('/')}`;
-}
 
 export function LocaleSwitcher({
   variant = 'inline',
@@ -63,9 +56,11 @@ export function LocaleSwitcher({
       if (typeof document !== 'undefined') {
         document.cookie = `NEXT_LOCALE=${next};path=/;max-age=${LOCALE_COOKIE_MAX_AGE};samesite=lax`;
       }
-      const target = withLocale(pathname, next);
       startTransition(() => {
-        router.replace(target);
+        // next-intl router takes a `locale` option and rewrites the prefix
+        // for the same un-prefixed path. Don't hand-prefix the URL or we
+        // double-stack the segment (`/en/es/...`).
+        router.replace(pathname, { locale: next });
         onSelect?.();
       });
     },

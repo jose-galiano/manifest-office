@@ -1,9 +1,9 @@
 'use client';
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useId, useState } from 'react';
 
+import { Link } from '@/i18n/navigation';
+import { usePathname } from '@/i18n/navigation';
 import { CUSTOM_EVENTS, ECOMMERCE_EVENTS, track } from '@/lib/analytics';
 import { validateEmail } from '@/lib/utils/email';
 
