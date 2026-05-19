@@ -26,13 +26,15 @@ import type { ReactElement } from 'react';
 type NavLink = {
   readonly href: string;
   readonly label: string;
+  /** Plain-English subtitle for first-time visitors who don't yet read the brand voice. */
+  readonly sublabel: string;
 };
 
 const NAV_LINKS: readonly NavLink[] = [
-  { href: '/pages/editions', label: 'Editions' },
-  { href: '/collections/edition-01', label: 'Dossiers' },
-  { href: '/pages/system', label: 'System' },
-  { href: '/pages/provenance', label: 'Provenance' },
+  { href: '/pages/editions', label: 'Editions', sublabel: 'Limited Releases' },
+  { href: '/collections/edition-01', label: 'Dossiers', sublabel: 'All Products' },
+  { href: '/pages/system', label: 'System', sublabel: 'The Complete Kit' },
+  { href: '/pages/provenance', label: 'Provenance', sublabel: 'Our Story' },
 ];
 
 const SCROLL_THRESHOLD_PX = 600;
@@ -126,9 +128,12 @@ export function Nav({ forceSolid }: NavProps = {}): ReactElement {
                 data-track="nav_link"
                 data-track-label={link.label.toLowerCase()}
                 data-track-surface="desktop"
-                className="text-[13px] tracking-[0.02em] hover:text-signal transition-colors"
+                className="group/nav flex flex-col items-center leading-none transition-colors hover:text-signal"
               >
-                {link.label}
+                <span className="text-[13px] tracking-[0.02em]">{link.label}</span>
+                <span className="mt-[3px] font-mono text-[9px] uppercase tracking-[0.08em] text-[#9CAA98] transition-colors group-hover/nav:text-signal">
+                  {link.sublabel}
+                </span>
               </Link>
             </li>
           ))}
@@ -192,9 +197,14 @@ export function Nav({ forceSolid }: NavProps = {}): ReactElement {
                 data-track="nav_link"
                 data-track-label={link.label.toLowerCase()}
                 data-track-surface="mobile"
-                className="block py-5 font-display text-[28px] font-bold tracking-[-0.01em] transition-colors hover:text-signal"
+                className="flex flex-col gap-1 py-5 transition-colors hover:text-signal"
               >
-                {link.label}
+                <span className="font-display text-[28px] font-bold leading-none tracking-[-0.01em]">
+                  {link.label}
+                </span>
+                <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#9CAA98]">
+                  {link.sublabel}
+                </span>
               </Link>
             </li>
           ))}

@@ -3,6 +3,7 @@ import { EditionFeature } from '@/components/sections/EditionFeature';
 import { EditorialGallery } from '@/components/sections/EditorialGallery';
 import { EmailCapture } from '@/components/sections/EmailCapture';
 import { FeaturedDossiers } from '@/components/sections/FeaturedDossiers';
+import { FeaturedProduct } from '@/components/sections/FeaturedProduct';
 import { FinalReserveCTA } from '@/components/sections/FinalReserveCTA';
 import { HomeHero } from '@/components/sections/HomeHero';
 import { Manifesto } from '@/components/sections/Manifesto';
@@ -34,6 +35,7 @@ export default function HomePage(): ReactElement {
   return (
     <main className="bg-[#F2EFE8] text-[#0B0F0E]">
       <HomeHero />
+      <FeaturedProduct />
       <FeaturedDossiers />
       <TrustStrip />
       <Manifesto />
