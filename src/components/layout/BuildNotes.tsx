@@ -195,7 +195,7 @@ export function BuildNotes(): ReactElement {
 
       <aside
         aria-label="Build notes"
-        aria-hidden={!isOpen}
+        inert={!isOpen}
         className={[
           'fixed right-0 top-0 z-[900] flex h-dvh w-[min(520px,100vw)] flex-col',
           'bg-[var(--color-paper)] text-[var(--color-ink)]',

@@ -182,7 +182,7 @@ export function WishlistDrawer(): ReactElement {
 
       <aside
         aria-label="Your wishlist"
-        aria-hidden={!isDrawerOpen}
+        inert={!isDrawerOpen}
         className={[
           'fixed right-0 top-0 z-[900] flex h-dvh w-[min(440px,100vw)] flex-col',
           'bg-[var(--color-paper)] text-[var(--color-ink)]',

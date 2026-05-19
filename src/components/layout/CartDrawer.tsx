@@ -418,7 +418,7 @@ export function CartDrawer(): ReactElement | null {
 
       <aside
         aria-label="Your manifest"
-        aria-hidden={!isDrawerOpen}
+        inert={!isDrawerOpen}
         className={[
           // `h-dvh` (dynamic viewport height) so the drawer's bottom edge
           // tracks the mobile browser's visible chrome — `h-screen`/`100vh`
