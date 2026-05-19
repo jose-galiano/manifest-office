@@ -27,6 +27,7 @@ const COLORWAY_HEX: Readonly<Record<string, string>> = {
   Charcoal: '#1A1A1A',
   Lichen: '#5C6B5A',
   Tobacco: '#6E5947',
+  Bronze: '#8A5A2B',
 };
 
 type Swatch = {

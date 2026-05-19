@@ -29,3 +29,30 @@ export const PLP_CHARCOAL_IMAGE_OVERRIDES: Readonly<Record<string, string>> = {
 export function resolvePlpImage(shopifyHandle: string): string | null {
   return PLP_CHARCOAL_IMAGE_OVERRIDES[shopifyHandle] ?? null;
 }
+
+// Synthetic colorway extensions for hardware SKUs. The Shopify-side
+// products don't carry a colorway option (the soft goods do), so this map
+// injects the alt finish at the data layer + provides the image URL the
+// PLP card swap reads. Keys are Shopify-side handles.
+export type SyntheticColorway = {
+  readonly name: string;
+  readonly hex: string;
+  readonly imageUrl: string;
+};
+
+export const SYNTHETIC_COLORWAYS: Readonly<Record<string, readonly SyntheticColorway[]>> = {
+  'manifest-luggage-tag': [
+    { name: 'Charcoal', hex: '#1A1A1A', imageUrl: '/images/products/charcoal/luggage-tag.webp' },
+    { name: 'Tobacco', hex: '#6E5947', imageUrl: '/images/products/tobacco/luggage-tag.webp' },
+  ],
+  'manifest-anchor-latch': [
+    { name: 'Charcoal', hex: '#1A1A1A', imageUrl: '/images/products/charcoal/anchor-latch.webp' },
+    { name: 'Bronze', hex: '#8A5A2B', imageUrl: '/images/products/bronze/anchor-latch.webp' },
+  ],
+};
+
+export function resolveSyntheticColorways(
+  shopifyHandle: string,
+): readonly SyntheticColorway[] | null {
+  return SYNTHETIC_COLORWAYS[shopifyHandle] ?? null;
+}

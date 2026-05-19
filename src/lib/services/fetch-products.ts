@@ -9,7 +9,7 @@ import {
   EDITION_01_NUMBER,
   EDITION_01_TOTAL,
 } from '@/lib/constants/allocation';
-import { resolvePlpImage } from '@/lib/services/plp-image-overrides';
+import { resolvePlpImage, resolveSyntheticColorways } from '@/lib/services/plp-image-overrides';
 import {
   fetchProductsByHandle,
   type ShopifyProductNode,
@@ -58,7 +58,7 @@ export async function fetchManifestProducts(): Promise<FetchProductsResult> {
 }
 
 function mapNodeToProduct(node: ShopifyProductNode): ManifestProduct {
-  const variants = node.variants.edges.map((edge) => ({
+  const baseVariants = node.variants.edges.map((edge) => ({
     id: edge.node.id,
     title: edge.node.title,
     inventoryQty:
@@ -70,8 +70,7 @@ function mapNodeToProduct(node: ShopifyProductNode): ManifestProduct {
   const colorOption = node.options.find(
     (option) => typeof option.name === 'string' && option.name.toLowerCase() === 'colorway',
   );
-
-  const firstVariant = variants[0];
+  const shopifyColorways = colorOption ? colorOption.optionValues.map((value) => value.name) : [];
 
   const plpOverride = resolvePlpImage(node.handle);
   const shopifyImages = node.images.edges.map((edge) => ({
@@ -84,6 +83,31 @@ function mapNodeToProduct(node: ShopifyProductNode): ManifestProduct {
   // hero. Restoration path: remove the entry from PLP_CHARCOAL_IMAGE_OVERRIDES.
   const images = plpOverride ? [{ url: plpOverride, alt: node.title }] : shopifyImages;
 
+  // Hardware SKUs (Luggage Tag, Anchor Latch) ship without a Shopify-side
+  // colorway option but we offer alt finishes at the storefront — Tobacco
+  // leather for the tag, Bronze anodised for the latch. Synthesise the
+  // colorway names + matching variants here so the PLP card swatches and
+  // the PDP buy-box pick them up via the same paths as real soft-good
+  // variants.
+  const synthetic = resolveSyntheticColorways(node.handle);
+  let colorways = shopifyColorways;
+  let variants = baseVariants;
+  if (synthetic && shopifyColorways.length === 0) {
+    colorways = synthetic.map((entry) => entry.name);
+    variants = [
+      ...baseVariants,
+      ...synthetic.map((entry) => ({
+        id: `${node.id}/synthetic/${entry.name.toLowerCase()}`,
+        title: entry.name,
+        inventoryQty: null,
+        selectedOptions: [{ name: 'Colorway', value: entry.name }],
+        image: entry.imageUrl,
+      })),
+    ];
+  }
+
+  const firstVariant = variants[0];
+
   return {
     id: node.id,
     handle: node.handle,
@@ -92,7 +116,7 @@ function mapNodeToProduct(node: ShopifyProductNode): ManifestProduct {
     currency: node.priceRangeV2.minVariantPrice.currencyCode,
     image: plpOverride ?? node.featuredImage?.url ?? null,
     images,
-    colorways: colorOption ? colorOption.optionValues.map((value) => value.name) : [],
+    colorways,
     variants,
     volume: node.volume?.value ?? '',
     editionTotal: parseIntegerOr(node.allocationTotal?.value, EDITION_01_TOTAL),
