@@ -22,7 +22,7 @@
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
 
-import { reserveProductAction } from '@/app/products/[handle]/actions';
+import { reserveProductAction } from '@/app/[locale]/products/[handle]/actions';
 import { useCart } from '@/hooks/use-cart';
 import { CUSTOM_EVENTS, ECOMMERCE_EVENTS, track } from '@/lib/analytics';
 import { ENGRAVING_ALLOWED_REGEX, ENGRAVING_FEE, ENGRAVING_MAX } from '@/lib/constants/commerce';

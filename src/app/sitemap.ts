@@ -1,64 +1,77 @@
 // Native Next.js `sitemap.ts` convention (App Router, Next 15). Emits
-// `/sitemap.xml` from a typed array. Lastmod is build-time today; promote to
-// per-resource timestamps once a CMS / database is added.
+// `/sitemap.xml` from a typed array. Every URL is repeated per locale and
+// declares its `alternates.languages` map + `x-default` so search engines
+// pick the right page per visitor and never index a non-canonical variant.
 //
-// Priorities follow Google's "guidance only" semantics — they signal relative
-// importance within the site, not absolute crawl frequency.
+// Lastmod is build-time today; promote to per-resource timestamps once a
+// CMS / database is added.
 
 import { COLLECTIONS, EDITION_01_PRODUCTS, STATIC_PAGES } from '@/content/manifest-office';
+import { routing } from '@/i18n/routing';
 import { SITE_ORIGIN } from '@/lib/seo';
 
 import type { MetadataRoute } from 'next';
 
 const BLOG_HANDLES = ['operator-notes'] as const;
+const DEFAULT_LOCALE = routing.defaultLocale;
+const LOCALES = routing.locales;
+
+type ChangeFrequency = NonNullable<MetadataRoute.Sitemap[number]['changeFrequency']>;
+
+type RouteSpec = {
+  readonly path: string;
+  readonly priority: number;
+  readonly changeFrequency: ChangeFrequency;
+};
+
+function makeAlternates(path: string): Record<string, string> {
+  const languages: Record<string, string> = {};
+  for (const locale of LOCALES) {
+    languages[locale] = `${SITE_ORIGIN}/${locale}${path}`;
+  }
+  languages['x-default'] = `${SITE_ORIGIN}/${DEFAULT_LOCALE}${path}`;
+  return languages;
+}
+
+function expandRoute(spec: RouteSpec, lastModified: Date): MetadataRoute.Sitemap {
+  const languages = makeAlternates(spec.path);
+  return LOCALES.map((locale) => ({
+    url: `${SITE_ORIGIN}/${locale}${spec.path}`,
+    lastModified,
+    changeFrequency: spec.changeFrequency,
+    priority: spec.priority,
+    alternates: { languages },
+  }));
+}
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();
-
-  const entries: MetadataRoute.Sitemap = [
-    {
-      url: `${SITE_ORIGIN}/`,
-      lastModified,
-      changeFrequency: 'daily',
-      priority: 1.0,
-    },
-  ];
+  const specs: RouteSpec[] = [{ path: '', priority: 1.0, changeFrequency: 'daily' }];
 
   for (const collection of COLLECTIONS) {
-    entries.push({
-      url: `${SITE_ORIGIN}/collections/${collection.handle}`,
-      lastModified,
-      changeFrequency: 'weekly',
+    specs.push({
+      path: `/collections/${collection.handle}`,
       priority: 0.8,
+      changeFrequency: 'weekly',
     });
   }
-
   for (const product of EDITION_01_PRODUCTS) {
-    entries.push({
-      url: `${SITE_ORIGIN}/products/${product.handle}`,
-      lastModified,
-      changeFrequency: 'weekly',
+    specs.push({
+      path: `/products/${product.handle}`,
       priority: 0.9,
-    });
-  }
-
-  for (const page of STATIC_PAGES) {
-    entries.push({
-      url: `${SITE_ORIGIN}/pages/${page.handle}`,
-      lastModified,
-      changeFrequency: 'monthly',
-      priority: 0.5,
-    });
-  }
-
-  for (const blog of BLOG_HANDLES) {
-    entries.push({
-      url: `${SITE_ORIGIN}/blogs/${blog}`,
-      lastModified,
       changeFrequency: 'weekly',
-      priority: 0.4,
     });
   }
+  for (const page of STATIC_PAGES) {
+    specs.push({
+      path: `/pages/${page.handle}`,
+      priority: 0.5,
+      changeFrequency: 'monthly',
+    });
+  }
+  for (const blog of BLOG_HANDLES) {
+    specs.push({ path: `/blogs/${blog}`, priority: 0.4, changeFrequency: 'weekly' });
+  }
 
-  return entries;
+  return specs.flatMap((spec) => expandRoute(spec, lastModified));
 }

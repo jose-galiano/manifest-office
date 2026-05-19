@@ -1,0 +1,285 @@
+{
+  "meta": {
+    "site_title": "Manifest Office · Edition 01 · Gibraltar",
+    "site_description": "A modular travel-kit system finished in Porto. Edition 01 — 1,200 systems issued."
+  },
+  "nav": {
+    "skip_to_content": "Skip to content",
+    "editions": "Editions",
+    "editions_sub": "Limited Releases",
+    "dossiers": "Dossiers",
+    "dossiers_sub": "All Products",
+    "system": "System",
+    "system_sub": "The Complete Kit",
+    "provenance": "Provenance",
+    "provenance_sub": "Our Story",
+    "open_cart": "Open manifest, {count} {count, plural, one {item} other {items}}",
+    "open_wishlist": "Open wishlist, {count} {count, plural, one {item} other {items}}",
+    "open_menu": "Open menu",
+    "close_menu": "Close menu",
+    "currency": "EUR",
+    "locale_picker": "Choose language"
+  },
+  "edition_banner": {
+    "label": "Edition 01 — Gibraltar",
+    "audio_button": "Atelier",
+    "try_with_audio": "Try with audio",
+    "allocation": "Allocation {issued} / {total}"
+  },
+  "footer": {
+    "rights": "Manifest Office — Edition 01 issued from Porto.",
+    "designed_in": "Designed in Gibraltar · Finished in Porto",
+    "made_with": "Powered by Maelify.com",
+    "follow_us": "Follow",
+    "newsletter_title": "Edition 02 list",
+    "newsletter_lede": "Earliest access when the next edition opens."
+  },
+  "hero": {
+    "eyebrow": "Edition 01 · Gibraltar",
+    "title_line_1": "A travel kit,",
+    "title_line_2": "locked together.",
+    "lede": "One field tote. Three tech pouches. Three packing cubes. A machined anchor latch that ties them all together.",
+    "primary_cta": "Reserve from Edition 01",
+    "secondary_cta": "Browse the dossiers",
+    "scroll_caption": "Scroll to begin"
+  },
+  "featured_product": {
+    "eyebrow": "Featured · The Hub",
+    "title": "Field Tote",
+    "lede": "Top carry. The piece every other dossier locks into. Anchor-Latch compatible with every component of the system, finished in Porto.",
+    "callout": "14L · 420D Cordura · YKK AquaGuard",
+    "primary_cta": "Reserve from Edition 01",
+    "secondary_cta": "View dossier",
+    "currency_caption": "EUR · Incl VAT",
+    "allocation": "{issued} / {total} issued · {remaining} remaining"
+  },
+  "featured_dossiers": {
+    "eyebrow": "Featured Dossiers",
+    "title": "Edition 01 — four anchor pieces",
+    "lede": "The shortest path from arrival to packing. Each dossier numbered, finished in Porto, allocation live.",
+    "view_all": "View every dossier"
+  },
+  "trust_strip": {
+    "shipping": "Free shipping over €120",
+    "returns": "30-day returns on unused dossiers",
+    "origin": "Designed in Gibraltar · Finished in Porto",
+    "allocation": "1,200 systems issued"
+  },
+  "manifesto": {
+    "eyebrow": "Manifesto",
+    "body": "Travel is a system. A pouch is not a pouch — it is a slot. A cube is not a cube — it is a discipline. Manifest Office issues the system, in numbered editions, finished by hand in Porto."
+  },
+  "edition_feature": {
+    "eyebrow": "Edition 01",
+    "title": "Gibraltar to Porto, twelve months in the open.",
+    "body": "Edition 01 closes when the 1,200th system ships. Every dossier carries the issue number, the maker initial, and the finishing date. Edition 02 opens on the same day."
+  },
+  "process": {
+    "eyebrow": "Process",
+    "step_one_title": "Specified",
+    "step_one_body": "Brief opens in Gibraltar with a fixed weight budget, fixed colorway, fixed material stack.",
+    "step_two_title": "Made",
+    "step_two_body": "Porto atelier cuts, stitches and finishes each dossier against the brief, numbered as it leaves the bench.",
+    "step_three_title": "Issued",
+    "step_three_body": "Reserved through the storefront, shipped within the quarter, traceable for the lifetime of the edition."
+  },
+  "practitioners": {
+    "eyebrow": "Practitioners",
+    "title": "Three hands, three benches.",
+    "body": "Cristina, Joana, and Marc finish every dossier in the edition. Each piece carries the maker initial on the inside seam."
+  },
+  "final_reserve": {
+    "remaining_label": "{remaining} systems remaining in Edition 01",
+    "title_pre": "Reserve from Edition 01",
+    "title_main": "while it is still open.",
+    "cta": "Reserve",
+    "edition_meta": "Edition 01 · Gibraltar · Finished in Porto"
+  },
+  "desk_teaser": {
+    "eyebrow": "Brief the Desk",
+    "title": "A trip in. A packing list out.",
+    "body": "Tell the desk where you are going and how long. It will brief the dossiers you need for the kit and the order they pack.",
+    "cta": "Brief the desk"
+  },
+  "desk_brief": {
+    "form_title": "Brief the desk",
+    "form_lede": "Where, when, for how long. The desk will reply with a packing list using the dossiers available in Edition 01.",
+    "field_destination": "Destination",
+    "field_destination_placeholder": "e.g. Lisbon · Tokyo · Mexico City",
+    "field_duration": "Duration",
+    "field_duration_placeholder": "e.g. 4 days · 2 weeks",
+    "field_purpose": "Purpose",
+    "field_purpose_placeholder": "Working trip, surf trip, family visit, …",
+    "submit": "Brief the desk",
+    "submitting": "Briefing…",
+    "response_title": "Desk reply",
+    "response_clear": "Start a new brief"
+  },
+  "email_capture": {
+    "eyebrow": "Edition 02 list",
+    "title": "Earliest access when Edition 02 opens.",
+    "lede": "Edition 02 is not announced. The list closes when Edition 01 closes.",
+    "placeholder": "you@example.com",
+    "submit": "Join the list",
+    "submitting": "Joining…",
+    "success": "On the list — see you when Edition 02 opens."
+  },
+  "product_card": {
+    "dossier_label": "Dossier {number}",
+    "allocation": "{issued} / {total}",
+    "quick_add": "Quick add",
+    "add": "Add",
+    "reserving": "Reserving…",
+    "added": "Added ✓",
+    "save_to_wishlist": "Save {title} to wishlist",
+    "remove_from_wishlist": "Remove {title} from wishlist",
+    "colorway_label": "Colorways for {title}",
+    "preview_colorway": "Preview {name} colorway"
+  },
+  "pdp": {
+    "breadcrumb_editions": "Editions",
+    "breadcrumb_edition_label": "01",
+    "breadcrumb_dossiers": "Dossiers",
+    "header_dossier": "Dossier {number}",
+    "header_ref": "Ref {sku}",
+    "header_volume": "Volume {volume}",
+    "header_issued": "Issued Porto · {quarter}",
+    "buy_eyebrow": "Edition {edition} / Dossier {dossier}",
+    "buy_price_caption": "EUR · Incl. VAT",
+    "colorway_label": "Colorway",
+    "engraving_label": "Engraving (optional)",
+    "engraving_upcharge": "+€{amount}",
+    "engraving_none": "None",
+    "engraving_add": "Add Engraving",
+    "engraving_input_placeholder": "Up to 12 characters",
+    "engraving_helper": "Letters, numbers, dots and dashes only.",
+    "reserve_cta": "Reserve from Edition 01",
+    "reserve_cta_pending": "Reserving…",
+    "external_link_aria": "View on Shopify",
+    "allocation": "{issued} / {total} issued · {remaining} remaining",
+    "sold_out_title": "Edition 01 is fully reserved.",
+    "sold_out_body": "Join the Edition 02 list — earliest access when the next edition opens.",
+    "specs_title": "Specifications",
+    "spec_material": "Material",
+    "spec_closure": "Closure",
+    "spec_zipper": "Zipper",
+    "spec_volume": "Volume",
+    "spec_mass": "Mass",
+    "spec_origin": "Origin",
+    "dossier_eyebrow": "Dossier · Long-form",
+    "dossier_body": "The {title} dossier — provenance, field notes, and operator credentials — expands in Wave 4. The skeleton is shipped now so the URL is stable for SEO and agentic-commerce crawlers."
+  },
+  "exploded_kit": {
+    "eyebrow": "Reference geometry · Interactive",
+    "title_line_1": "Drag. Rotate.",
+    "title_line_2": "Pull it apart.",
+    "lede": "Seven pieces. One latch. The interactive viewer assembles the kit in your browser at sixty frames a second.",
+    "explode": "Explode",
+    "assemble": "Assemble",
+    "label_field_tote": "Field Tote",
+    "label_tech_pouch": "Tech Pouch",
+    "label_cube": "Cube",
+    "label_toiletry": "Toiletry Kit",
+    "label_luggage_tag": "Luggage Tag",
+    "label_anchor_latch": "Anchor Latch",
+    "label_paracord_pull": "Paracord Pull"
+  },
+  "scroll_latch": {
+    "beat_one": "Closed. Locked. Twelve grams.",
+    "beat_two": "Rotate to release.",
+    "beat_three": "Mechanism revealed.",
+    "beat_four": "Tolerance 0.02 mm.",
+    "beat_five": "The kit, exploded."
+  },
+  "cart": {
+    "drawer_title": "Manifest",
+    "drawer_subtitle": "Your reservation",
+    "close": "Close",
+    "empty_eyebrow": "Manifest is empty",
+    "empty_title": "Nothing reserved yet.",
+    "empty_cta": "Browse Edition 01",
+    "subtotal": "Subtotal",
+    "shipping_estimate": "Shipping estimated at checkout",
+    "free_shipping_label": "Free shipping unlocked",
+    "free_shipping_remaining": "€{remaining} away from free shipping",
+    "checkout_cta": "Checkout",
+    "engrave_open": "Edit engraving",
+    "engrave_save": "Save",
+    "engrave_cancel": "Cancel",
+    "engrave_remove": "Remove engraving",
+    "remove_line": "Remove",
+    "issued_as": "Issued as #{issue}",
+    "engraved_with": "Engraved · {text}",
+    "engravable_prompt": "Engrave on the leather pull?"
+  },
+  "wishlist": {
+    "drawer_title_owned": "Wishlist",
+    "drawer_title_shared": "Shared with you",
+    "drawer_subtitle_owned": "{count} {count, plural, one {item} other {items}}",
+    "drawer_subtitle_shared": "{count} {count, plural, one {item} other {items}} · preview",
+    "close": "Close",
+    "empty_eyebrow": "Nothing saved yet",
+    "empty_title": "Tap the heart on any dossier to save it for later.",
+    "empty_cta": "Browse Edition 01",
+    "share_button": "Share my wishlist",
+    "share_copied": "Link copied ✓",
+    "share_error": "Copy failed",
+    "save_shared_cta": "Save all to my wishlist",
+    "clear": "Clear",
+    "remaining_low": "{count} remaining",
+    "remaining_normal": "{count} remaining",
+    "sold_out": "Sold out",
+    "reserve": "Reserve",
+    "reserving": "Reserving…",
+    "remove": "Remove"
+  },
+  "quick_add": {
+    "title": "Quick Reserve",
+    "close": "Close quick add",
+    "choose_colorway": "Choose colorway",
+    "cta_idle": "Reserve",
+    "cta_pending": "Reserving…",
+    "cta_success": "Reserved ✓"
+  },
+  "build_notes": {
+    "trigger": "Build Notes",
+    "trigger_aria": "Open build notes — guided tour of what was built",
+    "header_eyebrow": "Maelify · Build Notes",
+    "header_title": "What was built",
+    "close": "Close",
+    "footer_hint": "Press D anywhere · ESC to close",
+    "panel_01": "Stack",
+    "panel_02": "Features",
+    "panel_03": "Performance",
+    "panel_04": "Commerce",
+    "panel_05": "Source",
+    "source_repo_meta": "MIT · public · CI on every push (typecheck · lint · format · build)",
+    "source_maelify_meta": "Jose Galiano — Shopify Plus architect · headless commerce · AI-native UX",
+    "source_email_meta": "Open to long-term engagements · €15-20k/mo · EU-based",
+    "source_disclaimer": "This site is a portfolio piece. The brand \"Manifest Office\" is fictional. The commerce wiring, the imagery, the analytics fanout, the WebGL, the AI endpoints and the build infrastructure are real and shipping."
+  },
+  "collection": {
+    "title_default": "All Dossiers",
+    "lede_default": "Every piece of the Edition 01 system, finished in Porto. Reserve any dossier directly from the card.",
+    "empty": "No dossiers in this collection yet.",
+    "count": "{count} {count, plural, one {dossier} other {dossiers}}"
+  },
+  "checkout": {
+    "secure_header": "Secure checkout",
+    "express_label": "Express",
+    "contact_title": "Contact",
+    "help_title": "How can I help you?",
+    "payment_title": "Payment",
+    "pay_cta": "Book the call",
+    "thank_you_title": "Thank you. Manifest filed.",
+    "order_number": "Order MO-{number}",
+    "thank_you_pitch": "Edition 01 reservations are routed to Maelify directly. Expect a calendar invite within the hour."
+  },
+  "common": {
+    "loading": "Loading",
+    "error_title": "Something went sideways.",
+    "error_body": "The desk is back at its bench. Try again, or come back in a moment.",
+    "retry": "Try again",
+    "go_home": "Back to the start"
+  }
+}

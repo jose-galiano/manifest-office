@@ -19,6 +19,7 @@ import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
 import { CartBadge } from '@/components/layout/CartBadge';
+import { LocaleSwitcher } from '@/components/layout/LocaleSwitcher';
 import { WishlistBadge } from '@/components/layout/WishlistBadge';
 
 import type { ReactElement } from 'react';
@@ -142,9 +143,7 @@ export function Nav({ forceSolid }: NavProps = {}): ReactElement {
         <div className="md:hidden" />
 
         <div className="flex items-center justify-end gap-3 md:gap-[18px]">
-          <span className="hidden md:inline font-mono text-[11px] tracking-[0.04em] uppercase">
-            EN · EUR
-          </span>
+          <LocaleSwitcher />
           <WishlistBadge />
           <CartBadge />
           {/* Hamburger — visible only below `md`. */}
@@ -209,8 +208,14 @@ export function Nav({ forceSolid }: NavProps = {}): ReactElement {
             </li>
           ))}
         </ul>
+        <div className="border-t border-[rgba(242,239,232,0.12)] px-5 pt-8">
+          <span className="block pb-3 font-mono text-[10px] uppercase tracking-[0.1em] text-[#5C6B5A]">
+            Language
+          </span>
+          <LocaleSwitcher variant="stack" onSelect={() => setMenuOpen(false)} />
+        </div>
         <div className="px-5 pt-8 font-mono text-[11px] tracking-[0.06em] uppercase text-[#5C6B5A]">
-          EN · EUR · EDITION 01 · ISSUED FROM PORTO
+          EUR · EDITION 01 · ISSUED FROM PORTO
         </div>
       </div>
     </>

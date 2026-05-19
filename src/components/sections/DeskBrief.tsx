@@ -29,7 +29,7 @@
 
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 
-import { reserveProductAction } from '@/app/products/[handle]/actions';
+import { reserveProductAction } from '@/app/[locale]/products/[handle]/actions';
 import { findProductByShopifyHandle } from '@/content/manifest-office';
 import { useCart } from '@/hooks/use-cart';
 

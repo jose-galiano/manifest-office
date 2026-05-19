@@ -3,5 +3,7 @@
 # - sharp: image optimization (next/image)
 # - unrs-resolver: Rust-based module resolver (ESLint)
 allowBuilds:
+  '@parcel/watcher': false
+  '@swc/core': false
   sharp: true
   unrs-resolver: true
