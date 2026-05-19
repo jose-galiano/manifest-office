@@ -2,6 +2,7 @@ import { Inter, JetBrains_Mono, Space_Grotesk } from 'next/font/google';
 
 import { Analytics, AnalyticsNoScript } from '@/components/analytics/Analytics';
 import { ClarityLoader } from '@/components/analytics/ClarityLoader';
+import { BuildNotes } from '@/components/layout/BuildNotes';
 import { CartDrawer } from '@/components/layout/CartDrawer';
 import { ConsoleSignature } from '@/components/layout/ConsoleSignature';
 import { Footer } from '@/components/layout/Footer';
@@ -97,6 +98,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         <WishlistDrawer />
         <WishlistShareHydrator />
         <LeadCapturePopup />
+        <BuildNotes />
         <ConsoleSignature />
       </body>
     </html>
