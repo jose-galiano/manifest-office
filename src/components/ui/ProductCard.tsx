@@ -230,74 +230,78 @@ export function ProductCard({ product, dossierNumber }: ProductCardProps): React
           />
         </div>
 
-        <div className="flex items-start justify-between gap-4 border-t border-[rgba(11,15,14,0.12)] px-7 py-6">
-          <div className="flex flex-col gap-1.5">
-            {presentationLabel ? (
-              <span className="font-mono text-[10px] uppercase tracking-[0.08em] text-[#5C6B5A]">
-                {presentationLabel}
+        <div
+          className="grid grid-cols-[1fr_auto] gap-x-4 border-t border-[rgba(11,15,14,0.12)] px-7 py-6"
+          style={{
+            // Locked rows so every card aligns horizontally regardless of
+            // title length, swatch count or engraving caption: eyebrow ·
+            // title (2 lines) · swatches · engraving.
+            gridTemplateRows: '14px 3rem 24px 14px',
+            rowGap: '10px',
+          }}
+        >
+          <span className="col-start-1 row-start-1 self-end font-mono text-[10px] uppercase tracking-[0.08em] text-[#5C6B5A]">
+            {presentationLabel || '—'}
+          </span>
+          <span className="col-start-2 row-start-1 self-end text-right font-mono text-[10px] uppercase tracking-[0.06em] text-[#5C6B5A]">
+            EUR · INCL VAT
+          </span>
+
+          <h3 className="col-start-1 row-start-2 self-start overflow-hidden font-display text-[22px] font-bold leading-[1.1] tracking-tight text-[#0B0F0E]">
+            {product.title}
+          </h3>
+          <div className="col-start-2 row-start-2 self-start text-right font-mono text-[14px] font-medium leading-[1.1] text-[#0B0F0E]">
+            {formatPrice(product.price)}
+          </div>
+
+          <div
+            className="col-start-1 row-start-3 flex items-center gap-2 self-center"
+            role="group"
+            aria-label={`Colorways for ${product.title}`}
+            onMouseLeave={onSwatchLeave}
+          >
+            {swatches.map((swatch, index) => {
+              const isActive = index === activeIndex;
+              const isPreviewed = index === previewIndex;
+              // Button hit-box is 24×24 (WCAG 2.5.8); the visible chip is a
+              // 16×16 inner span so the brand chip size stays unchanged.
+              const innerStateClass = isActive
+                ? 'border-[rgba(11,15,14,0.55)] outline outline-2 outline-offset-2 outline-[#0B0F0E]'
+                : isPreviewed
+                  ? 'border-[rgba(11,15,14,0.55)] outline outline-1 outline-offset-2 outline-[rgba(11,15,14,0.55)]'
+                  : 'border-[rgba(11,15,14,0.35)]';
+              const chipStyle: CSSProperties = { background: swatch.hex };
+              return (
+                <button
+                  type="button"
+                  key={swatch.name}
+                  onClick={(event) => onSwatchClick(event, index)}
+                  onMouseEnter={() => onSwatchHover(index)}
+                  onFocus={() => onSwatchHover(index)}
+                  onBlur={onSwatchLeave}
+                  aria-label={`Preview ${swatch.name} colorway`}
+                  aria-pressed={isActive}
+                  className="grid h-6 w-6 cursor-pointer place-items-center bg-transparent p-0"
+                >
+                  <span
+                    aria-hidden="true"
+                    className={`block h-4 w-4 rounded-full border transition-[outline,transform] duration-200 ${innerStateClass}`}
+                    style={chipStyle}
+                  />
+                </button>
+              );
+            })}
+            {swatches.length > 0 ? (
+              <span className="ml-2 font-mono text-[10px] uppercase tracking-[0.08em] text-[#5C6B5A]">
+                {(swatches[displayedIndex]?.name ?? '').toUpperCase()}
               </span>
             ) : null}
-            <h3 className="font-display text-[26px] font-bold leading-none tracking-tight text-[#0B0F0E]">
-              {product.title}
-            </h3>
+          </div>
 
-            {swatches.length > 0 ? (
-              <div
-                className="mt-3 flex items-center gap-2"
-                role="group"
-                aria-label={`Colorways for ${product.title}`}
-                onMouseLeave={onSwatchLeave}
-              >
-                {swatches.map((swatch, index) => {
-                  const isActive = index === activeIndex;
-                  const isPreviewed = index === previewIndex;
-                  // Button hit-box is 24×24 (WCAG 2.5.8); the visible chip is a
-                  // 16×16 inner span so the brand chip size stays unchanged.
-                  const innerStateClass = isActive
-                    ? 'border-[rgba(11,15,14,0.55)] outline outline-2 outline-offset-2 outline-[#0B0F0E]'
-                    : isPreviewed
-                      ? 'border-[rgba(11,15,14,0.55)] outline outline-1 outline-offset-2 outline-[rgba(11,15,14,0.55)]'
-                      : 'border-[rgba(11,15,14,0.35)]';
-                  const chipStyle: CSSProperties = { background: swatch.hex };
-                  return (
-                    <button
-                      type="button"
-                      key={swatch.name}
-                      onClick={(event) => onSwatchClick(event, index)}
-                      onMouseEnter={() => onSwatchHover(index)}
-                      onFocus={() => onSwatchHover(index)}
-                      onBlur={onSwatchLeave}
-                      aria-label={`Preview ${swatch.name} colorway`}
-                      aria-pressed={isActive}
-                      className="grid h-6 w-6 cursor-pointer place-items-center bg-transparent p-0"
-                    >
-                      <span
-                        aria-hidden="true"
-                        className={`block h-4 w-4 rounded-full border transition-[outline,transform] duration-200 ${innerStateClass}`}
-                        style={chipStyle}
-                      />
-                    </button>
-                  );
-                })}
-                <span className="ml-2 font-mono text-[10px] uppercase tracking-[0.08em] text-[#5C6B5A]">
-                  {(swatches[displayedIndex]?.name ?? '').toUpperCase()}
-                </span>
-              </div>
-            ) : null}
-          </div>
-          <div className="text-right">
-            <div className="font-mono text-[14px] font-medium text-[#0B0F0E]">
-              {formatPrice(product.price)}
-            </div>
-            <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.06em] text-[#5C6B5A]">
-              EUR · INCL VAT
-            </div>
-            {showsEngraving ? (
-              <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.08em] text-[#5C6B5A]">
-                +€{ENGRAVING_UPCHARGE_EUR} ENGRAVING
-              </div>
-            ) : null}
-          </div>
+          <span className="col-start-1 row-start-4 self-end font-mono text-[10px] uppercase tracking-[0.08em] text-[#5C6B5A]">
+            {showsEngraving ? `+€${ENGRAVING_UPCHARGE_EUR} ENGRAVING` : ''}
+          </span>
+          <span className="col-start-2 row-start-4 self-end" />
         </div>
       </Link>
       {isMultiColorway ? (
