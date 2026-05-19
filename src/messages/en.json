@@ -161,18 +161,27 @@
     "cta": "Brief the desk"
   },
   "desk_brief": {
-    "form_title": "Brief the desk",
-    "form_lede": "Where, when, for how long. The desk will reply with a packing list using the dossiers available in Edition 01.",
-    "field_destination": "Destination",
-    "field_destination_placeholder": "e.g. Lisbon · Tokyo · Mexico City",
-    "field_duration": "Duration",
-    "field_duration_placeholder": "e.g. 4 days · 2 weeks",
-    "field_purpose": "Purpose",
-    "field_purpose_placeholder": "Working trip, surf trip, family visit, …",
-    "submit": "Brief the desk",
-    "submitting": "Briefing…",
-    "response_title": "Desk reply",
-    "response_clear": "Start a new brief"
+    "eyebrow": "The Desk · Beta",
+    "title_line_1": "Tell us the trip.",
+    "title_line_2": "The desk responds",
+    "title_line_3": "with the kit.",
+    "lede": "Describe a trip in plain language. The desk returns a recommended allocation, a printable manifest, and a checklist you can save. Built on Gemini 2.5 Flash. Trained on Edition 01 use patterns. No chat. No bot. A desk.",
+    "form_eyebrow": "Brief the desk · memo to Manifest Office",
+    "placeholder": "Five days in Mexico City. Two client meetings, one studio visit. Carry-on only. October.",
+    "hint_default": "Return to submit · Gemini 2.5 Flash · 5/hr · 20/day",
+    "hint_composing": "Desk composing · stand by",
+    "hint_done": "Gemini 2.5 Flash · briefed in real time",
+    "submit_default": "Brief the desk",
+    "submit_busy": "Briefing…",
+    "manifest_cta_reserving": "Reserving…",
+    "manifest_cta_template": "Make this manifest · {count} items",
+    "manifest_caption": "Reserves all dossiers · opens cart",
+    "issued_count": "{count} dossiers issued",
+    "err_short": "— Brief too short. Describe the trip in a full sentence.",
+    "err_invalid": "Desk only accepts trip briefs. Describe a trip, duration, and purpose.",
+    "err_overloaded": "The desk is briefing another operator.\nTry again in a few seconds.",
+    "err_turnstile": "Verification required. Refresh the page and retry.",
+    "err_generic": "Desk temporarily unavailable — retry."
   },
   "email_capture": {
     "eyebrow": "Edition 02 · Unnamed Anchor",
@@ -390,5 +399,33 @@
     "error_body": "The desk is back at its bench. Try again, or come back in a moment.",
     "retry": "Try again",
     "go_home": "Back to the start"
+  },
+  "lead_capture": {
+    "eyebrow": "Built by Maelify",
+    "headline_default": "Like what you're seeing?",
+    "headline_success": "Got it. I'll be in touch.",
+    "body_default": "This whole storefront is a portfolio piece. Shopify Plus, Next.js 15, agentic-commerce schema, multi-agent Claude Code build. The same stack can elevate your brand into a storefront that people remember and that converts. Leave an email, or book a call.",
+    "body_success": "Thanks. I'll reach out within a business day with a few questions and a short recommendation on where headless gets you the biggest unlock. Meanwhile, the rest of the demo is yours to poke at.",
+    "email_label": "Email",
+    "email_placeholder": "your.email@company.com",
+    "submit": "Send me a note",
+    "book_call": "Or book a 30-min call",
+    "book_call_success": "Book a 30-min call",
+    "keep_exploring": "Keep exploring",
+    "close": "Close",
+    "signature": "Jose Galiano · Shopify Agentic Commerce Architect · maelify.com"
+  },
+  "atelier_toggle": {
+    "label": "♪ Atelier — play/pause atelier ambience",
+    "play": "Play atelier ambience",
+    "pause": "Pause atelier ambience"
+  },
+  "pdp_specs": {
+    "material": "Material",
+    "closure": "Closure",
+    "zipper": "Zipper",
+    "volume": "Volume",
+    "mass": "Mass",
+    "origin": "Origin"
   }
 }

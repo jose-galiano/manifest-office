@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { CUSTOM_EVENTS, track } from '@/lib/analytics';
@@ -53,6 +54,7 @@ function readSavedVolume(): number {
 }
 
 export function AtelierToggle(): ReactElement {
+  const t = useTranslations('atelier_toggle');
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const fadeFrameRef = useRef<number | null>(null);
   // Set on user-gesture play only (not on auto-resume) so `listened_ms`
@@ -257,7 +259,7 @@ export function AtelierToggle(): ReactElement {
         type="button"
         // WCAG 2.5.3 (Label in Name): the accessible name must begin with the
         // visible text. Visible label is "♪ AUDIO" / "♪ ATELIER".
-        aria-label={isOn ? '♪ AUDIO — pause atelier ambience' : '♪ AUDIO — play atelier ambience'}
+        aria-label={isOn ? `♪ ${t('pause')}` : `♪ ${t('play')}`}
         aria-pressed={isOn}
         onClick={handleToggle}
         className={[

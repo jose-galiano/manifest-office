@@ -15,6 +15,7 @@
  */
 
 import { notFound } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 
 import { BuildYourSystem } from '@/components/sections/BuildYourSystem';
 import { DeskBrief } from '@/components/sections/DeskBrief';
@@ -101,21 +102,25 @@ export async function generateMetadata({ params }: PdpPageProps): Promise<Metada
 // zipper, mass, origin) default to the Edition 01 baseline. Wave 4 will add
 // per-product overrides when the rich dossier body is authored.
 // ---------------------------------------------------------------------------
-function buildSpecStrip(catalogEntry: Product, shopifyProduct: ManifestProduct | null): PdpSpec[] {
+async function buildSpecStrip(
+  catalogEntry: Product,
+  shopifyProduct: ManifestProduct | null,
+): Promise<PdpSpec[]> {
+  const t = await getTranslations('pdp_specs');
   const volume = catalogEntry.volume === '—' ? '—' : `${catalogEntry.volume}`;
   const isHardware =
     catalogEntry.handle === 'anchor-latch' || catalogEntry.handle === 'luggage-tag';
   return [
     {
       icon: 'material',
-      label: 'Material',
+      label: t('material'),
       value: isHardware ? '6061-T6 Aluminium' : '420D Cordura',
     },
-    { icon: 'closure', label: 'Closure', value: 'Anchor Latch' },
-    { icon: 'zipper', label: 'Zipper', value: isHardware ? '—' : 'YKK AquaGuard' },
-    { icon: 'volume', label: 'Volume', value: volume },
-    { icon: 'mass', label: 'Mass', value: shopifyProduct?.volume ?? '—' },
-    { icon: 'origin', label: 'Origin', value: 'Porto · EU' },
+    { icon: 'closure', label: t('closure'), value: 'Anchor Latch' },
+    { icon: 'zipper', label: t('zipper'), value: isHardware ? '—' : 'YKK AquaGuard' },
+    { icon: 'volume', label: t('volume'), value: volume },
+    { icon: 'mass', label: t('mass'), value: shopifyProduct?.volume ?? '—' },
+    { icon: 'origin', label: t('origin'), value: 'Porto · EU' },
   ];
 }
 
@@ -214,7 +219,7 @@ export default async function ProductDetailPage({
   const gallery = selectGalleryImages(shopifyProduct, catalogEntry.title);
   const colorways = deriveColorways(shopifyProduct);
   const sizeOptions = deriveSizeOptions(catalogEntry.handle);
-  const specs = buildSpecStrip(catalogEntry, shopifyProduct);
+  const specs = await buildSpecStrip(catalogEntry, shopifyProduct);
 
   // Resolve the requested colorway (e.g. `?color=lichen` from the PLP card).
   // Match case-insensitively; if the param is missing/unknown, fall back to

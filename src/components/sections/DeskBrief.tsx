@@ -27,6 +27,7 @@
 
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 
 import { reserveProductAction } from '@/app/[locale]/products/[handle]/actions';
@@ -81,9 +82,6 @@ const PLACEHOLDER_BRIEF =
 const HINT_DEFAULT = 'RETURN TO SUBMIT · GEMINI 2.5 FLASH · 5/HR · 20/DAY';
 const HINT_COMPOSING = 'DESK COMPOSING · STAND BY';
 const HINT_DONE = 'GEMINI 2.5 FLASH · BRIEFED IN REAL TIME';
-
-const SUBMIT_DEFAULT = '↗ BRIEF THE DESK';
-const SUBMIT_BUSY = '↻ BRIEFING…';
 
 const ERR_SHORT = '— BRIEF TOO SHORT. DESCRIBE THE TRIP IN A FULL SENTENCE.';
 const ERR_INVALID = 'DESK ONLY ACCEPTS TRIP BRIEFS. DESCRIBE A TRIP, DURATION, AND PURPOSE.';
@@ -208,6 +206,7 @@ type DeskBriefProps = {
 };
 
 export function DeskBrief({ anchorId = 'desk' }: DeskBriefProps): ReactElement {
+  const t = useTranslations('desk_brief');
   const hintId = useId();
   const responseId = useId();
   const honeyId = useId();
@@ -463,20 +462,16 @@ export function DeskBrief({ anchorId = 'desk' }: DeskBriefProps): ReactElement {
     >
       <div className="mx-auto max-w-[1100px]">
         <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-signal">
-          THE DESK · BETA
+          {t('eyebrow').toUpperCase()}
         </span>
         <h2 className="mt-6 font-display font-bold leading-[0.95] tracking-[-0.02em] text-[clamp(36px,4vw,56px)]">
-          Tell us the trip.
+          {t('title_line_1')}
           <br />
-          The desk responds
+          {t('title_line_2')}
           <br />
-          with the kit.
+          {t('title_line_3')}
         </h2>
-        <p className="mt-6 max-w-[60ch] text-[15px] leading-[1.7] text-[#F2EFE8]/75">
-          Describe a trip in plain language. The desk returns a recommended allocation, a printable
-          manifest, and a checklist you can save. Built on Gemini 2.5 Flash. Trained on Edition 01
-          use patterns. No chat. No bot. A desk.
-        </p>
+        <p className="mt-6 max-w-[60ch] text-[15px] leading-[1.7] text-[#F2EFE8]/75">{t('lede')}</p>
 
         <form
           onSubmit={onSubmit}
@@ -484,7 +479,7 @@ export function DeskBrief({ anchorId = 'desk' }: DeskBriefProps): ReactElement {
           className="mt-10 border border-[rgba(242,239,232,0.18)] bg-[rgba(242,239,232,0.04)] p-6"
         >
           <div className="mb-3 font-mono text-[10px] uppercase tracking-[0.18em] text-[#F2EFE8]/60">
-            BRIEF THE DESK · MEMO TO MANIFEST OFFICE
+            {t('form_eyebrow').toUpperCase()}
           </div>
 
           <div className="flex items-start gap-3">
@@ -495,7 +490,7 @@ export function DeskBrief({ anchorId = 'desk' }: DeskBriefProps): ReactElement {
               ref={inputRef}
               rows={2}
               maxLength={BRIEF_MAX_LENGTH}
-              placeholder={PLACEHOLDER_BRIEF}
+              placeholder={t('placeholder')}
               onKeyDown={onKeyDown}
               aria-describedby={hintId}
               className="flex-1 resize-none border-0 bg-transparent font-mono text-[14px] text-[#F2EFE8] outline-none placeholder:text-[#F2EFE8]/40"
@@ -532,7 +527,9 @@ export function DeskBrief({ anchorId = 'desk' }: DeskBriefProps): ReactElement {
               disabled={submitting}
               className="bg-[#F2EFE8] px-5 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-[#0B0F0E] transition-all duration-200 hover:bg-[#D24A1F] hover:text-[#F2EFE8] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {submitting ? SUBMIT_BUSY : SUBMIT_DEFAULT}
+              {submitting
+                ? `↻ ${t('submit_busy').toUpperCase()}`
+                : `↗ ${t('submit_default').toUpperCase()}`}
             </button>
           </div>
 
@@ -558,10 +555,12 @@ export function DeskBrief({ anchorId = 'desk' }: DeskBriefProps): ReactElement {
               disabled={reserving}
               className="bg-[#F2EFE8] px-5 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-[#0B0F0E] transition-all duration-200 hover:bg-[#D24A1F] hover:text-[#F2EFE8] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {reserving ? '↻ RESERVING…' : `↗ MAKE THIS MANIFEST · ${items.length} ITEMS`}
+              {reserving
+                ? `↻ ${t('manifest_cta_reserving').toUpperCase()}`
+                : `↗ ${t('manifest_cta_template', { count: items.length }).toUpperCase()}`}
             </button>
             <span className="font-mono text-[10px] uppercase tracking-[0.10em] text-[#F2EFE8]/55">
-              → RESERVES ALL DOSSIERS · OPENS CART
+              → {t('manifest_caption').toUpperCase()}
             </span>
           </div>
         )}
@@ -569,7 +568,7 @@ export function DeskBrief({ anchorId = 'desk' }: DeskBriefProps): ReactElement {
         {reservedCount !== null && (
           <div className="mt-6 border-t border-[rgba(242,239,232,0.15)] pt-5">
             <span className="bg-[#A8350F] px-4 py-2 font-mono text-[11px] uppercase tracking-[0.14em] text-[#F2EFE8]">
-              ✓ {reservedCount} DOSSIERS ISSUED
+              ✓ {t('issued_count', { count: reservedCount }).toUpperCase()}
             </span>
           </div>
         )}

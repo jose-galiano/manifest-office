@@ -1,9 +1,9 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useId, useState } from 'react';
 
-import { Link } from '@/i18n/navigation';
-import { usePathname } from '@/i18n/navigation';
+import { Link, usePathname } from '@/i18n/navigation';
 import { CUSTOM_EVENTS, ECOMMERCE_EVENTS, track } from '@/lib/analytics';
 import { validateEmail } from '@/lib/utils/email';
 
@@ -40,6 +40,7 @@ function isCoarsePointer(): boolean {
 }
 
 export function LeadCapturePopup(): ReactElement | null {
+  const t = useTranslations('lead_capture');
   const pathname = usePathname();
   const inputId = useId();
   const [open, setOpen] = useState<boolean>(false);
@@ -161,7 +162,7 @@ export function LeadCapturePopup(): ReactElement | null {
     >
       <button
         type="button"
-        aria-label="Close"
+        aria-label={t('close')}
         onClick={handleClose}
         className="absolute inset-0 bg-[rgba(11,15,14,0.55)] backdrop-blur-[2px] cursor-default"
       />
@@ -169,7 +170,7 @@ export function LeadCapturePopup(): ReactElement | null {
       <div className="relative w-full max-w-[480px] bg-[var(--color-paper)] text-[var(--color-ink)] shadow-[0_24px_60px_-24px_rgba(0,0,0,0.45)]">
         <button
           type="button"
-          aria-label="Close"
+          aria-label={t('close')}
           onClick={handleClose}
           className="absolute right-4 top-4 z-10 h-9 w-9 font-mono text-[14px] uppercase tracking-[0.06em] text-[var(--color-lichen)] transition-colors hover:text-[var(--color-ink)]"
         >
@@ -178,26 +179,22 @@ export function LeadCapturePopup(): ReactElement | null {
 
         <div className="px-7 py-9 sm:px-9 sm:py-11">
           <span className="block font-mono text-[10px] tracking-[0.14em] uppercase text-signal">
-            BUILT BY MAELIFY
+            {t('eyebrow').toUpperCase()}
           </span>
           <h2
             id={`${inputId}-heading`}
             className="mt-3 font-display text-[28px] font-medium leading-[1.05] tracking-[-0.015em] sm:text-[34px]"
           >
-            {submitted ? 'Got it. I’ll be in touch.' : 'Like what you’re seeing?'}
+            {submitted ? t('headline_success') : t('headline_default')}
           </h2>
 
           {!submitted ? (
             <p className="mt-4 text-[15px] leading-[1.55] text-[var(--color-ink)]/85">
-              This whole storefront is a portfolio piece. Shopify Plus, Next.js 15, agentic-commerce
-              schema, multi-agent Claude Code build. The same stack can elevate your brand into a
-              storefront that people remember and that converts. Leave an email, or book a call.
+              {t('body_default')}
             </p>
           ) : (
             <p className="mt-4 text-[15px] leading-[1.55] text-[var(--color-ink)]/85">
-              Thanks. I&apos;ll reach out within a business day with a few questions and a short
-              recommendation on where headless gets you the biggest unlock. Meanwhile, the rest of
-              the demo is yours to poke at.
+              {t('body_success')}
             </p>
           )}
 
@@ -205,7 +202,7 @@ export function LeadCapturePopup(): ReactElement | null {
             <form onSubmit={handleSubmit} noValidate className="mt-7 flex flex-col gap-3">
               <div className="flex items-stretch border border-[var(--color-rule-strong)] focus-within:border-[var(--color-ink)]">
                 <label htmlFor={inputId} className="sr-only">
-                  Email
+                  {t('email_label')}
                 </label>
                 <input
                   id={inputId}
@@ -213,7 +210,7 @@ export function LeadCapturePopup(): ReactElement | null {
                   inputMode="email"
                   autoComplete="email"
                   required
-                  placeholder="your.email@company.com"
+                  placeholder={t('email_placeholder')}
                   value={email}
                   onChange={(event) => {
                     setEmail(event.target.value);
@@ -235,7 +232,7 @@ export function LeadCapturePopup(): ReactElement | null {
                 type="submit"
                 className="w-full bg-[var(--color-ink)] px-4 py-[16px] font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--color-paper)] transition-[background-color,letter-spacing] duration-[280ms] ease-out hover:bg-[var(--color-signal)] hover:tracking-[0.18em]"
               >
-                Send me a note
+                {t('submit')}
               </button>
               <Link
                 href={BOOK_CALL_HREF}
@@ -244,7 +241,7 @@ export function LeadCapturePopup(): ReactElement | null {
                 onClick={handleBookCall}
                 className="text-center font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-ink)] underline decoration-[var(--color-rule-strong)] underline-offset-[6px] transition-colors hover:text-signal hover:decoration-[var(--color-signal)]"
               >
-                Or book a 30-min call →
+                {t('book_call')} →
               </Link>
             </form>
           ) : (
@@ -256,20 +253,20 @@ export function LeadCapturePopup(): ReactElement | null {
                 onClick={handleBookCall}
                 className="w-full text-center bg-[var(--color-ink)] px-4 py-[16px] font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--color-paper)] transition-[background-color,letter-spacing] duration-[280ms] ease-out hover:bg-[var(--color-signal)] hover:tracking-[0.18em]"
               >
-                Book a 30-min call →
+                {t('book_call_success')} →
               </Link>
               <button
                 type="button"
                 onClick={handleClose}
                 className="text-center font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-lichen)] transition-colors hover:text-[var(--color-ink)]"
               >
-                Keep exploring
+                {t('keep_exploring')}
               </button>
             </div>
           )}
 
           <p className="mt-7 font-mono text-[10px] tracking-[0.06em] uppercase text-[var(--color-lichen)]">
-            Jose Galiano · Shopify Agentic Commerce Architect · maelify.com
+            {t('signature')}
           </p>
         </div>
       </div>
