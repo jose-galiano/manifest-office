@@ -501,8 +501,9 @@ export function PdpBuybox({
       </div>
 
       <div
+        id="allocation"
         aria-live="polite"
-        className="mt-2 flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.04em] text-[#5C6B5A]"
+        className="mt-2 flex scroll-mt-[110px] items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.04em] text-[#5C6B5A]"
       >
         <span
           aria-hidden="true"

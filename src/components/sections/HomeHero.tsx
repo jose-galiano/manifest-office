@@ -53,9 +53,10 @@ export function HomeHero(): ReactElement {
 
   return (
     <section
+      id="hero"
       data-surface="ink"
       ref={wrapperRef}
-      className="relative h-screen min-h-[760px] overflow-hidden bg-[#0B0F0E] text-[#F2EFE8]"
+      className="relative h-screen min-h-[760px] overflow-hidden bg-[#0B0F0E] text-[#F2EFE8] scroll-mt-[110px]"
     >
       {/* SSR static gradient — the LCP candidate. Always painted; the WebGL
           canvas overlays it once the three.js chunk is hydrated. */}

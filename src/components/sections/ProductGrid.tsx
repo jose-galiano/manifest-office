@@ -25,8 +25,9 @@ export function ProductGrid({ products }: ProductGridProps): ReactElement {
   }
   return (
     <div
+      id="dossiers"
       role="list"
-      className="grid grid-cols-1 gap-px border-b border-[rgba(11,15,14,0.12)] bg-[rgba(11,15,14,0.12)] md:grid-cols-2 lg:grid-cols-3"
+      className="grid scroll-mt-[110px] grid-cols-1 gap-px border-b border-[rgba(11,15,14,0.12)] bg-[rgba(11,15,14,0.12)] md:grid-cols-2 lg:grid-cols-3"
     >
       {products.map((product, index) => (
         <div key={product.handle} role="listitem" className="contents">

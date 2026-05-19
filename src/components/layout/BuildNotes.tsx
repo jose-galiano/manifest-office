@@ -39,17 +39,17 @@ const FEATURES: readonly FeatureLink[] = [
   {
     label: 'WebGL topographic hero',
     description: 'Three.js plane, pointer Gaussian bulge, signal-orange ink fog',
-    href: '/',
+    href: '/#hero',
   },
   {
     label: 'Anchor Latch scrollytelling',
     description: '193-frame AVIF sequence, sticky canvas, scroll-driven frame index',
-    href: '/products/anchor-latch',
+    href: '/products/anchor-latch#anchor-story',
   },
   {
     label: '3D exploded kit viewer',
     description: 'Drag-orbit, EXPLODE / ASSEMBLE toggle, seven labelled parts',
-    href: '/pages/system',
+    href: '/products/anchor-latch#exploded-kit',
   },
   {
     label: 'Brief the Desk',
@@ -59,22 +59,22 @@ const FEATURES: readonly FeatureLink[] = [
   {
     label: 'Wishlist + share URL',
     description: 'LocalStorage, cross-tab sync, ?w= share link, drawer carousel',
-    href: '/',
+    href: '/collections/edition-01#dossiers',
   },
   {
     label: 'Quick-add bottom sheet',
     description: 'Card-anchored on desktop, slide-up on mobile, haptic on add',
-    href: '/collections/edition-01',
+    href: '/collections/edition-01#dossiers',
   },
   {
     label: 'PDP thumbnail carousel',
     description: 'Hero + alt-angle thumbs, click to swap, all paper-backdrop typology',
-    href: '/products/field-tote',
+    href: '/products/field-tote#gallery',
   },
   {
     label: 'Live allocation counter',
     description: 'Shopify metafield write, real-time across visitors, JSON-LD availability',
-    href: '/products/cube-m',
+    href: '/products/cube-m#allocation',
   },
 ];
 

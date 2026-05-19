@@ -204,9 +204,10 @@ export function ScrollLatchReveal(): ReactElement {
 
   return (
     <section
+      id="anchor-story"
       ref={containerRef}
       data-section="scroll-latch-reveal"
-      className="relative bg-[#0B0F0E] text-[#F2EFE8]"
+      className="relative scroll-mt-[110px] bg-[#0B0F0E] text-[#F2EFE8]"
       style={{ height: reducedMotion ? 'auto' : '420vh' }}
     >
       <div

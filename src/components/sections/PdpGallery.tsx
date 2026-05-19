@@ -37,7 +37,7 @@ export function PdpGallery({
     : tiles.slice(0, 5);
 
   return (
-    <div className="flex flex-col gap-3">
+    <div id="gallery" className="flex scroll-mt-[110px] flex-col gap-3">
       <div className="aspect-[3/4] overflow-hidden border border-[rgba(11,15,14,0.12)] bg-[var(--color-paper)]">
         {heroImageUrl ? (
           <Image

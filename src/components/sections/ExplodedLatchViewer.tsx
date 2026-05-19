@@ -325,8 +325,9 @@ export function ExplodedLatchViewer(): ReactElement {
 
   return (
     <section
+      id="exploded-kit"
       data-surface="ink"
-      className="bg-[#0B0F0E] text-[#F2EFE8] px-5 md:px-10 py-24 border-t border-[rgba(242,239,232,0.18)]"
+      className="scroll-mt-[110px] bg-[#0B0F0E] text-[#F2EFE8] px-5 md:px-10 py-24 border-t border-[rgba(242,239,232,0.18)]"
     >
       <span className="font-mono text-[11px] tracking-[0.08em] uppercase text-signal block mb-3">
         REFERENCE GEOMETRY · INTERACTIVE
