@@ -139,7 +139,7 @@ export function BuildNotes(): ReactElement {
         type="button"
         onClick={handleOpen}
         aria-label={t('trigger_aria')}
-        className="mo-build-chip fixed bottom-5 left-5 z-[750] inline-flex items-center gap-2 rounded-full border border-[var(--color-rule-strong)] bg-[var(--color-paper)] px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.1em] text-[var(--color-ink)] shadow-[0_4px_20px_rgba(11,15,14,0.18)] transition-[transform,background] duration-200 hover:bg-white active:scale-[0.97]"
+        className="mo-build-chip fixed bottom-5 left-5 z-[80] hidden items-center gap-2 rounded-full border border-[var(--color-rule-strong)] bg-[var(--color-paper)] px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.1em] text-[var(--color-ink)] shadow-[0_4px_20px_rgba(11,15,14,0.18)] transition-[transform,background] duration-200 hover:bg-white active:scale-[0.97] md:inline-flex"
         data-nudge={hasNudged ? 'off' : 'on'}
       >
         <span aria-hidden="true" className="text-[var(--color-signal)]">

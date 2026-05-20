@@ -86,30 +86,41 @@ export function LocaleSwitcher({
 
   if (variant === 'stack') {
     return (
-      <div className="grid grid-cols-[1fr_auto] gap-x-6 gap-y-0" aria-label="Choose language">
+      <ul className="flex flex-col" aria-label="Choose language">
         {routing.locales.map((locale) => {
           const isActive = locale === active;
           const market = LOCALE_MARKET[locale];
           return (
-            <button
-              key={locale}
-              type="button"
-              onClick={(event) => switchTo(event, locale)}
-              aria-pressed={isActive}
-              className={`col-span-2 grid grid-cols-subgrid items-baseline border-b border-[rgba(242,239,232,0.18)] py-3 text-left transition-colors ${
-                isActive ? 'text-signal' : 'text-[#F2EFE8] hover:text-signal'
-              }`}
-            >
-              <span className="whitespace-nowrap font-display text-[22px] leading-tight tracking-[-0.01em]">
-                {LOCALE_FULL_NAMES[locale]}
-              </span>
-              <span className="whitespace-nowrap text-right font-mono text-[11px] uppercase leading-tight tracking-[0.1em] tabular-nums text-[#9CAA98]">
-                {LOCALE_LABELS[locale]} · {market.currency}
-              </span>
-            </button>
+            <li key={locale}>
+              <button
+                type="button"
+                onClick={(event) => switchTo(event, locale)}
+                aria-pressed={isActive}
+                className={`flex w-full items-center justify-between gap-4 border-b border-[rgba(242,239,232,0.18)] py-4 text-left transition-colors ${
+                  isActive ? 'text-signal' : 'text-[#F2EFE8] hover:text-signal'
+                }`}
+              >
+                <span className="flex min-w-0 flex-col gap-1">
+                  <span className="font-display text-[20px] font-medium leading-tight tracking-[-0.01em]">
+                    {LOCALE_FULL_NAMES[locale]}
+                  </span>
+                  <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#9CAA98]">
+                    {LOCALE_LABELS[locale]} · {market.currency}
+                  </span>
+                </span>
+                <span
+                  aria-hidden="true"
+                  className={`shrink-0 font-mono text-[14px] leading-none transition-opacity ${
+                    isActive ? 'text-signal opacity-100' : 'opacity-0'
+                  }`}
+                >
+                  ●
+                </span>
+              </button>
+            </li>
           );
         })}
-      </div>
+      </ul>
     );
   }
 
