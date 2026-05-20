@@ -77,17 +77,32 @@ export function Nav({ forceSolid }: NavProps = {}): ReactElement {
     setMenuOpen(false);
   }, [pathname]);
 
-  // Lock body scroll while the menu overlay is open.
+  // Lock body scroll while the menu overlay is open. iOS Safari ignores
+  // `body { overflow: hidden }` on its own — pinning the body with
+  // `position: fixed` + restoring scrollY on close is the reliable pattern.
   useEffect(() => {
     if (!menuOpen) return;
-    const previous = document.body.style.overflow;
+    const scrollY = window.scrollY;
+    const prev = {
+      bodyPosition: document.body.style.position,
+      bodyTop: document.body.style.top,
+      bodyWidth: document.body.style.width,
+      bodyOverflow: document.body.style.overflow,
+    };
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
     document.body.style.overflow = 'hidden';
     const onKey = (event: KeyboardEvent): void => {
       if (event.key === 'Escape') setMenuOpen(false);
     };
     window.addEventListener('keydown', onKey);
     return () => {
-      document.body.style.overflow = previous;
+      document.body.style.position = prev.bodyPosition;
+      document.body.style.top = prev.bodyTop;
+      document.body.style.width = prev.bodyWidth;
+      document.body.style.overflow = prev.bodyOverflow;
+      window.scrollTo(0, scrollY);
       window.removeEventListener('keydown', onKey);
     };
   }, [menuOpen]);
@@ -182,7 +197,8 @@ export function Nav({ forceSolid }: NavProps = {}): ReactElement {
         aria-hidden={!menuOpen}
         className={[
           'fixed inset-x-0 top-[calc(36px+57px)] bottom-0 z-40 md:hidden',
-          'bg-[#0B0F0E] text-[#F2EFE8]',
+          'overflow-y-auto overscroll-contain bg-[#0B0F0E] text-[#F2EFE8]',
+          '[-webkit-overflow-scrolling:touch]',
           'transition-[opacity,transform] duration-[280ms] ease-out',
           menuOpen
             ? 'opacity-100 translate-y-0 pointer-events-auto'
@@ -216,7 +232,7 @@ export function Nav({ forceSolid }: NavProps = {}): ReactElement {
           </span>
           <LocaleSwitcher variant="stack" onSelect={() => setMenuOpen(false)} />
         </div>
-        <div className="px-5 pt-8 font-mono text-[11px] tracking-[0.06em] uppercase text-[#5C6B5A]">
+        <div className="px-5 pb-[calc(env(safe-area-inset-bottom)+32px)] pt-8 font-mono text-[11px] tracking-[0.06em] uppercase text-[#5C6B5A]">
           EUR · EDITION 01 · ISSUED FROM PORTO
         </div>
       </div>
