@@ -13,6 +13,8 @@
     "system_sub": "O kit completo",
     "provenance": "Proveniência",
     "provenance_sub": "A nossa história",
+    "faq": "FAQ",
+    "faq_sub": "Dúvidas, em poucas palavras",
     "open_cart": "Abrir manifesto, {count} {count, plural, one {item} other {itens}}",
     "open_wishlist": "Abrir wishlist, {count} {count, plural, one {item} other {itens}}",
     "open_menu": "Abrir menu",
